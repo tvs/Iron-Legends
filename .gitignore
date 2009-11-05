@@ -1,0 +1,37 @@
+# Design doc folder
+design-doc/*
+
+# Temporary and build folders
+tmp/*
+bin/*
+log/*.log
+export/*
+
+# Archive files
+*.tar
+*.gz
+*.zip
+*.jar
+
+# Eclipse settings
+.classpath
+.project
+.settings/*
+
+# Temporary editor files
+*~
+*.swp
+
+# Class files
+*.class
+
+# Image work-files
+*.psd
+*.ai
+
+# LaTeX work-files
+*.log
+*.aux
+
+# Random Mac thing
+.DS_Store

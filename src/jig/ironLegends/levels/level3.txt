@@ -1,0 +1,21 @@
+20 20
+h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  
+h  c  h  h  e  h  e  h  e  h  av h  e  h  h  sv h  c  h  h  
+h  h  b  h  e  h  av h  e  h  e  h  e  h  h  e  h  e  e  h  
+h  h  h  h  e  h  h  h  e  h  h  h  h  h  h  e  h  h  h  h  
+e  e  e  e  e  e  e  e  e  e  e  e  e  e  e  w  e  e  e  p2 
+h  e  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  
+h  w  e  e  e  sv h  h  e  av p2 h  sv e  h  h  av p2 h  h  
+h  e  h  e  h  e  h  h  h  e  h  h  e  h  e  h  e  h  e  h  
+h  e  h  e  h  e  h  h  h  e  h  h  e  e  h  h  e  e  h  h  
+h  e  h  e  h  e  h  e  h  e  h  h  e  h  h  h  e  h  h  h  
+h  e  h  h  h  p2 h  e  wp e  h  h  e  h  sv h  e  h  sv h  
+h  e  h  h  h  h  h  h  h  e  h  h  e  h  e  h  e  h  e  h  
+h  e  h  h  h  h  h  h  h  e  h  h  e  h  h  h  e  h  h  h  
+h  w  e  e  ah e  e  e  e  w  e  e  e  e  e  e  w  e  e  h  
+h  e  h  h  h  h  h  e  h  h  h  h  e  sv h  h  h  h  e  h  
+h  e  h  e  h  e  h  e  h  c  e  h  e  e  h  h  e  h  e  h  
+h  e  h  e  ah e  h  e  h  e  e  h  e  h  h  e  e  h  e  h  
+h  e  h  h  h  h  h  e  h  h  h  h  e  h  h  h  h  h  e  h  
+h  e  e  e  e  e  e  w  e  e  e  e  w  e  e  ah e  e  w  h  
+h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  

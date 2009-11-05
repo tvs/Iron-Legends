@@ -1,0 +1,119 @@
+<spriteset>
+	<author>Michael JP Persons</author>
+	<name>hedgeRunnerSprites</name>
+	<type>image/png</type>
+	<width>300</width>
+	<height>200</height>
+
+
+    <frameset>
+        <name>mitko</name>
+        <left>0</left>
+        <top>177</top>
+        <width>20</width>
+        <height>20</height>
+        <columns>8</columns>
+    </frameset>
+    <frameset>
+    <name>empty</name>
+    <left>189</left>
+    <top>137</top>
+    <width>32</width>
+    <height>32</height>
+    </frameset>
+    <frameset>
+        <name>bat</name>
+        <left>0</left>
+        <top>80</top>
+        <width>48</width>
+        <height>48</height>
+        <columns>4</columns>
+    </frameset>
+    <frameset>
+        <name>spider</name>
+        <left>0</left>
+        <top>0</top>
+        <width>28</width>
+        <height>28</height>
+        <columns>8</columns>
+    </frameset>
+    <frameset>
+        <name>ant</name>
+        <left>0</left>
+        <top>157</top>
+        <width>20</width>
+        <height>20</height>
+        <columns>8</columns>
+    </frameset>
+    
+	<frameset>
+		<name>powerup</name>
+		<left>1</left>
+		<top>48</top>
+		<width>12</width>
+		<height>15</height>
+		<columns>2</columns>
+	</frameset>
+	<frameset>
+		<name>weed1</name>
+		<top>32</top>
+		<left>0</left>
+		<width>10</width>
+		<height>10</height>
+		<columns>2</columns>
+	</frameset>
+	
+	<frameset>
+		<name>hedge</name>
+		<left>55</left>
+		<top>48</top>
+		<width>32</width>
+		<height>32</height>
+	</frameset>
+    <frameset>
+        <name>test-hedge</name>
+        <left>0</left>
+        <top>96</top>
+        <width>32</width>
+        <height>32</height>
+    </frameset>
+
+	<frameset>
+		<name>testTile1</name>
+		<top>96</top>
+		<left>64</left>
+		<width>32</width>
+		<height>32</height>
+	</frameset>
+	<frameset>
+		<name>testTile2</name>
+		<left>87</left>
+        <top>48</top>
+		<width>32</width>
+		<height>32</height>
+	</frameset>
+    <frameset>
+        <name>batCave</name>
+        <left>119</left>
+        <top>48</top>
+        <width>32</width>
+        <height>32</height>
+    </frameset>
+	<frameset>
+		<name>ball</name>
+		<top>0</top>
+		<left>48</left>
+		<width>16</width>
+		<height>16</height>
+	</frameset>
+	<frameset>
+		<name>blackball</name>
+		<top>16</top>
+		<left>48</left>
+		<width>16</width>
+		<height>16</height>
+
+	</frameset>
+
+
+</spriteset>
