@@ -25,7 +25,7 @@ public class CollisionSink_Creature extends CollisionSink_VanillaPolyBodyDefault
 	{
 		// poly = Mitko
 		// body = creature
-		Mitko m = (Mitko)poly;
+		Mitko m = null;//(Mitko)poly;
 
 		Bat b = null;
 		try{

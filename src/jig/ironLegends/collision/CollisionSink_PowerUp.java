@@ -30,7 +30,7 @@ public class CollisionSink_PowerUp implements ICollisionSink_VanillaPolyBody
 		if (pu.isActive())
 		{
 			pu.setActivation(false);
-			Mitko m = (Mitko)poly;
+			Mitko m = null;//(Mitko)poly;
 			
 			if (pu.isImmediate())
 			{

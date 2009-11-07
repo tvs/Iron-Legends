@@ -7,11 +7,28 @@
 
 
     <frameset>
+        <name>cpb</name>
+        <left>296</left>
+        <top>196</top>
+        <width>4</width>
+        <height>4</height>
+    </frameset>
+    <!--  
+    <frameset>
         <name>mitko</name>
         <left>0</left>
         <top>177</top>
         <width>20</width>
         <height>20</height>
+        <columns>8</columns>
+    </frameset>
+    -->
+    <frameset>
+        <name>mitko</name>
+        <left>2</left>
+        <top>180</top>
+        <width>16</width>
+        <height>14</height>
         <columns>8</columns>
     </frameset>
     <frameset>

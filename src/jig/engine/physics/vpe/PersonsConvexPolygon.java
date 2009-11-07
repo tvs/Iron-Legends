@@ -12,7 +12,10 @@ import jig.engine.util.Vector2D;
  */
 public class PersonsConvexPolygon extends ConvexPolygon 
 {
+	// publicly exposing data not available in ConvexPolygon
 	public int getCorners(){return nCorners;}
+	// offset to rotation is a vector that when added to the position will be the rotation point
+	public Vector2D getOffsetToRotation() {return offsetToRotation;}
 	
 	protected PersonsConvexPolygon(int nCorners) {
 		super(nCorners);
@@ -530,7 +533,9 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		if (r2 < dist2)
 			return null;
 		 */
+		// distance between the center of each polygon (squared)
 		double dist2 = other.getPosition().translate(other.offsetToRotation).difference(getPosition().translate(offsetToRotation)).magnitude2();
+		// square of the (sum of each radius) 
 		double r2 = (other.radius + radius)*(other.radius + radius);
 		if (r2 < dist2)
 			return null;

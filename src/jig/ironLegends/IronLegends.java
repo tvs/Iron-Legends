@@ -25,6 +25,7 @@ import jig.ironLegends.collision.CollisionSink_CreatureHedge;
 import jig.ironLegends.collision.CollisionSink_PowerUp;
 import jig.ironLegends.collision.CollisionSink_Weed;
 import jig.ironLegends.collision.CollisionHandler_PolyLayer_BodyLayer;
+import jig.ironLegends.collision.Handler_CPB_BodyLayer;
 import jig.ironLegends.collision.PolyLayer_PolyLayer;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
@@ -492,6 +493,10 @@ public class IronLegends extends ScrollingScreenGame
 				
 				// don't hit the hedges
 				m_physicsEngine.registerCollisionHandler(
+						new Handler_CPB_BodyLayer(m_mitko, m_hedgeLayer, m_polygonFactory, Tile.WIDTH, Tile.HEIGHT, null));
+				
+				/*
+				m_physicsEngine.registerCollisionHandler(
 						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT, null));
 				m_physicsEngine.registerCollisionHandler(
 						new CollisionHandler_PolyLayer_BodyLayer(m_polygonFactory, m_antLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
@@ -526,6 +531,8 @@ public class IronLegends extends ScrollingScreenGame
 						new PolyLayer_PolyLayer(m_batLayer, m_antLayer, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
 				m_physicsEngine.registerCollisionHandler(
 						new PolyLayer_PolyLayer(m_batLayer, m_spiderLayer, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
+				 */
+				
 				/*
 				 collision resolution in following order
 				 mitko - hedge

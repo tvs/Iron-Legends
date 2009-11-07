@@ -7,9 +7,11 @@ import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.physics.vpe.VanillaAARectangle;
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.core.MultiSpriteBody;
 
 //public class Mitko extends VanillaAARectangle 
-public class Mitko extends VanillaPolygon
+//public class Mitko extends VanillaPolygon
+public class Mitko extends MultiSpriteBody
 {
 	Vector2D m_resetPosition;
 	//static final int MIN_SPEED = 50;
@@ -20,7 +22,7 @@ public class Mitko extends VanillaPolygon
 	static final int MIN_TO_MAX_MS = 0;
 
 	protected static final long WIDTH = 16;
-	protected static final long HEIGHT = 12;
+	protected static final long HEIGHT = 14;
 	protected static final int MITKO_FRAMES = 4;
 	protected static final long FRAME_DURATION_MS = 150;
 	protected static final long FEINT_FRAME_DURATION_MS = 400;
@@ -29,13 +31,16 @@ public class Mitko extends VanillaPolygon
 	
 	public Mitko(ConvexPolygon shape)
 	{
-		super(IronLegends.SPRITE_SHEET + "#mitko");
+		//super(IronLegends.SPRITE_SHEET + "#mitko");
+		//setBackingShape(shape);
+		super(shape, IronLegends.SPRITE_SHEET + "#mitko");
+		
+		//super.addSprite(IronLegends.SPRITE_SHEET + "#mitko");
 		position = shape.getPosition();
 
 		m_animator 	= new Animator(MITKO_FRAMES,FRAME_DURATION_MS, 0);
 		m_engine 	= new GroundEngine(MIN_SPEED, MAX_SPEED, MIN_TO_MAX_MS);
 		
-		setBackingShape(shape);
 		m_resetPosition = position;
 		m_powerupRemainingMs = 0;
 		m_storedPowerUps = 0;
@@ -86,9 +91,11 @@ public class Mitko extends VanillaPolygon
 	}
 	
 	@Override
-	public void render(RenderingContext rc) {
+	public void render(RenderingContext rc) 
+	{
 		if (!active) return;
-		
+		super.render(rc);
+		/*		
 		Vector2D p = position;
 		AffineTransform at = AffineTransform.getTranslateInstance(p.getX()
 				+ radius, p.getY() + radius);
@@ -96,7 +103,8 @@ public class Mitko extends VanillaPolygon
 		at.rotate(rotation);
 		at.translate(-radius + offset.getX(), -radius + offset.getY());
 		
-		render(rc, at);	
+		render(rc, at);
+		*/	
 	}
 	
 	public void update(long deltaMs) 

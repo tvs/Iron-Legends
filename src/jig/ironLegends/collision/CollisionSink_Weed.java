@@ -32,7 +32,7 @@ public class CollisionSink_Weed implements ICollisionSink_VanillaPolyBody
 
 			if (isPowerup)
 			{
-				Mitko m = (Mitko)poly;
+				Mitko m = null;//(Mitko)poly;
 				m.collectPowerUp();
 				// play sound
 				m_sfx.play("collectPowerup1");
