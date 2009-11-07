@@ -5,10 +5,10 @@ import jig.ironLegends.Mitko;
 import jig.ironLegends.Weed;
 import jig.ironLegends.core.SoundFx;
 import jig.engine.physics.Body;
-import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.core.ConvexPolyBody;
 
-public class CollisionSink_Weed implements ICollisionSink_VanillaPolyBody 
+public class CollisionSink_Weed implements ISink_CPB_Body 
 {
 
 	public CollisionSink_Weed(LevelProgress levelProgress, SoundFx sfx)
@@ -19,7 +19,7 @@ public class CollisionSink_Weed implements ICollisionSink_VanillaPolyBody
 	
 	@Override
 	public boolean onCollision(
-			VanillaPolygon poly
+			ConvexPolyBody poly
 			, Body body
 			, Vector2D vCorrection) 
 	{
@@ -32,7 +32,7 @@ public class CollisionSink_Weed implements ICollisionSink_VanillaPolyBody
 
 			if (isPowerup)
 			{
-				Mitko m = null;//(Mitko)poly;
+				Mitko m = (Mitko)poly;
 				m.collectPowerUp();
 				// play sound
 				m_sfx.play("collectPowerup1");

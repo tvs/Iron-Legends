@@ -8,8 +8,9 @@ import jig.ironLegends.Navigator;
 import jig.engine.physics.Body;
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.core.ConvexPolyBody;
 
-public class CollisionSink_CreatureHedge extends CollisionSink_VanillaPolyBodyDefault 
+public class CollisionSink_CreatureHedge extends Sink_CPB_Body_Default 
 {
 	public CollisionSink_CreatureHedge(LevelGrid levelGrid)
 	{
@@ -18,7 +19,7 @@ public class CollisionSink_CreatureHedge extends CollisionSink_VanillaPolyBodyDe
 	
 	@Override
 	public boolean onCollision(
-			VanillaPolygon poly
+			ConvexPolyBody poly
 			, Body body
 			, Vector2D vCorrection) 
 	{

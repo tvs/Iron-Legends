@@ -6,8 +6,9 @@ import jig.engine.RenderingContext;
 import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.core.MultiSpriteBody;
 
-public class Creature extends VanillaPolygon 
+public class Creature extends MultiSpriteBody 
 {
 	protected Mitko m_mitko;
 	Animator m_animator;
@@ -17,9 +18,8 @@ public class Creature extends VanillaPolygon
 	Creature(String sprite, int frames, long frameDurationMs
 			, boolean bHorizontal, ConvexPolygon shape, Mitko mitko)
 	{
-		super(IronLegends.SPRITE_SHEET + "#" + sprite);
-		setBackingShape(shape);
-		position = shape.getPosition();
+		super(shape, IronLegends.SPRITE_SHEET + "#" + sprite);
+		
 		if (bHorizontal)
 			velocity = new Vector2D(-20,0);
 		else
@@ -62,15 +62,7 @@ public class Creature extends VanillaPolygon
 	{
 		if (!active)
 			return;
-		
-		Vector2D p = position;
-		AffineTransform at = AffineTransform.getTranslateInstance(p.getX()
-				+ radius, p.getY() + radius);
-
-		at.rotate(rotation);
-		at.translate(-radius + offset.getX(), -radius + offset.getY());
-		
-		render(rc, at);	
+		super.render(rc);		
 	}
 	
 	@Override

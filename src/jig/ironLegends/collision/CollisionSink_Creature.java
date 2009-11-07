@@ -4,12 +4,13 @@ import jig.ironLegends.Bat;
 import jig.ironLegends.Creature;
 import jig.ironLegends.LevelProgress;
 import jig.ironLegends.Mitko;
+import jig.ironLegends.core.ConvexPolyBody;
 import jig.ironLegends.core.SoundFx;
 import jig.engine.physics.Body;
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
 
-public class CollisionSink_Creature extends CollisionSink_VanillaPolyBodyDefault 
+public class CollisionSink_Creature implements ISink_CPB_CPB 
 {
 	protected LevelProgress m_levelProgress;
 	protected final SoundFx m_sfx;
@@ -20,12 +21,11 @@ public class CollisionSink_Creature extends CollisionSink_VanillaPolyBodyDefault
 		m_sfx = sfx;
 	}
 	
-	@Override
-	public boolean onCollision(VanillaPolygon poly, Body body, Vector2D vCorrection)
+	public boolean onCollision(ConvexPolyBody poly, ConvexPolyBody body, Vector2D vCorrection)
 	{
 		// poly = Mitko
 		// body = creature
-		Mitko m = null;//(Mitko)poly;
+		Mitko m = (Mitko)poly;
 
 		Bat b = null;
 		try{

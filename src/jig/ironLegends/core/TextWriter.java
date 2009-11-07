@@ -79,6 +79,10 @@ public class TextWriter
 	
 	public void print(String msg, int x, int y)
 	{
+		if (x == -1)
+		{
+			x = m_width / 2 - m_curFont.getStringWidth(msg) / 2;
+		}
 		m_curFont.render(msg, m_rc, AffineTransform.getTranslateInstance(x, y));
 	}
 	public void print(String msg)

@@ -191,7 +191,7 @@ public class Bat extends Creature
 						m_bInMission = false;
 						setVelocity(new Vector2D(0,0));
 						m_engine.m_curSpeed = 0;
-						rotation = 0;
+						setRotation(0);
 						m_bIdleMs = 0;
 						m_animator.setFrameBase(2);
 					}			

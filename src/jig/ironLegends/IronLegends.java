@@ -18,15 +18,7 @@ import jig.engine.util.Vector2D;
 import jig.engine.physics.vpe.VanillaPhysicsEngine;
 import jig.misc.sat.PolygonFactory;
 
-import jig.ironLegends.collision.CollisionHandler_VanillaPolygon_Body;
-import jig.ironLegends.collision.CollisionSink_BatCreature;
-import jig.ironLegends.collision.CollisionSink_Creature;
-import jig.ironLegends.collision.CollisionSink_CreatureHedge;
-import jig.ironLegends.collision.CollisionSink_PowerUp;
-import jig.ironLegends.collision.CollisionSink_Weed;
-import jig.ironLegends.collision.CollisionHandler_PolyLayer_BodyLayer;
-import jig.ironLegends.collision.Handler_CPB_BodyLayer;
-import jig.ironLegends.collision.PolyLayer_PolyLayer;
+import jig.ironLegends.collision.*;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.GameScreens;
@@ -495,44 +487,38 @@ public class IronLegends extends ScrollingScreenGame
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_BodyLayer(m_mitko, m_hedgeLayer, m_polygonFactory, Tile.WIDTH, Tile.HEIGHT, null));
 				
-				/*
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT, null));
-				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_PolyLayer_BodyLayer(m_polygonFactory, m_antLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
+						new Handler_CPBLayer_BodyLayer(m_polygonFactory, m_antLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
 									, new CollisionSink_CreatureHedge(m_grid)));
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_PolyLayer_BodyLayer(m_polygonFactory, m_spiderLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
+						new Handler_CPBLayer_BodyLayer(m_polygonFactory, m_spiderLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
 									, new CollisionSink_CreatureHedge(m_grid)));
-				
-				// mitko-powerup
+				// power-up
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_powerUpLayer, PowerUp.WIDTH, PowerUp.HEIGHT
+						new Handler_CPB_BodyLayer(m_mitko, m_powerUpLayer, m_polygonFactory, PowerUp.WIDTH, PowerUp.HEIGHT
 								, new CollisionSink_PowerUp(m_levelProgress, m_sfx)));
 				
 				// mitko-creatures
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_antLayer, Ant.WIDTH, Ant.HEIGHT
+						new Handler_CPB_CPBLayer(m_mitko, m_antLayer
 								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_spiderLayer, Spider.WIDTH, Spider.HEIGHT
+						new Handler_CPB_CPBLayer(m_mitko, m_spiderLayer
 								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_batLayer, Bat.WIDTH, Bat.HEIGHT
+						new Handler_CPB_CPBLayer(m_mitko, m_batLayer
 								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
-
 				// mitko-weeds
 				m_physicsEngine.registerCollisionHandler(
-						new CollisionHandler_VanillaPolygon_Body(m_polygonFactory, m_mitko, m_weedLayer, Weed.WIDTH, Weed.HEIGHT
+						new Handler_CPB_BodyLayer(m_mitko, m_weedLayer, m_polygonFactory, Weed.WIDTH, Weed.HEIGHT
 								, new CollisionSink_Weed(m_levelProgress, m_sfx)));
-				
 				// bat-creatures
 				m_physicsEngine.registerCollisionHandler(
-						new PolyLayer_PolyLayer(m_batLayer, m_antLayer, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
+						new Handler_CPBLayer_CPBLayer(m_batLayer, m_antLayer
+								, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
 				m_physicsEngine.registerCollisionHandler(
-						new PolyLayer_PolyLayer(m_batLayer, m_spiderLayer, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
-				 */
-				
+						new Handler_CPBLayer_CPBLayer(m_batLayer, m_spiderLayer
+								, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
 				/*
 				 collision resolution in following order
 				 mitko - hedge

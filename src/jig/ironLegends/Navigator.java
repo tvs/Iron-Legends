@@ -4,6 +4,7 @@ import java.util.Random;
 
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.core.ConvexPolyBody;
 
 public class Navigator 
 {
@@ -16,16 +17,16 @@ public class Navigator
 		m_rand = new Random();		
 	}
 	
-	public boolean selectRandom(VanillaPolygon poly)
+	public boolean selectRandom(ConvexPolyBody poly)
 	{
 		return selectOption(poly, poly.getVelocity(), m_rand);
 	}
-	public boolean selectOption(VanillaPolygon poly)
+	public boolean selectOption(ConvexPolyBody poly)
 	{
 		return selectOption(m_grid, poly, poly.getVelocity(), m_rand);
 	}
 	public static boolean selectOption(
-			  VanillaPolygon poly
+			ConvexPolyBody poly
 			, Vector2D vel
 			, Random rand
 			)
@@ -63,7 +64,7 @@ public class Navigator
 	
 	public static boolean selectOption(
 			  LevelGrid grid
-			, VanillaPolygon poly
+			, ConvexPolyBody poly
 			, Vector2D vel  
 			, Random rand
 			)

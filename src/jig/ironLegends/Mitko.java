@@ -31,11 +31,9 @@ public class Mitko extends MultiSpriteBody
 	
 	public Mitko(ConvexPolygon shape)
 	{
-		//super(IronLegends.SPRITE_SHEET + "#mitko");
-		//setBackingShape(shape);
-		super(shape, IronLegends.SPRITE_SHEET + "#mitko");
+		super(shape, IronLegends.SPRITE_SHEET + "#mitko");		
+		super.addSprite(IronLegends.SPRITE_SHEET + "#ant");
 		
-		//super.addSprite(IronLegends.SPRITE_SHEET + "#mitko");
 		position = shape.getPosition();
 
 		m_animator 	= new Animator(MITKO_FRAMES,FRAME_DURATION_MS, 0);
@@ -53,7 +51,8 @@ public class Mitko extends MultiSpriteBody
 	
 	public void reset()
 	{
-		position = m_resetPosition;
+		setPosition(m_resetPosition);
+		
 		velocity = new Vector2D(0,0);
 		
 		m_bFeinting 	= false;
@@ -95,16 +94,6 @@ public class Mitko extends MultiSpriteBody
 	{
 		if (!active) return;
 		super.render(rc);
-		/*		
-		Vector2D p = position;
-		AffineTransform at = AffineTransform.getTranslateInstance(p.getX()
-				+ radius, p.getY() + radius);
-
-		at.rotate(rotation);
-		at.translate(-radius + offset.getX(), -radius + offset.getY());
-		
-		render(rc, at);
-		*/	
 	}
 	
 	public void update(long deltaMs) 

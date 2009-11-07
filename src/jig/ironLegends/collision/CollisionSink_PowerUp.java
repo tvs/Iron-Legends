@@ -3,12 +3,13 @@ package jig.ironLegends.collision;
 import jig.ironLegends.LevelProgress;
 import jig.ironLegends.Mitko;
 import jig.ironLegends.PowerUp;
+import jig.ironLegends.core.ConvexPolyBody;
 import jig.ironLegends.core.SoundFx;
 import jig.engine.physics.Body;
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
 
-public class CollisionSink_PowerUp implements ICollisionSink_VanillaPolyBody 
+public class CollisionSink_PowerUp implements ISink_CPB_Body 
 {
 	protected LevelProgress m_levelProgress;
 	protected final SoundFx m_sfx;
@@ -21,7 +22,7 @@ public class CollisionSink_PowerUp implements ICollisionSink_VanillaPolyBody
 	
 	@Override
 	public boolean onCollision(
-			VanillaPolygon poly
+			ConvexPolyBody poly
 			, Body body
 			, Vector2D vCorrection) 
 	{
@@ -30,7 +31,7 @@ public class CollisionSink_PowerUp implements ICollisionSink_VanillaPolyBody
 		if (pu.isActive())
 		{
 			pu.setActivation(false);
-			Mitko m = null;//(Mitko)poly;
+			Mitko m = (Mitko)poly;
 			
 			if (pu.isImmediate())
 			{
