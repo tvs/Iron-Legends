@@ -1,12 +1,15 @@
 package jig.ironLegends;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
 import javax.imageio.spi.ServiceRegistry;
 
+import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
+import jig.engine.Sprite;
 import jig.engine.ViewableLayer;
 import jig.engine.hli.ScrollingScreenGame;
 //import jig.engine.hli.StaticScreenGame;
@@ -31,6 +34,9 @@ import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.StaticBodyLayer;
 import jig.ironLegends.core.Tile;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
+import jig.ironLegends.core.ui.Button;
+import jig.ironLegends.core.ui.IUIEvent;
+import jig.ironLegends.core.ui.MouseState;
 import jig.ironLegends.screens.CustomizePlayerGS;
 import jig.ironLegends.screens.CustomizePlayerTextLayer;
 import jig.ironLegends.screens.GameInfoTextLayer;
@@ -349,8 +355,15 @@ public class IronLegends extends ScrollingScreenGame
 		m_keyCmds.addCommand("y", KeyEvent.VK_Y);
 		m_keyCmds.addCommand("z", KeyEvent.VK_Z);
 		
+		
+		// button test
+		// TODO put collection of buttons as part of each GameScreen?..
+		m_btnTest = new Button(200, 100, IronLegends.SPRITE_SHEET + "#powerup", -1);
+		
 		loadLevel(m_gameProgress.getCurLevel());
 	}
+	
+	protected Button m_btnTest;
 
 	
 	protected boolean loadResources()
@@ -545,11 +558,19 @@ public class IronLegends extends ScrollingScreenGame
 	}
 	
 	protected KeyCommands m_keyCmds = new KeyCommands();
-	protected boolean m_paused = false;	
+	protected boolean m_paused = false;
 	
+
 	protected void processCommands(final long deltaMs)
 	{
 		m_keyCmds.update(keyboard);
+		m_btnTest.update(mouse, deltaMs);
+		if (m_btnTest.wasLeftClicked())
+			System.out.println("button: " + m_btnTest.getId() + " was left clicked");
+		
+		//mouse.getLocation();
+		//if (mouse.isLeftButtonPressed())
+		//	System.out.println("LeftButtonDown: " + mouse.getLocation().x + "," + mouse.getLocation().y);
 
 		if (m_levelProgress.isExitActivated())
 		{
@@ -796,7 +817,10 @@ public class IronLegends extends ScrollingScreenGame
 	public void render(final RenderingContext rc) 
 	{
 		if (rc != null)
+		{
 			super.render(rc);
+			m_btnTest.render(rc);			
+		}
 		
 		//Area gameInfoArea = new Area(new Rectangle2D.Float(600, 0, 200, 600));
 		//Color clear = new Color(128,128,128);
