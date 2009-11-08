@@ -117,7 +117,7 @@ public class IronLegends extends ScrollingScreenGame
 
 		setWorldBounds(0,0, WORLD_WIDTH, WORLD_HEIGHT);
 		
-		m_sInstallDir 	= InstallInfo.getInstallDir("/jig/IronLegends/IronLegends.class", "IronLegends.jar");
+		m_sInstallDir 	= InstallInfo.getInstallDir(RESOURCE_ROOT + "IronLegends.class", "IronLegends.jar");
 		
 		m_levelProgress = new LevelProgress();
 		m_gameProgress 	= new GameProgress(m_levelProgress);
