@@ -2,6 +2,7 @@ package jig.ironLegends;
 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.util.Iterator;
 
 import javax.imageio.spi.ServiceRegistry;
@@ -48,17 +49,17 @@ import jig.ironLegends.screens.SplashTextLayer;
 
 public class IronLegends extends ScrollingScreenGame
 {
-	static final int TILE_WIDTH = 32;
-	static final int TILE_HEIGHT = 32;
-	
+	public static final int TILE_WIDTH = 32;
+	public static final int TILE_HEIGHT = 32;	
 	public static final int WORLD_WIDTH = 1200;
 	public static final int WORLD_HEIGHT = 800;
 	public static final int SCREEN_WIDTH = 800;
 	public static final int SCREEN_HEIGHT = 600;
-	static final String RESOURCE_ROOT = "jig/ironLegends/";
+	public static final String GAME_ROOT = "jig/ironLegends/";
+	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
 	
 	public static final String SPRITE_SHEET = RESOURCE_ROOT + "hr-spritesheet.png";
-	static final String MY_RESOURCES = "hr-resources.xml";
+	public static final String MY_RESOURCES = "hr-resources.xml";
 
 	static final int START_LIVES = 2;
 	
@@ -117,8 +118,7 @@ public class IronLegends extends ScrollingScreenGame
 
 		setWorldBounds(0,0, WORLD_WIDTH, WORLD_HEIGHT);
 		
-		m_sInstallDir 	= InstallInfo.getInstallDir(RESOURCE_ROOT + "IronLegends.class", "IronLegends.jar");
-		
+		m_sInstallDir 	= InstallInfo.getInstallDir("/" + GAME_ROOT + "IronLegends.class", "IronLegends.jar");
 		m_levelProgress = new LevelProgress();
 		m_gameProgress 	= new GameProgress(m_levelProgress);
 		m_rr 			= new ResourceReader(m_sInstallDir);

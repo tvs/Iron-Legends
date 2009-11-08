@@ -181,7 +181,7 @@ public class LevelLoader
 		// read line
 		// add cells
 		//ResourceFactory resourceFactory = ResourceFactory.getFactory();
-		URL url = ResourceFactory.findResource(IronLegends.RESOURCE_ROOT + "levels/level" + level + ".txt");
+		URL url = ResourceFactory.findResource(IronLegends.GAME_ROOT + "levels/level" + level + ".txt");
 		if (url != null)
 		{
 			System.out.println("Located level " + level + " at\n\t" + url.toString());
