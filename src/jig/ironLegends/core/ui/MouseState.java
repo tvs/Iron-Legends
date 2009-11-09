@@ -11,11 +11,26 @@ public class MouseState implements IUIEvent
 	
 	public boolean isActive(){return m_bActive;}
 
+	protected void updateReset()
+	{
+		m_bLeftPressedDown = false;
+		m_bLeftReleased = false;
+		m_bLeftClicked = false;
+	}
+	
+	public MouseState()
+	{
+		
+		m_bActive = false;
+		m_bLeftClicked = false;
+		m_bLeftDown = false;
+	}
+	
 	public void update(Mouse mouse, final long deltaMs, int btnId)
 	{
 		Point mousePt = mouse.getLocation();
 		
-		m_bLeftClick = false;
+		updateReset();
 		
 		// go through and update state
 		if (mouse.isLeftButtonPressed())
@@ -30,7 +45,8 @@ public class MouseState implements IUIEvent
 		if (!m_bActive)
 		{
 			m_bActive = true;
-			m_bLeftClick = false;
+			
+			m_bLeftClicked = false;
 			m_bLeftDown = false;
 			//System.out.println("Button: " + btnId + ". enter");
 		}
@@ -42,7 +58,8 @@ public class MouseState implements IUIEvent
 		if (m_bActive)
 		{
 			m_bActive = false;
-			m_bLeftClick = false;
+			
+			m_bLeftClicked = false;
 			m_bLeftDown = false;
 			
 			//System.out.println("Button: " + btnId + ". leave");
@@ -52,18 +69,18 @@ public class MouseState implements IUIEvent
 	// point at which button was release
 	public void onLeftClick(int btnId, Point mousePt) 
 	{
-		m_bLeftClick = true;
+		m_bLeftClicked = true;
 		//System.out.println("Button: " + btnId + ". left clicked");
 	}
 
 	@Override
 	public void onLeftDown(int btnId, Point mousePt) 
 	{
-		// TODO Auto-generated method stub
 		if (!m_bLeftDown)
 		{
 			m_leftDownPt = mousePt;
 			m_bLeftDown = true;
+			m_bLeftPressedDown = true;
 			//System.out.println("Button: " + btnId + ". left down");
 		}
 	}
@@ -71,7 +88,6 @@ public class MouseState implements IUIEvent
 	@Override
 	public void onLeftUp(int btnId, Point mousePt) 
 	{
-		// TODO Auto-generated method stub
 		if (m_bLeftDown)
 		{
 			//System.out.println("Button: " + btnId + ". left up");
@@ -80,19 +96,31 @@ public class MouseState implements IUIEvent
 			m_bLeftDown = false;
 			onLeftClick(btnId, mousePt);	
 		}
-		
 	}
 	
+	// reset on update
 	public boolean wasLeftClicked()
 	{
-		return m_bLeftClick;
+		return m_bLeftClicked;
+	}
+	// reset on update
+	public boolean wasLeftPressedDown()
+	{
+		return m_bLeftPressedDown;
+	}
+	// reset on update
+	public boolean wasLeftReleased()
+	{
+		return m_bLeftReleased;
 	}
 	
 	// TODO put all these parameters into a inputBtnState?(i.e. clicked, count, etc) so can have left, middle, right, etc
 	protected Point m_leftDownPt;
 	protected Point m_leftUpPt;
 	
-	protected boolean m_bLeftClick;
-	protected boolean m_bLeftDown;
-	protected int m_bLeftClickCount;
+	protected boolean m_bLeftDown;	
+	
+	protected boolean m_bLeftClicked;
+	protected boolean m_bLeftPressedDown;
+	protected boolean m_bLeftReleased;
 }

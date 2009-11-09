@@ -102,6 +102,7 @@ public class SplashTextLayer extends ScreenTextLayer
 		text.println("Press Enter to Play");
 		text.println("Press F1 or 'h' for Help");
 		text.println("Press 'c' to enter a player name");
+		text.println("Press t to enter test screen");
 
 		{
 			int xStart = 7*IronLegends.SCREEN_WIDTH/12;

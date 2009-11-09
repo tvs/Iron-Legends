@@ -1,8 +1,11 @@
 package jig.ironLegends.core;
 
+import java.awt.image.renderable.RenderContext;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import jig.engine.Mouse;
+import jig.engine.RenderingContext;
 import jig.engine.ViewableLayer;
 
 public class GameScreen 
@@ -16,7 +19,7 @@ public class GameScreen
 	{
 	}
 
-	public void activate()
+	public void activate(int prevScreen)
 	{
 	}
 	
@@ -30,7 +33,13 @@ public class GameScreen
 		return m_viewableLayers.iterator();
 	}
 	
-	public void processInput(KeyCommands keyCmds)
+	// return to indicate screen to transition to (may be self)
+	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs)
+	{
+		return name();
+	}
+	
+	public void render(RenderingContext rc)
 	{
 	}
 	

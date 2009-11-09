@@ -3,6 +3,7 @@ package jig.ironLegends.screens;
 import java.util.Iterator;
 import java.util.Vector;
 
+import jig.engine.Mouse;
 import jig.ironLegends.PlayerInfo;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
@@ -37,13 +38,13 @@ public class CustomizePlayerGS extends GameScreen
 	}
 
 	@Override
-	public void activate()
+	public void activate(int prevScreen)
 	{
 		m_sCollectedName = "";
 		m_textLayer.setCollectedName(m_sCollectedName);
 	}
 	@Override
-	public void processInput(KeyCommands keyCmds)
+	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs)
 	{
 		Vector<FinalPair<String, KeyState>> pressedKeys = keyCmds.collectPressedKeyCodes();
 		Iterator<FinalPair<String,KeyState> > iter = pressedKeys.iterator();
@@ -84,6 +85,7 @@ public class CustomizePlayerGS extends GameScreen
 			}
 			//System.out.println("");
 		}
+		return name();
 	}
 	protected String m_sCollectedName;
 	

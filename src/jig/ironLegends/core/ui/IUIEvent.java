@@ -11,6 +11,6 @@ public interface IUIEvent
 	
 	// left button was pressed down, then released while staying over button
 	// should be all we need for events
-	//public void onLeftClick(int btnId, Point mousePt);
+	public void onLeftClick(int btnId, Point mousePt);
 
 }

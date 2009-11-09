@@ -38,6 +38,7 @@ import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.core.ui.Button;
 import jig.ironLegends.core.ui.IUIEvent;
 import jig.ironLegends.core.ui.MouseState;
+import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.screens.CustomizePlayerGS;
 import jig.ironLegends.screens.CustomizePlayerTextLayer;
 import jig.ironLegends.screens.GameInfoTextLayer;
@@ -46,6 +47,7 @@ import jig.ironLegends.screens.GamePlayTextLayer;
 import jig.ironLegends.screens.GameWonTextLayer;
 import jig.ironLegends.screens.HelpTextLayer;
 import jig.ironLegends.screens.SplashTextLayer;
+import jig.ironLegends.screens.TestUI_GS;
 
 public class IronLegends extends ScrollingScreenGame
 {
@@ -63,13 +65,14 @@ public class IronLegends extends ScrollingScreenGame
 
 	static final int START_LIVES = 2;
 	
-	static final int SPLASH_SCREEN = 0;
-	static final int HELP_SCREEN = 1;
-	static final int GAMEOVER_SCREEN = 2;
-	static final int GAMEPLAY_SCREEN = 3;
-	static final int GAMEWON_SCREEN = 4;
+	public static final int SPLASH_SCREEN = 0;
+	public static final int HELP_SCREEN = 1;
+	public static final int GAMEOVER_SCREEN = 2;
+	public static final int GAMEPLAY_SCREEN = 3;
+	public static final int GAMEWON_SCREEN = 4;
 	//static final int LEVELCOMPLETE_SCREEN = 5;
-	static final int CUSTOMIZEPLAYER_SCREEN = 6;
+	public static final int CUSTOMIZEPLAYER_SCREEN = 6;
+	public static final int TESTUI_SCREEN = -1;
 	
 	Fonts m_fonts = new Fonts();
 	
@@ -151,6 +154,7 @@ public class IronLegends extends ScrollingScreenGame
 		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
 		//m_screens.addScreen(new MPGameScreen(LEVELCOMPLETE_SCREEN));
 		m_screens.addScreen(new CustomizePlayerGS(CUSTOMIZEPLAYER_SCREEN, m_playerInfo));
+		m_screens.addScreen(new TestUI_GS(TESTUI_SCREEN, m_fonts));
 		
 		GameScreen gameplayScreen = m_screens.getScreen(GAMEPLAY_SCREEN);
 		
@@ -300,7 +304,8 @@ public class IronLegends extends ScrollingScreenGame
 		m_screens.addTransition(SPLASH_SCREEN, CUSTOMIZEPLAYER_SCREEN, "c");
 		m_screens.addTransition(CUSTOMIZEPLAYER_SCREEN, SPLASH_SCREEN, "enter");
 		m_screens.addTransition(CUSTOMIZEPLAYER_SCREEN, SPLASH_SCREEN, "esc");
-		m_screens.setActiveScreen(SPLASH_SCREEN);		
+		m_screens.addTransition(SPLASH_SCREEN, TESTUI_SCREEN, "t");
+		m_screens.setActiveScreen(SPLASH_SCREEN);
 		
 		// Configure Commands
 		/*
@@ -356,14 +361,9 @@ public class IronLegends extends ScrollingScreenGame
 		m_keyCmds.addCommand("z", KeyEvent.VK_Z);
 		
 		
-		// button test
-		// TODO put collection of buttons as part of each GameScreen?..
-		m_btnTest = new Button(200, 100, IronLegends.SPRITE_SHEET + "#powerup", -1);
 		
 		loadLevel(m_gameProgress.getCurLevel());
 	}
-	
-	protected Button m_btnTest;
 
 	
 	protected boolean loadResources()
@@ -564,14 +564,26 @@ public class IronLegends extends ScrollingScreenGame
 	protected void processCommands(final long deltaMs)
 	{
 		m_keyCmds.update(keyboard);
-		m_btnTest.update(mouse, deltaMs);
-		if (m_btnTest.wasLeftClicked())
-			System.out.println("button: " + m_btnTest.getId() + " was left clicked");
 		
-		//mouse.getLocation();
-		//if (mouse.isLeftButtonPressed())
-		//	System.out.println("LeftButtonDown: " + mouse.getLocation().x + "," + mouse.getLocation().y);
-
+		// TODO update each button on cur screen
+		// TODO definitely create a Screen class for each screen because
+		// then each screen class can hold all the logic for processing input
+		GameScreen curScreen = m_screens.getActiveScreen();
+		if (curScreen != null)
+		{
+			int iNewScreen = curScreen.processCommands(m_keyCmds, mouse, deltaMs);
+			int iCurScreen = curScreen.name();
+			if (iCurScreen != iNewScreen)
+			{
+				// NOTE if had a SplashScreen GameScreen, the activate could populateGameLayers?
+				m_screens.setActiveScreen(iNewScreen);
+				GameScreen newScreen = m_screens.getActiveScreen();
+				curScreen.deactivate();
+				newScreen.activate(iCurScreen);
+				populateGameLayers();
+			}
+		}		
+		
 		if (m_levelProgress.isExitActivated())
 		{
 			if (m_keyCmds.wasPressed("enter"))
@@ -580,8 +592,7 @@ public class IronLegends extends ScrollingScreenGame
 			}
 		}
 		
-		GameScreen curScreen = m_screens.getActiveScreen();
-		curScreen.processInput(m_keyCmds);
+		//curScreen.processInput(m_keyCmds);
 		
 		if (m_keyCmds.wasPressed("weedsCollected"))
 		{
@@ -622,7 +633,7 @@ public class IronLegends extends ScrollingScreenGame
 				populateGameLayers();
 			}
 			curScreen.deactivate();
-			newScreen.activate();
+			newScreen.activate(t.m_from);
 		}
 		
 		if (m_keyCmds.wasPressed("pause")){
@@ -819,7 +830,9 @@ public class IronLegends extends ScrollingScreenGame
 		if (rc != null)
 		{
 			super.render(rc);
-			m_btnTest.render(rc);			
+			GameScreen curScreen = m_screens.getActiveScreen();
+			if (curScreen != null)
+				curScreen.render(rc);
 		}
 		
 		//Area gameInfoArea = new Area(new Rectangle2D.Float(600, 0, 200, 600));

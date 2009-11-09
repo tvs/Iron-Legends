@@ -13,6 +13,13 @@
         <width>4</width>
         <height>4</height>
     </frameset>
+    <frameset>
+        <name>testEditBox</name>
+        <left>189</left>
+        <top>169</top>
+        <width>32</width>
+        <height>31</height>
+    </frameset>
     <!--  
     <frameset>
         <name>mitko</name>
