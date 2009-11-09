@@ -496,6 +496,14 @@ public class IronLegends extends ScrollingScreenGame
 				m_physicsEngine.manageViewableSet(m_weedLayer);
 				//m_physicsEngine.manageViewableSet(m_hedgeLayer);
 				
+				/*
+				 collision resolution in following order
+				 mitko - hedge
+				 creature - hedge
+				 mitko - creatures
+				 mitko - weeds/powerups
+				 */
+				
 				// don't hit the hedges
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_BodyLayer(m_mitko, m_hedgeLayer, m_polygonFactory, Tile.WIDTH, Tile.HEIGHT, null));
@@ -532,18 +540,6 @@ public class IronLegends extends ScrollingScreenGame
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPBLayer_CPBLayer(m_batLayer, m_spiderLayer
 								, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
-				/*
-				 collision resolution in following order
-				 mitko - hedge
-				 creature - hedge
-				 mitko - creatures
-				 mitko - weeds/powerups
-				 
-				 // test in following order
-				 mitko - hedge
-				 mitko - weeds/powerups
-				 mitko - creatures
-				 */
 			break;
 		}
 	}

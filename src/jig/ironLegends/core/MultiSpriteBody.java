@@ -1,16 +1,12 @@
 package jig.ironLegends.core;
 
-import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import jig.engine.ImageResource;
 import jig.engine.RenderingContext;
-import jig.engine.Sprite;
-import jig.engine.physics.Body;
 import jig.engine.physics.vpe.ConvexPolygon;
-import jig.engine.physics.vpe.PersonsConvexPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ConvexPolyBody;
 
@@ -91,20 +87,46 @@ public class MultiSpriteBody extends ConvexPolyBody
 		super(shape);
 		addSprite(rsc);
 	}
+	
+	// returns handle to sprite (can be used later to manipulate sprite (ok, ok, its just an index)
 	public int addSprite(final String rsc)
 	{
 		m_sprites.add(new ATSprite(rsc));
 		m_bSpritesInSync = false;
 		
-		return m_sprites.size();
+		return m_sprites.size()-1;
+	}
+	protected ATSprite getSprite(int spriteHandle)
+	{
+		if (spriteHandle < m_sprites.size() && spriteHandle >= 0)
+			return m_sprites.get(spriteHandle);
+		return null;
 	}
 	
+	public void setSpriteVisible(int spriteHandle, boolean bVisible)
+	{
+		ATSprite sprite = getSprite(spriteHandle);
+		if (sprite != null)
+		{
+			sprite.setActivation(bVisible);
+		}
+	}
+	
+	public void setSpriteRotation(int spriteHandle, double rotRad)
+	{
+		ATSprite sprite = getSprite(spriteHandle);
+		if (sprite != null)
+		{
+			sprite.setRotation(rotRad);
+		}
+	}
+	// returns handle to sprite (can be used later to manipulate sprite (ok, ok, its just an index)
 	public int addSprite(final List<ImageResource> frameset)
 	{
 		m_sprites.add(new ATSprite(frameset));
 		m_bSpritesInSync = false;
 		
-		return m_sprites.size();
+		return m_sprites.size()-1;
 	}
 	
 	@Override
