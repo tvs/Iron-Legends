@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<resources>
+	<spritesheet>
+		<imagesrc>spritesheet.png</imagesrc>
+		<framesrc>spritesheet.xml</framesrc>
+	</spritesheet>
+	
+    <image>
+        <src>splash.png</src>
+    </image>	
+</resources>
