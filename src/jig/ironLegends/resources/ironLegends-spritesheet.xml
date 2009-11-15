@@ -145,7 +145,7 @@
 		<name>wall</name>
 		<top>0</top>
 		<left>624</left>
-		<width>48</width>
+		<width>47</width>
 		<height>132</height>
 		<columns>2</columns>
 	</frameset>
