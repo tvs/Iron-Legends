@@ -42,7 +42,7 @@ public class Tank extends MultiSpriteBody {
 	}
 	
 	public Tank(PolygonFactory pf, String team) {
-		this(pf, new Vector2D(100, 100), team);
+		this(pf, new Vector2D(1000, 1000), team);
 	}
 
 	public double getTurretRotation() {
@@ -51,6 +51,16 @@ public class Tank extends MultiSpriteBody {
 
 	public void setTurretRotation(double rot) {
 		turret.setRotation(rot);
+	}
+	
+	@Override
+	public int getWidth() {
+		return getSprite(0).getWidth();
+	}
+
+	@Override
+	public int getHeight() {
+		return getSprite(0).getHeight();
 	}
 	
 	@Override
@@ -76,7 +86,9 @@ public class Tank extends MultiSpriteBody {
 		rotation += angularVelocity * deltaMs / 1000.0;		
 		Vector2D translateVec = Vector2D.getUnitLengthVector(rotation).scale(speed * deltaMs / 1000.0);
 		Vector2D p = position.translate(translateVec);
-		p = p.clamp(IronLegends2.WORLD_BOUNDS);
+		//p = p.clamp(IronLegends2.WORLD_BOUNDS);
+		p = p.clampX(0, IronLegends2.WORLD_WIDTH - getWidth());
+	    p = p.clampY(0, IronLegends2.WORLD_HEIGHT - getHeight());		
 		
 		setPosition(p);
 		setRotation(rotation);
@@ -123,8 +135,8 @@ public class Tank extends MultiSpriteBody {
 		Point loc = mouse.getLocation();
 		setTurretRotation(Math.atan2(screenCenter.getY() - loc.y, 
 				screenCenter.getX()	- loc.x));
-//		System.out.printf("p = %s, c = %s, mouse = %s, turretrotation = %.2f\n",
-//				getPosition(), screenCenter, loc, Math.toDegrees(getTurretRotation()));		
+//		System.out.printf("p = %s, c = %s, mouse = %s, turretrotation = %.2f, width = %d, height = %d\n",
+//				getPosition(), screenCenter, loc, Math.toDegrees(getTurretRotation()), getWidth(), getHeight());
 	}
 
 	public void stop() {
