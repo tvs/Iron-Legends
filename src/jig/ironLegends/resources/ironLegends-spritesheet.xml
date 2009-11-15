@@ -1,4 +1,4 @@
-<spritesheet>
+<spriteset>
 	<author>Travis Hall</author>
 	<name>Iron Legends Sprites</name>
 	<type>image/png</type>
@@ -115,7 +115,7 @@
 	</frameset>
 	
 	<frameset>
-		<name>shield</name>
+		<name>shield-effect</name>
 		<top>138</top>
 		<left>0</left>
 		<width>157</width>
@@ -189,4 +189,11 @@
 	</frameset>
 	<!-- @end Bases -->
 	
-</spritesheet>
+    <frameset>
+        <name>background</name>
+        <top>352</top>
+        <left>0</left>
+        <width>50</width>
+        <height>50</height>
+    </frameset>	
+</spriteset>

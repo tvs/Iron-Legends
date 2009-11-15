@@ -32,8 +32,8 @@ public class Tank extends MultiSpriteBody {
 	private long timeSinceDied = 0;
 
 	public Tank(PolygonFactory pf, Vector2D pos, String team) {
-		super(pf.createRectangle(pos, 50, 50), IronLegends2.SPRITE_SHEET + "#ptank");
-		turret = getSprite(addSprite(IronLegends2.SPRITE_SHEET + "#turret"));
+		super(pf.createRectangle(pos, 85, 101), IronLegends2.SPRITE_SHEET + "#tank");
+		turret = getSprite(addSprite(IronLegends2.SPRITE_SHEET + "#cannon"));
 		
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;

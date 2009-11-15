@@ -37,7 +37,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 
 	public static final String GAME_ROOT = "jig/ironLegends/";
 	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
-	public static final String SPRITE_SHEET = RESOURCE_ROOT + "spritesheet.png";
+	public static final String SPRITE_SHEET = RESOURCE_ROOT + "ironLegends-spritesheet.png";
 
 	public static final int SPLASH_SCREEN = 0;
 	public static final int HELP_SCREEN = 1;
@@ -103,7 +103,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 
 	private void loadResources() {
 		ResourceFactory.getFactory().loadResources(RESOURCE_ROOT,
-				"resources.xml");
+				"ironLegends-resources.xml");
 	}
 
 	/**

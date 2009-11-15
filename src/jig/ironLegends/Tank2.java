@@ -29,7 +29,7 @@ public class Tank2 extends VanillaSphere {
 	private long timeSinceDied = 0;
 
 	public Tank2(PolygonFactory pf, Vector2D pos) {
-		super(IronLegends2.SPRITE_SHEET + "#ptank");
+		super(IronLegends2.SPRITE_SHEET + "#tank");
 		position = pos;
 		turret = new Turret();
 		initialPosition = pos;
@@ -199,7 +199,7 @@ public class Tank2 extends VanillaSphere {
 
 	public class Turret extends VanillaSphere {
 		public Turret() {
-			super(IronLegends2.SPRITE_SHEET + "#turret");
+			super(IronLegends2.SPRITE_SHEET + "#cannon");
 			setCenterPosition(Tank2.this.getCenterPosition());
 		}
 
