@@ -1,6 +1,11 @@
 package jig.ironLegends.core;
 
+import java.util.List;
+
+import jig.engine.ImageResource;
+import jig.engine.PaintableCanvas;
 import jig.engine.RenderingContext;
+import jig.engine.PaintableCanvas.JIGSHAPE;
 import jig.engine.physics.Body;
 import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.physics.vpe.PersonsConvexPolygon;
@@ -13,12 +18,16 @@ public class ConvexPolyBody extends Body
 	protected ConvexPolygon m_shape = null;
 	ConvexPolyBody(ConvexPolygon shape)
 	{
-		// TODO should create an empty sprite to supply
-		super(IronLegends.SPRITE_SHEET + "#cpb");
+		super(getEmptySprite());
 		m_shape = shape;
 		setPosition(m_shape.getPosition());
 	}
 	
+	private static String getEmptySprite() {
+		PaintableCanvas.loadDefaultFrames("cpb", 4, 4, 1, JIGSHAPE.RECTANGLE, null);
+		return "cpb";
+	}
+
 	public Vector2D getOffsetToRotation()
 	{
 		return ((PersonsConvexPolygon)m_shape).getOffsetToRotation();

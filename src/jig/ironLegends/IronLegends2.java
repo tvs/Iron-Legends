@@ -12,15 +12,13 @@ import jig.engine.ResourceFactory;
 import jig.engine.ViewableLayer;
 import jig.engine.hli.ImageBackgroundLayer;
 import jig.engine.hli.ScrollingScreenGame;
-import jig.engine.physics.Body;
+import jig.engine.physics.AbstractBodyLayer;
 import jig.engine.physics.BodyLayer;
 import jig.engine.physics.vpe.VanillaPhysicsEngine;
+import jig.engine.util.Vector2D;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.GameScreens;
-import jig.ironLegends.core.HighScore;
-import jig.ironLegends.core.HighScorePersistance;
-import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
@@ -33,6 +31,8 @@ public class IronLegends2 extends ScrollingScreenGame {
 	public static final int SCREEN_HEIGHT = 600;
 	public static final Rectangle WORLD_BOUNDS = new Rectangle(0, 0,
 			WORLD_WIDTH, WORLD_HEIGHT);
+	public static final Rectangle VISIBLE_BOUNDS = new Rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+			WORLD_WIDTH - 2 * (SCREEN_WIDTH / 2), WORLD_HEIGHT - 2 * (SCREEN_HEIGHT / 2));
 
 	public static final String GAME_ROOT = "jig/ironLegends/";
 	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
@@ -54,9 +54,9 @@ public class IronLegends2 extends ScrollingScreenGame {
 	protected SoundFx m_sfx;
 
 	protected PlayerInfo m_playerInfo;
-	// protected Tank m_tank;
+	protected Tank m_tank;
 	protected ViewableLayer m_bgLayer;
-	protected BodyLayer<Body> m_tankLayer;
+	protected BodyLayer<Tank> m_tankLayer;
 
 	protected Navigator m_navigator;
 	protected String m_sError;
@@ -166,23 +166,31 @@ public class IronLegends2 extends ScrollingScreenGame {
 		m_bgLayer = new ImageBackgroundLayer(bkg, WORLD_WIDTH, WORLD_HEIGHT,
 				ImageBackgroundLayer.TILE_IMAGE);
 
-		// Splash screen		
+		// Splash screen
+		ImageResource splashimg = ResourceFactory.getFactory().getFrames(
+				RESOURCE_ROOT + "splash.png").get(0);
+		ViewableLayer splashBgLayer = new ImageBackgroundLayer(splashimg,
+				SCREEN_WIDTH, SCREEN_HEIGHT, ImageBackgroundLayer.TILE_IMAGE);
+
 		GameScreen splashScreen = new GameScreen(SPLASH_SCREEN);
-		ImageResource splashimg = ResourceFactory.getFactory().getFrames(RESOURCE_ROOT + "splash.png").get(0); 
-		ViewableLayer splashBgLayer = new ImageBackgroundLayer(splashimg, SCREEN_WIDTH, SCREEN_HEIGHT, ImageBackgroundLayer.TILE_IMAGE);
-		splashScreen.addViewableLayer(splashBgLayer);				
+		splashScreen.addViewableLayer(splashBgLayer);
 		m_screens.addScreen(splashScreen);
 
 		// GamePlay Screen
+		m_tank = new Tank(m_polygonFactory);
+		m_tankLayer = new AbstractBodyLayer.IterativeUpdate<Tank>();
+		m_tankLayer.add(m_tank);
+
 		GameScreen gameplayScreen = new GameScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(m_bgLayer);
+		gameplayScreen.addViewableLayer(m_tankLayer);
 		m_screens.addScreen(gameplayScreen);
 
 		// Screen Transitions
 		m_screens.addTransition(SPLASH_SCREEN, GAMEPLAY_SCREEN, "enter");
 
 		// Start with Splash screen
-		m_screens.setActiveScreen(SPLASH_SCREEN);
+		m_screens.setActiveScreen(GAMEPLAY_SCREEN);
 	}
 
 	private void populateGameLayers() {
@@ -206,16 +214,23 @@ public class IronLegends2 extends ScrollingScreenGame {
 		ScreenTransition t = m_screens.transition(m_keyCmds);
 		if (t != null) {
 			GameScreen newScreen = m_screens.getActiveScreen();
-			populateGameLayers();
 			curScreen.deactivate();
 			newScreen.activate(t.m_from);
+			populateGameLayers();
 		}
+		
+		m_tank.controlMovement(m_keyCmds, mouse, getCenter());
 	}
 
 	@Override
 	public void update(long deltaMs) {
 		super.update(deltaMs);
 		processCommands(deltaMs);
+		
+		// center screen on tank
+		Vector2D center = m_tank.getPosition();
+		// TODO: on right & bottom object moves beyond the bounds 
+		centerOnPoint(center.clamp(VISIBLE_BOUNDS));		
 	}
 
 	@Override

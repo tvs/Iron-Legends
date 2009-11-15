@@ -14,6 +14,14 @@
     </frameset>
     
     <frameset>
+        <name>turret</name>
+        <left>0</left>
+        <top>230</top>
+        <width>50</width>
+        <height>20</height>
+    </frameset>
+    
+    <frameset>
         <name>enemy-1</name>
         <left>0</left>
         <top>50</top>
