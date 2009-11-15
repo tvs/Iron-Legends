@@ -1,21 +1,22 @@
+hr1
 20 20
 h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  
-h  e  e  e  e  e  e  e  e  e  e  h  h  e  h  h  w  e  e  h  
-h  e  h  h  h  h  av h  h  h  e  h  e  e  e  e  e  h  av h  
+h  e  e  e  e  e  e  e  e  e  e  h  h  e  h  h  e  e  e  h  
+h  e  h  t  c  h  av h  h  h  e  h  e  e  e  e  e  h  av h  
 h  e  h  e  e  e  e  e  e  h  e  h  e  h  e  h  e  h  e  h  
 h  e  h  e  h  h  h  h  e  h  e  h  e  h  e  h  e  h  e  h  
 h  e  h  e  h  e  e  h  e  h  e  h  e  h  av h  e  h  e  h  
-h  w  e  e  h  av h  h  e  h  av h  e  h  e  h  e  wp e  h  
-h  e  h  e  h  e  e  e  e  h  e  h  e  h  e  h  e  h  e  h  
+h  e  e  e  h  av h  h  e  h  av h  e  h  e  h  e  wp e  h  
+h  e  h  e  h  wall  e  e  e  h  e  h  e  h  e  h  e  h  e  h  
 h  e  h  e  h  h  h  h  h  h  e  h  av h  e  h  e  h  e  h  
-h  e  h  e  h  h  w  h  e  h  e  h  e  h  e  e  e  h  av h  
-h  e  w  e  e  e  e  e  e  e  e  h  e  h  w  h  e  h  e  h  
-h  e  h  h  e  h  h  h  h  e  h  h  h  h  e  h  e  h  h  h  
+h  e  h  e  h  h  e  h  e  h  e  h  e  h  e  e  e  h  av h  
+h  e  e  e  e  e  b  r  tr e  e  h  e  h  e  c  e  h  e  h  
+h  e  h  h  e  c  h  h  h  e  h  h  h  h  e  h  e  h  h  h  
 h  e  h  h  h  h  h  e  h  e  h  h  h  h  e  h  e  e  e  h  
 h  e  h  e  e  e  e  e  e  e  e  e  e  e  e  h  e  h  h  h  
 h  e  h  e  h  e  h  h  h  av h  h  e  h  h  h  e  h  av h  
-h  av e  e  h  h  h  h  w  e  e  h  h  h  h  h  e  e  e  h  
-h  p2 h  e  e  e  e  e  e  e  w  e  e  e  e  e  e  h  e  h  
+h  av e  e  h  h  h  h  e  e  e  h  h  h  h  h  e  e  e  h  
+h  p2 h  e  e  e  e  e  e  e  e  e  e  e  e  e  e  h  e  h  
 h  e  h  h  h  h  h  h  h  e  h  h  h  h  h  h  h  h  e  h  
-h  m  e  e  e  w  e  e  e  w  e  e  p1 e  e  e  w  e  e  h  
+h  m  e  wall  e  e  e  e  e  e  e  e  p1 e  e  e  e  e  e  h  
 h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  h  

@@ -113,6 +113,10 @@ public class MouseState implements IUIEvent
 	{
 		return m_bLeftReleased;
 	}
+	public Point LeftDownPt()
+	{
+		return m_leftDownPt;
+	}
 	
 	// TODO put all these parameters into a inputBtnState?(i.e. clicked, count, etc) so can have left, middle, right, etc
 	protected Point m_leftDownPt;

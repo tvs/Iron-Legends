@@ -8,13 +8,9 @@ public class GridCell
 		m_row = row;
 		
 		m_info = info;
-		m_bContainsWeed = false;
 		m_bObstacle = false;
-		if (m_info.equals("w"))
-		{
-			m_bContainsWeed = true;
-		}
-		else if (m_info.equals("h"))
+		
+		if (m_info.equals("h"))
 		{
 			m_bObstacle = true;
 		}		
@@ -29,8 +25,9 @@ public class GridCell
 	}
 	
 	public String getInfo() { return m_info;}
+	public void setInfo(String info){ m_info = info;}
+	
 	protected String m_info;
-	protected boolean m_bContainsWeed;
 	protected boolean m_bObstacle;
 	protected int m_col;
 	protected int m_row;

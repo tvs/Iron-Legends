@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 
 import jig.ironLegends.GameProgress;
 import jig.ironLegends.Mitko;
+import jig.ironLegends.Tank;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.HighScore;
 import jig.ironLegends.core.ScreenTextLayer;
@@ -63,7 +64,6 @@ public class GameInfoTextLayer extends ScreenTextLayer
 		
 		text.println("Level: " + m_gameProgress.getCurLevel());
 		text.println("Level Score: " + m_gameProgress.m_levelProgress.getScore());
-		text.println("Weeds: " + m_gameProgress.m_levelProgress.getWeedsRemaining());
 		
 		long powerUpRemainingMs = (long)m_mitko.getPowerUpRemainingMs();
 		if (powerUpRemainingMs > 0)
@@ -71,7 +71,7 @@ public class GameInfoTextLayer extends ScreenTextLayer
 		else
 			text.println("Courage: None");
 		
-		text.println("Faints Rem: " + m_gameProgress.getFaintsRemaining());
+		text.println("Faints Rem: " + m_gameProgress.getLivesRemaining());
 		
 		
 		text.println("");

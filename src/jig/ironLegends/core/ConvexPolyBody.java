@@ -19,8 +19,14 @@ public class ConvexPolyBody extends Body
 	ConvexPolyBody(ConvexPolygon shape)
 	{
 		super(getEmptySprite());
+		setShape(shape);
+	}
+	
+	protected void setShape(ConvexPolygon shape)
+	{
 		m_shape = shape;
-		setPosition(m_shape.getPosition());
+		if (m_shape != null)
+			setPosition(m_shape.getPosition());
 	}
 	
 	private static String getEmptySprite() {

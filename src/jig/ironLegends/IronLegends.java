@@ -61,7 +61,10 @@ public class IronLegends extends ScrollingScreenGame
 	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
 	
 	public static final String SPRITE_SHEET = RESOURCE_ROOT + "hr-spritesheet.png";
+	public static final String SPRITE_SHEET2 = RESOURCE_ROOT + "ironLegends-spritesheet.png";
+	
 	public static final String MY_RESOURCES = "hr-resources.xml";
+	public static final String IRON_LEGENDS_RESOURCES = "ironLegends-resources.xml";
 
 	static final int START_LIVES = 2;
 	
@@ -79,10 +82,10 @@ public class IronLegends extends ScrollingScreenGame
 	Mitko m_mitko;
 	BodyLayer<Body> m_mitkoLayer;
 	BodyLayer<Body> m_antLayer;
-	BodyLayer<Body> m_spiderLayer;
 	BodyLayer<Body> m_batLayer;
 	BodyLayer<Body> m_batCaveLayer;
 	
+	BodyLayer<Body> m_tankObstacleLayer;
 	BodyLayer<Body> m_hedgeLayer;
 	BodyLayer<Body> m_bgLayer;
 	BodyLayer<Body> m_powerUpLayer;
@@ -93,9 +96,7 @@ public class IronLegends extends ScrollingScreenGame
 	// TODO: move into level class
 	LevelProgress m_levelProgress;
 	GameProgress m_gameProgress;
-	//int m_bricksHit = 0;
-	BodyLayer<Body> m_weedLayer;
-
+	
 	boolean m_bGameOver = false;
 
 	GameScreens m_screens = new GameScreens();
@@ -108,7 +109,7 @@ public class IronLegends extends ScrollingScreenGame
 	protected String m_sInstallDir = "\\Temp";
 	protected HighScorePersistance m_highScorePersist;
 	protected PolygonFactory m_polygonFactory;
-	LevelGrid m_grid;
+	MapGrid m_grid;
 	//VanillaAARectangle	m_mPos;
 	ResourceReader m_rr;
 	protected SoundFx m_sfx;
@@ -246,34 +247,30 @@ public class IronLegends extends ScrollingScreenGame
 		*/
 
 		// could be moved below to "creating level" section
-		m_weedLayer = new AbstractBodyLayer.NoUpdate<Body>();
-
+		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_hedgeLayer= new AbstractBodyLayer.NoUpdate<Body>();
 		m_bgLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		
 		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 
 		m_antLayer	= new AbstractBodyLayer.NoUpdate<Body>();
-		m_spiderLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_batLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		
 		m_batCaveLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_creatures = new AbstractBodyLayer.NoUpdate<Body>();
 		
-		m_grid 		= new LevelGrid(TILE_WIDTH, TILE_HEIGHT);
+		m_grid 		= new MapGrid(TILE_WIDTH, TILE_HEIGHT);
 		m_navigator = new Navigator(m_grid);
 		
 		m_mitkoLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_mitkoLayer.add(m_mitko);
 
-		// collect 25% weeds -> make powerup active
 		gameplayScreen.addViewableLayer(m_bgLayer);
 		gameplayScreen.addViewableLayer(m_hedgeLayer);
 		gameplayScreen.addViewableLayer(m_batCaveLayer);
-		gameplayScreen.addViewableLayer(m_weedLayer);
+		gameplayScreen.addViewableLayer(m_tankObstacleLayer);
 		gameplayScreen.addViewableLayer(m_powerUpLayer);
 		gameplayScreen.addViewableLayer(m_antLayer);
-		gameplayScreen.addViewableLayer(m_spiderLayer);
 		gameplayScreen.addViewableLayer(m_batLayer);
 		gameplayScreen.addViewableLayer(m_mitkoLayer);
 		
@@ -333,34 +330,8 @@ public class IronLegends extends ScrollingScreenGame
 		m_keyCmds.addCommand("weedsCollected", KeyEvent.VK_W);
 			
     	m_keyCmds.addCommand("smoke", KeyEvent.VK_S);
-		m_keyCmds.addCommand("a", KeyEvent.VK_A);
-		m_keyCmds.addCommand("b", KeyEvent.VK_B);
-		m_keyCmds.addCommand("c", KeyEvent.VK_C);
-		m_keyCmds.addCommand("d", KeyEvent.VK_D);
-		m_keyCmds.addCommand("e", KeyEvent.VK_E);
-		m_keyCmds.addCommand("f", KeyEvent.VK_F);
-		m_keyCmds.addCommand("g", KeyEvent.VK_G);
-		m_keyCmds.addCommand("h", KeyEvent.VK_H);
-		m_keyCmds.addCommand("i", KeyEvent.VK_I);
-		m_keyCmds.addCommand("j", KeyEvent.VK_J);
-		m_keyCmds.addCommand("k", KeyEvent.VK_K);
-		m_keyCmds.addCommand("l", KeyEvent.VK_L);
-		m_keyCmds.addCommand("m", KeyEvent.VK_M);
-		m_keyCmds.addCommand("n", KeyEvent.VK_N);
-		m_keyCmds.addCommand("o", KeyEvent.VK_O);
-		m_keyCmds.addCommand("p", KeyEvent.VK_P);
-		m_keyCmds.addCommand("q", KeyEvent.VK_Q);
-		m_keyCmds.addCommand("r", KeyEvent.VK_R);
-		m_keyCmds.addCommand("s", KeyEvent.VK_S);
-		m_keyCmds.addCommand("t", KeyEvent.VK_T);
-		m_keyCmds.addCommand("u", KeyEvent.VK_U);
-		m_keyCmds.addCommand("v", KeyEvent.VK_V);
-		m_keyCmds.addCommand("w", KeyEvent.VK_W);
-		m_keyCmds.addCommand("x", KeyEvent.VK_X);
-		m_keyCmds.addCommand("y", KeyEvent.VK_Y);
-		m_keyCmds.addCommand("z", KeyEvent.VK_Z);
-		
-		
+    	
+    	m_keyCmds.addAlphabet();
 		
 		loadLevel(m_gameProgress.getCurLevel());
 	}
@@ -371,8 +342,8 @@ public class IronLegends extends ScrollingScreenGame
 		boolean bSuccess = true;
 		ResourceFactory resourceFactory = ResourceFactory.getFactory();
 
+		resourceFactory.loadResources(RESOURCE_ROOT, IRON_LEGENDS_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
-
 		// FONTS
 		m_fonts.create(resourceFactory);
 
@@ -403,19 +374,20 @@ public class IronLegends extends ScrollingScreenGame
 	protected boolean loadLevel(int level)
 	{
 		m_grid.clear();
+		m_tankObstacleLayer.clear();
 		m_hedgeLayer.clear();
 		m_bgLayer.clear();
 		m_batCaveLayer.clear();
-		m_weedLayer.clear();
 		m_antLayer.clear();
-		m_spiderLayer.clear();
 		m_batLayer.clear();
 		m_powerUpLayer.clear();
 		m_creatures.clear();
 		
 		m_levelProgress.reset();
 		
-		if (!LevelLoader.loadGrid(level, m_grid, m_rr))
+		String sMap = "levels/level" + level + ".txt";
+		
+		if (!MapLoader.loadGrid(sMap, m_grid, m_rr))
 		{
 			// TODO: won the game?... or error. for now "won" the game
 			int totalScore = m_gameProgress.gameOver(); 
@@ -430,18 +402,16 @@ public class IronLegends extends ScrollingScreenGame
 			return true;
 		}		
 		 
-		if (!LevelLoader.populate(level, m_grid, m_mitko, m_polygonFactory
-				, m_hedgeLayer, m_bgLayer
-				, m_weedLayer
-				, m_antLayer, m_spiderLayer, m_batLayer, m_powerUpLayer
+		if (!MapLoader.populate(level, m_grid, m_mitko, m_polygonFactory
+				, m_hedgeLayer, m_tankObstacleLayer, m_bgLayer
+				, m_antLayer, m_batLayer, m_powerUpLayer
 				, m_batCaveLayer, m_creatures))
 		{
 			return  false;
 		}
 		
-		int countWeeds = m_weedLayer.size();
-		// for now require all weeds to be collected before finishing the level
-		m_levelProgress.setWeedsRequired(countWeeds);
+		// for now require just set to 1 so people can still play until we get game over logic/criteria
+		m_levelProgress.setWeedsRequired(1);
 		populateGameLayers();
 		m_levelProgress.setIntro(2999);
 		m_bFirstLevelUpdate = false; 
@@ -491,9 +461,7 @@ public class IronLegends extends ScrollingScreenGame
 			default:
 				m_physicsEngine.manageViewableSet(m_mitkoLayer);
 				m_physicsEngine.manageViewableSet(m_antLayer);
-				m_physicsEngine.manageViewableSet(m_spiderLayer);
 				m_physicsEngine.manageViewableSet(m_batLayer);
-				m_physicsEngine.manageViewableSet(m_weedLayer);
 				//m_physicsEngine.manageViewableSet(m_hedgeLayer);
 				
 				/*
@@ -504,7 +472,7 @@ public class IronLegends extends ScrollingScreenGame
 				 mitko - weeds/powerups
 				 */
 				
-				// don't hit the hedges
+				// don't hit the obstacles
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_BodyLayer(m_mitko, m_hedgeLayer, m_polygonFactory, Tile.WIDTH, Tile.HEIGHT, null));
 				
@@ -512,8 +480,9 @@ public class IronLegends extends ScrollingScreenGame
 						new Handler_CPBLayer_BodyLayer(m_polygonFactory, m_antLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
 									, new CollisionSink_CreatureHedge(m_grid)));
 				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPBLayer_BodyLayer(m_polygonFactory, m_spiderLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
-									, new CollisionSink_CreatureHedge(m_grid)));
+						new Handler_CPB_CPBLayer(m_mitko, m_tankObstacleLayer
+								, new Sink_CPB_CPB_Default()));
+								
 				// power-up
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_BodyLayer(m_mitko, m_powerUpLayer, m_polygonFactory, PowerUp.WIDTH, PowerUp.HEIGHT
@@ -523,22 +492,14 @@ public class IronLegends extends ScrollingScreenGame
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_CPBLayer(m_mitko, m_antLayer
 								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPB_CPBLayer(m_mitko, m_spiderLayer
-								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
+				/*
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_CPBLayer(m_mitko, m_batLayer
 								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
-				// mitko-weeds
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPB_BodyLayer(m_mitko, m_weedLayer, m_polygonFactory, Weed.WIDTH, Weed.HEIGHT
-								, new CollisionSink_Weed(m_levelProgress, m_sfx)));
+								*/
 				// bat-creatures
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPBLayer_CPBLayer(m_batLayer, m_antLayer
-								, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPBLayer_CPBLayer(m_batLayer, m_spiderLayer
 								, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
 			break;
 		}
@@ -590,20 +551,9 @@ public class IronLegends extends ScrollingScreenGame
 		
 		//curScreen.processInput(m_keyCmds);
 		
-		if (m_keyCmds.wasPressed("weedsCollected"))
-		{
-			while (m_levelProgress.getWeedsRemaining() > 0)
-				m_levelProgress.addWeedCollected();
-		}
-		
-		if (m_keyCmds.wasPressed("splat")){
-			// hack to start new level
-			advanceLevel();
-			return;
-		}
 		if (m_screens.activeScreen() == GAMEPLAY_SCREEN)
 		{
-			if (m_keyCmds.wasPressed("faint"))
+			if (m_keyCmds.wasPressed("die"))
 			{
 				m_mitko.activateFaint();
 			}
@@ -634,32 +584,16 @@ public class IronLegends extends ScrollingScreenGame
 		
 		if (m_keyCmds.wasPressed("pause")){
 			if (m_paused) {
-				//m_ball.setSpeed(m_ballSlowSpeed);
 			} else {
-				//m_ball.setSpeed(m_ballSlowSpeed / 100.0);
 			}
 			m_paused = !m_paused;
 			System.out.println("");
 		}
 
-		/*
-		if (m_keyCmds.wasPressed("space")){
-			if (m_ballSlow)
-			{
-				m_ball.setSpeed(m_ballNormalSpeed);
-			}
-			else
-			{
-				m_ball.setSpeed(m_ballSlowSpeed);
-			}
-			m_ballSlow = !m_ballSlow;
-		}
-		*/
 	}
 	
 	protected void move(final long deltaMs) 
-	{
-		
+	{		
 		//processCommands(deltaMs);
 		
 		boolean left 	= m_keyCmds.isPressed("left");
@@ -733,7 +667,6 @@ public class IronLegends extends ScrollingScreenGame
 				else
 				{
 					m_physicsEngine.applyLawsOfPhysics(deltaMs);
-					//System.out.println("delta ms: " + deltaMs);
 					//m_physicsEngine.applyLawsOfPhysics(5);
 				}
 
@@ -741,7 +674,7 @@ public class IronLegends extends ScrollingScreenGame
 						&& m_mitko.doneFainting() 
 						&& m_screens.activeScreen() != GAMEOVER_SCREEN)
 				{
-					if (m_gameProgress.getFaintsRemaining() == 0)
+					if (m_gameProgress.getLivesRemaining() == 0)
 					{
 						m_screens.setActiveScreen(GAMEOVER_SCREEN);
 						
@@ -759,10 +692,6 @@ public class IronLegends extends ScrollingScreenGame
 						m_mitko.reset();
 					}
 					
-					// TODO: update level info.. faints remaining etc
-					// if faints still remaining, then reset
-					// otherwise ..... game over
-					// must populate screen
 					populateGameLayers();			
 				}
 
@@ -772,11 +701,6 @@ public class IronLegends extends ScrollingScreenGame
 					{
 						//m_levelProgress.setExit(3000);
 						m_levelProgress.setExit(true);
-					}
-					else
-					{					
-						// all bricks hit, start new level
-						//advanceLevel();
 					}
 				}
 

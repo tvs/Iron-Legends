@@ -81,7 +81,18 @@ public class MultiSpriteBody extends ConvexPolyBody
 		super(shape);
 		addSprite(frameset);
 	}
-	
+	/*
+	// create default shape
+	public MultiSpriteBody(final String rsc)
+	{
+		super(null);
+		addSprite(rsc);
+		// create shape from sprites dimensions (but would need polygon factory)
+		
+		setShape(null);
+		
+	}
+	*/
 	public MultiSpriteBody(ConvexPolygon shape, final String rsc)
 	{
 		super(shape);

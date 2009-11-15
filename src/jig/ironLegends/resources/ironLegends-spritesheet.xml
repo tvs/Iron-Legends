@@ -1,4 +1,4 @@
-<spritesheet>
+<spriteset>
 	<author>Travis Hall</author>
 	<name>Iron Legends Sprites</name>
 	<type>image/png</type>
@@ -189,4 +189,4 @@
 	</frameset>
 	<!-- @end Bases -->
 	
-</spritesheet>
+</spriteset>

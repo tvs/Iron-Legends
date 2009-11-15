@@ -9,9 +9,9 @@ import jig.ironLegends.core.ConvexPolyBody;
 public class Navigator 
 {
 	protected Random m_rand;
-	protected LevelGrid m_grid;
+	protected MapGrid m_grid;
 	
-	public Navigator(LevelGrid grid)
+	public Navigator(MapGrid grid)
 	{
 		m_grid = grid;
 		m_rand = new Random();		
@@ -21,10 +21,13 @@ public class Navigator
 	{
 		return selectOption(poly, poly.getVelocity(), m_rand);
 	}
+	
 	public boolean selectOption(ConvexPolyBody poly)
 	{
 		return selectOption(m_grid, poly, poly.getVelocity(), m_rand);
 	}
+	
+	// randomly selects a new direction (doesn't check for traverseable)
 	public static boolean selectOption(
 			ConvexPolyBody poly
 			, Vector2D vel
@@ -62,8 +65,9 @@ public class Navigator
 		return bOptionSelected;
 	}
 	
+	// selects a random direction to travel based on what is traverseable
 	public static boolean selectOption(
-			  LevelGrid grid
+			  MapGrid grid
 			, ConvexPolyBody poly
 			, Vector2D vel  
 			, Random rand

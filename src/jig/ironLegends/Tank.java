@@ -65,6 +65,11 @@ public class Tank extends MultiSpriteBody {
 		rotation += angularVelocity * deltaMs / 1000.0;
 		Vector2D t = Vector2D.getUnitLengthVector(rotation);
 		Vector2D p = position.translate(t.scale(speed * deltaMs / 1000.0));
+		/*
+		// need to subtract width and height otherwise will move off the map
+		position = position.clampX(0, IronLegends.WORLD_WIDTH - getWidth());
+		position = position.clampY(0, IronLegends.WORLD_HEIGHT - getHeight());
+		*/
 		p = p.clamp(IronLegends2.WORLD_BOUNDS);
 		
 		setPosition(p);

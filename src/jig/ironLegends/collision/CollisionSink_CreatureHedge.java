@@ -2,7 +2,7 @@ package jig.ironLegends.collision;
 
 import java.util.Random;
 
-import jig.ironLegends.LevelGrid;
+import jig.ironLegends.MapGrid;
 import jig.ironLegends.Navigator;
 
 import jig.engine.physics.Body;
@@ -12,7 +12,7 @@ import jig.ironLegends.core.ConvexPolyBody;
 
 public class CollisionSink_CreatureHedge extends Sink_CPB_Body_Default 
 {
-	public CollisionSink_CreatureHedge(LevelGrid levelGrid)
+	public CollisionSink_CreatureHedge(MapGrid levelGrid)
 	{
 		m_levelGrid = levelGrid;
 	}
@@ -52,7 +52,7 @@ public class CollisionSink_CreatureHedge extends Sink_CPB_Body_Default
 		
 		return true;
 	}
-	protected LevelGrid m_levelGrid;
+	protected MapGrid m_levelGrid;
 	protected Random m_rand = new Random();
 
 }

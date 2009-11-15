@@ -30,6 +30,7 @@ public class Creature extends MultiSpriteBody
 		m_mitko = mitko;
 		m_frames = frames;
 		m_bOrtho = true;
+		m_trapScore = 1;
 	}
 
 	protected void setOrtho(boolean bOrtho)
@@ -55,7 +56,7 @@ public class Creature extends MultiSpriteBody
 
 	int getTrapScore()
 	{
-		return 1;
+		return m_trapScore;
 	}
 	@Override
 	public void render(RenderingContext rc) 
@@ -103,7 +104,7 @@ public class Creature extends MultiSpriteBody
 			
 			if (!m_bOrtho)
 			{
-				double dBrgRad = MPmath2D.trueBrg(new Vector2D(0,0), new Vector2D(velocity.getX(), -velocity.getY()));
+				double dBrgRad = Math2D.trueBrg(new Vector2D(0,0), new Vector2D(velocity.getX(), -velocity.getY()));
 				//double dBrgRad = MPmath2D.trueBrg(new Vector2D(0,0), velocity);
 				dBrgRad += Math.PI/2.0;
 				if (dBrgRad < 0)
@@ -135,4 +136,5 @@ public class Creature extends MultiSpriteBody
 	
 	protected static final long CREATURE_FRAME_DURATION_MS = 150;
 	protected boolean m_bOrtho;
+	protected int m_trapScore;
 }

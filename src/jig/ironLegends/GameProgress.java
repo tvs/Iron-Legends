@@ -14,7 +14,7 @@ public class GameProgress
 	{
 		m_curLevel 		= 1;
 		m_totalScore 	= 0;
-		m_faintsRemaining = IronLegends.START_LIVES;
+		m_livesRemaining = IronLegends.START_LIVES;
 	}
 	public int getCurLevel(){return m_curLevel;}
 	
@@ -27,14 +27,14 @@ public class GameProgress
 		m_curLevel++;
 		return m_curLevel;
 	}
-	public int getFaintsRemaining()
+	public int getLivesRemaining()
 	{
-		return m_faintsRemaining;
+		return m_livesRemaining;
 	}
 	
 	public void mitkoFainted()
 	{
-		m_faintsRemaining--;
+		m_livesRemaining--;
 	}
 
 	public LevelProgress getLevelProgress()
@@ -55,7 +55,7 @@ public class GameProgress
 	
 	protected int m_curLevel;
 	protected int m_totalScore;
-	protected int m_faintsRemaining;
+	protected int m_livesRemaining;
 
 	public LevelProgress m_levelProgress;
 	protected String m_sPlayer;

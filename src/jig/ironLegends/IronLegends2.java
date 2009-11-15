@@ -61,6 +61,8 @@ public class IronLegends2 extends ScrollingScreenGame {
 	protected Navigator m_navigator;
 	protected String m_sError;
 	protected String m_sInstallDir;
+	
+	MapGrid m_grid;
 
 	public IronLegends2() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -130,33 +132,8 @@ public class IronLegends2 extends ScrollingScreenGame {
 		m_keyCmds.addCommand("F10", KeyEvent.VK_F10);
 		m_keyCmds.addCommand("F11", KeyEvent.VK_F11);
 		m_keyCmds.addCommand("F12", KeyEvent.VK_F12);
-
-		m_keyCmds.addCommand("a", KeyEvent.VK_A);
-		m_keyCmds.addCommand("b", KeyEvent.VK_B);
-		m_keyCmds.addCommand("c", KeyEvent.VK_C);
-		m_keyCmds.addCommand("d", KeyEvent.VK_D);
-		m_keyCmds.addCommand("e", KeyEvent.VK_E);
-		m_keyCmds.addCommand("f", KeyEvent.VK_F);
-		m_keyCmds.addCommand("g", KeyEvent.VK_G);
-		m_keyCmds.addCommand("h", KeyEvent.VK_H);
-		m_keyCmds.addCommand("i", KeyEvent.VK_I);
-		m_keyCmds.addCommand("j", KeyEvent.VK_J);
-		m_keyCmds.addCommand("k", KeyEvent.VK_K);
-		m_keyCmds.addCommand("l", KeyEvent.VK_L);
-		m_keyCmds.addCommand("m", KeyEvent.VK_M);
-		m_keyCmds.addCommand("n", KeyEvent.VK_N);
-		m_keyCmds.addCommand("o", KeyEvent.VK_O);
-		m_keyCmds.addCommand("p", KeyEvent.VK_P);
-		m_keyCmds.addCommand("q", KeyEvent.VK_Q);
-		m_keyCmds.addCommand("r", KeyEvent.VK_R);
-		m_keyCmds.addCommand("s", KeyEvent.VK_S);
-		m_keyCmds.addCommand("t", KeyEvent.VK_T);
-		m_keyCmds.addCommand("u", KeyEvent.VK_U);
-		m_keyCmds.addCommand("v", KeyEvent.VK_V);
-		m_keyCmds.addCommand("w", KeyEvent.VK_W);
-		m_keyCmds.addCommand("x", KeyEvent.VK_X);
-		m_keyCmds.addCommand("y", KeyEvent.VK_Y);
-		m_keyCmds.addCommand("z", KeyEvent.VK_Z);
+		
+		m_keyCmds.addAlphabet();
 	}
 
 	private void setupScreens() {
@@ -226,7 +203,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 	public void update(long deltaMs) {
 		super.update(deltaMs);
 		processCommands(deltaMs);
-		
+
 		// center screen on tank
 		Vector2D center = m_tank.getPosition();
 		// TODO: on right & bottom object moves beyond the bounds 

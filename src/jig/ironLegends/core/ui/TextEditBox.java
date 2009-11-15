@@ -33,7 +33,10 @@ public class TextEditBox extends Button
 		m_sCollectedText = text;
 		super.setText(text);
 	}
-	
+	public String getText()
+	{
+		return m_sCollectedText;
+	}			
 	public void processInput(KeyCommands keyCmds)
 	{
 		if (!hasFocus())
