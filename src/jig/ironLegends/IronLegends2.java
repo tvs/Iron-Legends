@@ -13,6 +13,7 @@ import jig.engine.ViewableLayer;
 import jig.engine.hli.ImageBackgroundLayer;
 import jig.engine.hli.ScrollingScreenGame;
 import jig.engine.physics.AbstractBodyLayer;
+import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
 import jig.engine.physics.vpe.VanillaPhysicsEngine;
 import jig.engine.util.Vector2D;
@@ -56,8 +57,10 @@ public class IronLegends2 extends ScrollingScreenGame {
 	protected PlayerInfo m_playerInfo;
 	protected Tank m_tank;
 	protected ViewableLayer m_bgLayer;
-	protected BodyLayer<Tank> m_tankLayer;
-
+	protected BodyLayer<Body> m_tankLayer;
+	protected BodyLayer<Body> m_opponentLayer;
+	protected BodyLayer<Bullet> m_bulletLayer;
+	
 	protected Navigator m_navigator;
 	protected String m_sError;
 	protected String m_sInstallDir;
@@ -177,13 +180,24 @@ public class IronLegends2 extends ScrollingScreenGame {
 		m_screens.addScreen(splashScreen);
 
 		// GamePlay Screen
-		m_tank = new Tank(m_polygonFactory);
-		m_tankLayer = new AbstractBodyLayer.IterativeUpdate<Tank>();
+		m_tank = new Tank(m_polygonFactory, new Vector2D(100, 100), "Player");
+		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankLayer.add(m_tank);
 
+		m_opponentLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		while (m_opponentLayer.size() < 10) {
+			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(), VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(), VISIBLE_BOUNDS.getMaxY());
+			Tank t = new Tank(m_polygonFactory, pos, "Enemy");
+			m_opponentLayer.add(t);
+		}
+		
+		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Bullet>();
+		
 		GameScreen gameplayScreen = new GameScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(m_bgLayer);
 		gameplayScreen.addViewableLayer(m_tankLayer);
+		gameplayScreen.addViewableLayer(m_opponentLayer);
+		gameplayScreen.addViewableLayer(m_bulletLayer);
 		m_screens.addScreen(gameplayScreen);
 
 		// Screen Transitions
@@ -204,11 +218,21 @@ public class IronLegends2 extends ScrollingScreenGame {
 				gameObjectLayers.add(layerIterator.next());
 			}
 		}
+		
+		int activeScreen = m_screens.activeScreen();
+		if (activeScreen == GAMEPLAY_SCREEN) {
+			m_physicsEngine.manageViewableSet(m_tankLayer);
+			m_physicsEngine.manageViewableSet(m_opponentLayer);
+			m_physicsEngine.manageViewableSet(m_bulletLayer);
+			
+			// Register Collision Handlers
+		}
 	}
 
 	private void processCommands(long deltaMs) {
 		m_keyCmds.update(keyboard);
-		GameScreen curScreen = m_screens.getActiveScreen();
+		int activeScreen = m_screens.activeScreen();
+		GameScreen curScreen = m_screens.getScreen(activeScreen);
 
 		// Screen Transitions
 		ScreenTransition t = m_screens.transition(m_keyCmds);
@@ -219,18 +243,44 @@ public class IronLegends2 extends ScrollingScreenGame {
 			populateGameLayers();
 		}
 		
-		m_tank.controlMovement(m_keyCmds, mouse, getCenter());
+		if (activeScreen == GAMEPLAY_SCREEN) {
+			m_tank.controlMovement(m_keyCmds, mouse, getCenter());
+			if (mouse.isLeftButtonPressed()) {
+				m_tank.fire(getBullet());
+			}
+		}
+	}
+
+	private Bullet getBullet() {
+		Bullet bullet = null;
+		for (Bullet b : m_bulletLayer) {
+			if (!b.isActive()) {
+				bullet = b;
+				break;
+			}
+		}
+		
+		if (bullet == null) {
+			bullet = new Bullet();
+			m_bulletLayer.add(bullet);
+		}
+		
+		return bullet;
 	}
 
 	@Override
 	public void update(long deltaMs) {
-		super.update(deltaMs);
 		processCommands(deltaMs);
+		super.update(deltaMs);
+		int activeScreen = m_screens.activeScreen();
+		if (activeScreen == GAMEPLAY_SCREEN) {
+			m_physicsEngine.applyLawsOfPhysics(deltaMs);
+		}
 		
 		// center screen on tank
 		Vector2D center = m_tank.getPosition();
 		// TODO: on right & bottom object moves beyond the bounds 
-		centerOnPoint(center.clamp(VISIBLE_BOUNDS));		
+		centerOnPoint(center.clamp(VISIBLE_BOUNDS));
 	}
 
 	@Override

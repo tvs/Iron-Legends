@@ -5,6 +5,7 @@ import java.util.List;
 import jig.engine.ImageResource;
 import jig.engine.PaintableCanvas;
 import jig.engine.RenderingContext;
+import jig.engine.ResourceFactory;
 import jig.engine.PaintableCanvas.JIGSHAPE;
 import jig.engine.physics.Body;
 import jig.engine.physics.vpe.ConvexPolygon;
@@ -24,7 +25,9 @@ public class ConvexPolyBody extends Body
 	}
 	
 	private static String getEmptySprite() {
-		PaintableCanvas.loadDefaultFrames("cpb", 4, 4, 1, JIGSHAPE.RECTANGLE, null);
+		if (ResourceFactory.getFactory().areFramesLoaded("cpb") == false) {
+			PaintableCanvas.loadDefaultFrames("cpb", 4, 4, 1, JIGSHAPE.RECTANGLE, null);
+		}	
 		return "cpb";
 	}
 
