@@ -20,7 +20,7 @@ public class ATSprite extends Sprite {
 		setoffsetToRotation();
 	}
 
-	ATSprite(final String rsc) {
+	public ATSprite(final String rsc) {
 		super(rsc);
 		setoffsetToRotation();
 	}

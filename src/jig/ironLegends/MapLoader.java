@@ -153,7 +153,9 @@ public class MapLoader
 		return true;
 	}
 	
-
+	/*
+	 * saves a grid based map
+	 */
 	static public boolean saveGrid(String sName, String sFile, MapGrid grid, final ResourceReader rw)
 	{
 		boolean bSuccess = true;
@@ -197,6 +199,9 @@ public class MapLoader
 		return bSuccess;
 	}
 	
+	/*
+	 * loads a grid based map
+	 */
 	static public boolean loadGrid(String sFile, MapGrid grid, final ResourceReader rr)
 	{
 		// open file

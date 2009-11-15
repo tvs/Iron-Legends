@@ -15,6 +15,20 @@ public class KeyCommands
 		m_keys = new TreeMap<String, KeyState>();
 	}
 
+	public void addNumbers()
+	{
+		addCommand("0", KeyEvent.VK_0);
+		addCommand("1", KeyEvent.VK_1);
+		addCommand("2", KeyEvent.VK_2);
+		addCommand("3", KeyEvent.VK_3);
+		addCommand("4", KeyEvent.VK_4);
+		addCommand("5", KeyEvent.VK_5);
+		addCommand("6", KeyEvent.VK_6);
+		addCommand("7", KeyEvent.VK_7);
+		addCommand("8", KeyEvent.VK_8);
+		addCommand("9", KeyEvent.VK_9);
+	}
+	
 	public void addAlphabet()
 	{
 		addCommand("a", KeyEvent.VK_A);
