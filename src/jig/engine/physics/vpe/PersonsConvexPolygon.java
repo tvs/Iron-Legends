@@ -553,12 +553,7 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		
 		double penetration;
 		boolean bLog = false;
-		if (getPosition().getX() < 192
-				&& other.getPosition().getY() == 64 
-				&& getPosition().getY() < 70)
-		{
-			//bLog = true;
-		}			
+
 		if (bLog)
 		{
 			System.out.println(" ");
@@ -590,9 +585,12 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		// NOTE: 2009.10.04 - if don't quite leave the collision, this could be bad
 		// for those movements that just toggle direction and don't check for 
 		// valid area of movement
+		/*
 		if (minPenetration < 0)
 			return minAxis.scale(minPenetration - 0.5);
 		return minAxis.scale(minPenetration + 0.5);
+		*/
+		return minAxis.scale(absMinPenetration + 0.5);
 		//return minAxis.scale(minPenetration);
 	}
 	
