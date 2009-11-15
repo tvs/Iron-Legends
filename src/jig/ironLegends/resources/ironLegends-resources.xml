@@ -1,0 +1,8 @@
+<resources>
+
+    <spritesheet>
+        <imagesrc>ironLegends-spritesheet.png</imagesrc>
+        <framesrc>ironLegends-spritesheet.xml</framesrc>
+    </spritesheet>
+
+</resources>
