@@ -290,7 +290,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 		}
 		
 		// center screen on tank
-		Vector2D center = m_tank.getPosition();
+		Vector2D center = m_tank.getCenterPosition();
 		// TODO: on right & bottom object moves beyond the bounds 
 		centerOnPoint(center.clamp(VISIBLE_BOUNDS));
 	}

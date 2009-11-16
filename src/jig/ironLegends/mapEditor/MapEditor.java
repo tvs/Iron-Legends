@@ -36,16 +36,11 @@ public class MapEditor extends ScrollingScreenGame
 	protected ResourceReader m_rr;
 	protected Fonts m_fonts = new Fonts();
 	protected GameScreens m_screens = new GameScreens();
-	protected MapEditorGrid m_grid; // just basic text info for grid
-	protected Point m_centerPt;
+	protected MapLayer m_mapLayer;
 
 	public static final int MAPEDIT_SCREEN = 0;
 
 	KeyCommands m_keyCmds = new KeyCommands();
-	/*
-	class MapGrid extends LevelGrid
-	{
-	*/
 	MapCalc m_mapCalc = new MapCalc(IronLegends.SCREEN_WIDTH, IronLegends.SCREEN_HEIGHT);
 
 	public MapEditor() 
@@ -59,33 +54,27 @@ public class MapEditor extends ScrollingScreenGame
 		
 		m_sInstallDir 	= InstallInfo.getInstallDir("/" + IronLegends.GAME_ROOT + "IronLegends.class", "IronLegends.jar");
 		m_rr 			= new ResourceReader(m_sInstallDir);
-		m_centerPt = new Point(IronLegends.WORLD_WIDTH/2, IronLegends.WORLD_HEIGHT/2);
 		
 		loadResources();
-		
-		int m_rows = IronLegends.WORLD_WIDTH/IronLegends.TILE_WIDTH;
-		int m_cols = IronLegends.WORLD_HEIGHT/IronLegends.TILE_HEIGHT;
-		
-		m_grid = new MapEditorGrid(IronLegends.TILE_WIDTH, IronLegends.TILE_HEIGHT);
-		m_grid.setDim(m_rows,m_cols);
-		
-		for (int j = 0; j < m_rows; ++j)
-		{
-			for (int i = 0; i < m_cols; ++i)
-			{
-				m_grid.setCell(i,j, "e");
-			}
-		}
-		
-		m_screens.addScreen(new MapEditor_GS(m_grid, m_mapCalc, m_fonts, this));
+				
+		m_mapLayer = new MapLayer();
+		//m_mapLayer.add(new SpriteMapItem(new Vector2D(400,400), 0, "wall", IronLegends.SPRITE_SHEET2 + "#wall"));
+		//m_mapLayer.add(new SpriteMapItem(new Vector2D(300,400), Math.toRadians(45), "wall", IronLegends.SPRITE_SHEET2 + "#wall"));
+				
+		m_screens.addScreen(new MapEditor_GS(m_mapLayer, m_mapCalc, m_fonts, this));
 
-		// load text info TODO: 
-		//LevelLoader.loadGrid(1, m_grid, m_rr);
+		// move map
 		m_keyCmds.addCommand("left", KeyEvent.VK_LEFT);
 		m_keyCmds.addCommand("right", KeyEvent.VK_RIGHT);
 		m_keyCmds.addCommand("up", KeyEvent.VK_UP);
 		m_keyCmds.addCommand("down", KeyEvent.VK_DOWN);
+		
+		// rotate map item
+		m_keyCmds.addCommand("rotateCCW", KeyEvent.VK_Q);
+		m_keyCmds.addCommand("rotateCW", KeyEvent.VK_E);	
+		
 		m_keyCmds.addAlphabet();
+		m_keyCmds.addNumbers();
 	}
 
 	public static void main(String[] args) 
@@ -100,6 +89,7 @@ public class MapEditor extends ScrollingScreenGame
 		ResourceFactory resourceFactory = ResourceFactory.getFactory();
 
 		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.MY_RESOURCES);
+		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.IRON_LEGENDS_RESOURCES);
 
 		// FONTS
 		
@@ -117,7 +107,8 @@ public class MapEditor extends ScrollingScreenGame
 			AffineTransform at = m_mapCalc.getWorldToScreenTransform();
 			rc.setTransform(at);
 
-			m_grid.render(rc);
+			m_mapLayer.render(rc);
+			
 			rc.setTransform(tr);
 		}
 		
@@ -129,33 +120,10 @@ public class MapEditor extends ScrollingScreenGame
 	{
 
 		m_keyCmds.update(keyboard);
-		boolean recalcMap = false;
-		if (m_keyCmds.wasPressed("left"))
-		{
-			m_centerPt.x -= IronLegends.TILE_WIDTH;
-			recalcMap = true;
-		}
-		if (m_keyCmds.wasPressed("right"))
-		{
-			m_centerPt.x += IronLegends.TILE_WIDTH;
-			recalcMap = true;
-		}
-		if (m_keyCmds.wasPressed("down"))
-		{
-			m_centerPt.y += IronLegends.TILE_HEIGHT;
-			recalcMap = true;
-		}
-		if (m_keyCmds.wasPressed("up"))
-		{
-			m_centerPt.y -= IronLegends.TILE_HEIGHT;
-			recalcMap = true;
-		}
-		if (recalcMap)
-		{
-			centerOnPoint(m_centerPt.x, m_centerPt.y);
-			m_mapCalc.centerOnPoint(m_centerPt.x, m_centerPt.y);			
-		}
+
 		m_screens.getActiveScreen().processCommands(m_keyCmds, mouse, deltaMs);
+		//centerOnPoint(m_centerPt.x, m_centerPt.y);
+
 		//centerOnPoint(0,0);
 	}
 }

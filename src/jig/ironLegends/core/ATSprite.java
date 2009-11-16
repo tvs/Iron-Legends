@@ -20,7 +20,7 @@ public class ATSprite extends Sprite {
 		setoffsetToRotation();
 	}
 
-	ATSprite(final String rsc) {
+	public ATSprite(final String rsc) {
 		super(rsc);
 		setoffsetToRotation();
 	}
@@ -65,6 +65,7 @@ public class ATSprite extends Sprite {
 				+ m_offsetToRotation.getY());
 
 		at.rotate(m_rotationRad);
+		//at.rotate(Math.toRadians(45));
 		at.translate(-m_offsetToRotation.getX(), -m_offsetToRotation.getY());
 		frames.get(visibleFrame).render(rc, at);
 	}
