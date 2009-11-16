@@ -48,8 +48,8 @@ public class Bullet extends VanillaSphere {
 	}
 	
 	public void fire(Body owner, Vector2D origin, double angle) {
-		setRotation(angle);
-		fire(owner, origin, Vector2D.getUnitLengthVector(angle).scale(-1));
+		setRotation(angle + Math.toRadians(270));
+		fire(owner, origin, Vector2D.getUnitLengthVector(angle));
 	}
 	
 	public void setDamage(int damage) {
