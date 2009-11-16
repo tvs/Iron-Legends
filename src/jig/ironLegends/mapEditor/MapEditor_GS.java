@@ -41,7 +41,6 @@ public class MapEditor_GS extends GameScreen
 	TileButton m_selButton = null;
 	ATSprite m_curSprite = null;
 	
-	MapEditorGrid m_mapGrid = null;
 	MapLayer m_mapLayer = null;
 	MouseState m_mouseState = new MouseState();
 	//protected static final int 
@@ -177,13 +176,13 @@ public class MapEditor_GS extends GameScreen
 			}
 			if (recalcMap)
 			{
+				//setMapCenter()
 				m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
 				m_mapCalc.centerOnPoint(m_centerPt.x, m_centerPt.y);			
 			}
 		}
 		
 		m_mouseState.update(mouse, deltaMs, -1);
-		
 		
 		m_mapName.processInput(keyCmds);
 		m_rotation.processInput(keyCmds);
@@ -209,7 +208,8 @@ public class MapEditor_GS extends GameScreen
 		if (m_loadBt.wasLeftClicked())
 		{
 			String mapName = m_mapName.getText();
-			
+			MapEditorLoadSink sink = new MapEditorLoadSink(this);
+			MapLoader.loadLayer(sink, mapName + ".txt", m_mapEditor.m_rr);
 			//MapLoader.loadGrid(mapName + ".txt", m_mapGrid,  m_mapEditor.m_rr);
 		}
 	
@@ -238,8 +238,6 @@ public class MapEditor_GS extends GameScreen
 			
 			if (m_mouseState.wasLeftClicked())
 			{
-				// update gridCell with new info
-				
 				// determine where on grid was clicked
 				Point pt = m_mouseState.LeftDownPt();
 				// convert to world coordinates
@@ -258,8 +256,7 @@ public class MapEditor_GS extends GameScreen
 				else
 				{
 					// add new map item based on m_selButton					
-					m_mapLayer.add(new SpriteMapItem(worldPt, Math.toRadians(m_curRotationDeg), m_selButton.getCode(), m_selButton.getSpriteName()));
-					
+					m_mapLayer.add(new SpriteMapItem(worldPt, Math.toRadians(m_curRotationDeg), m_selButton.getCode(), m_selButton.getSpriteName()));					
 				}
 			}
 		}

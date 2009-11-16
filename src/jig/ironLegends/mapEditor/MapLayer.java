@@ -22,6 +22,10 @@ public class MapLayer
 	{
 		m_mapItems.add(item);	
 	}
+	public Iterator<MapItem> iterator()
+	{
+		return m_mapItems.iterator();
+	}
 	public void render(RenderingContext rc)
 	{
 		Iterator<MapItem> iter = m_mapItems.iterator();

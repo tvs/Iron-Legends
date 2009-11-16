@@ -14,4 +14,5 @@ public abstract class MapItem
 	
 	abstract Vector2D getCenterPosition();
 	abstract void render(RenderingContext rc);
+	abstract String encoding();
 }
