@@ -70,5 +70,10 @@ public class MapLayer
 		if (idx >= 0 && idx < m_mapItems.size())
 		m_mapItems.remove(idx);
 		
+	}
+
+	public void clear() 
+	{
+		m_mapItems.clear();		
 	} 
 }

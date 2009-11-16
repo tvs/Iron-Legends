@@ -8,6 +8,7 @@ public class MapEditorLoadSink implements IMapLoadSink
 {
 	MapEditor_GS m_mapEditorGS;
 	MapLayer m_mapLayer;
+	
 	public MapEditorLoadSink(MapEditor_GS mapEditorGS)
 	{
 		m_mapEditorGS = mapEditorGS;
@@ -15,15 +16,15 @@ public class MapEditorLoadSink implements IMapLoadSink
 	}
 
 	@Override
-	public void mapDim(int cols, int rows) 
+	public void mapDim(int width, int height) 
 	{
-		
+		m_mapEditorGS.setWorldDim(width, height);
 	}
 
 	@Override
 	public void mapName(String sMapName) 
 	{
-		m_mapEditorGS.m_mapName.setText("sMapName");	
+		m_mapEditorGS.m_mapName.setText(sMapName);	
 	}
 
 	@Override
@@ -32,8 +33,7 @@ public class MapEditorLoadSink implements IMapLoadSink
 		// item:x:y:rotDeg:spriteName
 		String tokens[] = line.split(":");
 
-
-		if (tokens.length != 4)
+		if (tokens.length != 5)
 			return;
 		
 		double x;

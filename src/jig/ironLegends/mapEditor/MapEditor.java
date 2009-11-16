@@ -36,16 +36,11 @@ public class MapEditor extends ScrollingScreenGame
 	protected ResourceReader m_rr;
 	protected Fonts m_fonts = new Fonts();
 	protected GameScreens m_screens = new GameScreens();
-	//protected MapEditorGrid m_grid; // just basic text info for grid
 	protected MapLayer m_mapLayer;
 
 	public static final int MAPEDIT_SCREEN = 0;
 
 	KeyCommands m_keyCmds = new KeyCommands();
-	/*
-	class MapGrid extends LevelGrid
-	{
-	*/
 	MapCalc m_mapCalc = new MapCalc(IronLegends.SCREEN_WIDTH, IronLegends.SCREEN_HEIGHT);
 
 	public MapEditor() 

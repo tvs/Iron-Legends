@@ -5,7 +5,7 @@ import jig.engine.util.Vector2D;
 public class Math2D 
 {
 
-	static final double TWOpi = Math.PI*2.0;
+	public static final double TWOpi = Math.PI*2.0;
 
 	private Math2D(){}
 	// ------------------------------------------------------------------------

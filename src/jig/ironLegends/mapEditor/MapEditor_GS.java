@@ -7,9 +7,7 @@ import java.util.Vector;
 
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
-import jig.engine.hli.ScrollingScreenGame;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.GridCell;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.MapLoader;
 import jig.ironLegends.core.ATSprite;
@@ -20,7 +18,6 @@ import jig.ironLegends.core.ui.Button;
 import jig.ironLegends.core.ui.MouseState;
 import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.mapEditor.MapCalc;
-import jig.ironLegends.core.ui.IUIEvent;
 
 public class MapEditor_GS extends GameScreen 
 {
@@ -52,16 +49,21 @@ public class MapEditor_GS extends GameScreen
 	MapEditor m_mapEditor;
 	int m_maxSpriteWidth;
 	
+	int m_mapWidth;
+	int m_mapHeight;
+	
 	public MapEditor_GS(MapLayer mapLayer, MapCalc mapCalc, Fonts fonts, MapEditor mapEditor) 
 	{
 		super(MapEditor.MAPEDIT_SCREEN);
-	
-		m_centerPt = new Point(IronLegends.WORLD_WIDTH/2, IronLegends.WORLD_HEIGHT/2);
-				
+
+		
 		m_mapLayer = mapLayer;
 		m_mapCalc = mapCalc;
 		m_fonts = fonts;
 		m_mapEditor = mapEditor;
+		
+		m_centerPt = new Point(m_mapWidth/2, m_mapHeight/2);
+		setWorldDim(IronLegends.WORLD_WIDTH, IronLegends.WORLD_HEIGHT);
 		
 		m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
 		m_mapCalc.centerOnPoint(m_centerPt.x, m_centerPt.y);
@@ -177,6 +179,16 @@ public class MapEditor_GS extends GameScreen
 			if (recalcMap)
 			{
 				//setMapCenter()
+				if (m_centerPt.x > (m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX)))
+					m_centerPt.x = m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX);
+				if (m_centerPt.x < IronLegends.SCREEN_WIDTH/2)
+					m_centerPt.x = IronLegends.SCREEN_WIDTH/2;
+				
+				if (m_centerPt.y > (m_mapHeight - IronLegends.SCREEN_HEIGHT/2))
+					m_centerPt.y = m_mapHeight - IronLegends.SCREEN_HEIGHT/2;
+				if (m_centerPt.y < IronLegends.SCREEN_HEIGHT/2)
+					m_centerPt.y = IronLegends.SCREEN_HEIGHT/2;
+				
 				m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
 				m_mapCalc.centerOnPoint(m_centerPt.x, m_centerPt.y);			
 			}
@@ -203,14 +215,15 @@ public class MapEditor_GS extends GameScreen
 		if (m_saveBt.wasLeftClicked())
 		{
 			String mapName = m_mapName.getText();
-			//MapLoader.saveGrid(mapName, mapName+".txt", m_mapGrid, m_mapEditor.m_rr);
+			MapEditorSave save = new MapEditorSave(m_mapWidth, m_mapHeight, this);
+			MapLoader.saveLayer(save, mapName + ".txt", m_mapEditor.m_rr);
 		}
 		if (m_loadBt.wasLeftClicked())
 		{
+			m_mapLayer.clear();
 			String mapName = m_mapName.getText();
 			MapEditorLoadSink sink = new MapEditorLoadSink(this);
 			MapLoader.loadLayer(sink, mapName + ".txt", m_mapEditor.m_rr);
-			//MapLoader.loadGrid(mapName + ".txt", m_mapGrid,  m_mapEditor.m_rr);
 		}
 	
 		// update each button
@@ -253,7 +266,7 @@ public class MapEditor_GS extends GameScreen
 					if (idx >= 0)
 						m_mapLayer.remove(idx);
 				}
-				else
+				else if (worldPt.getX() < m_mapWidth && worldPt.getY() < m_mapHeight)
 				{
 					// add new map item based on m_selButton					
 					m_mapLayer.add(new SpriteMapItem(worldPt, Math.toRadians(m_curRotationDeg), m_selButton.getCode(), m_selButton.getSpriteName()));					
@@ -296,6 +309,19 @@ public class MapEditor_GS extends GameScreen
 			m_curSprite.setRotation(Math.toRadians(m_curRotationDeg));
 			m_curSprite.render(rc);
 		}				
+	}
+
+	public void setWorldDim(int width, int height) 
+	{
+		m_mapWidth	= width;
+		m_mapHeight = height;
+		m_centerPt.x = width/2;
+		m_centerPt.y = height/2;
+		
+		m_mapEditor.setWorldBounds(0,0, width, height);
+		m_mapCalc.setWorldBounds(0,0, width, height);
+		
+		m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
 	}
 
 }

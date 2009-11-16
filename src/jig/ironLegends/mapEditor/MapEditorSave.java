@@ -14,12 +14,12 @@ public class MapEditorSave implements IMapSave
 	Iterator<MapItem> m_iter; 
 	
 	// TODO: rows cols is size of map
-	MapEditorSave(int cols, int rows, MapEditor_GS mapEditorGS)
+	MapEditorSave(int width, int height, MapEditor_GS mapEditorGS)
 	{
-		m_mapEditorGS = mapEditorGS;
-		m_mapLayer = m_mapEditorGS.m_mapLayer;
-		m_mapWidth = cols;
-		m_mapHeight = rows;
+		m_mapEditorGS	= mapEditorGS;
+		m_mapLayer 		= m_mapEditorGS.m_mapLayer;
+		m_mapWidth 		= width;
+		m_mapHeight 	= height;
 		
 		m_iter = m_mapLayer.iterator();
 	}
@@ -45,6 +45,7 @@ public class MapEditorSave implements IMapSave
 			MapItem m = m_iter.next();
 			return m.encoding();
 		}
+		
 		return null;
 	}
 
@@ -53,5 +54,4 @@ public class MapEditorSave implements IMapSave
 	{
 		return m_mapHeight;
 	}
-
 }
