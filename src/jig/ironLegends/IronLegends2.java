@@ -17,6 +17,11 @@ import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
 import jig.engine.physics.vpe.VanillaPhysicsEngine;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.collision.Handler_CPBLayer_BodyLayer;
+import jig.ironLegends.collision.Handler_CPBLayer_CPBLayer;
+import jig.ironLegends.collision.ISink_CPB_Body;
+import jig.ironLegends.collision.ISink_CPB_CPB;
+import jig.ironLegends.core.ConvexPolyBody;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.GameScreens;
@@ -59,7 +64,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 	protected ViewableLayer m_bgLayer;
 	protected BodyLayer<Body> m_tankLayer;
 	protected BodyLayer<Body> m_opponentLayer;
-	protected BodyLayer<Bullet> m_bulletLayer;
+	protected BodyLayer<Body> m_bulletLayer;
 	
 	protected Navigator m_navigator;
 	protected String m_sError;
@@ -168,7 +173,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 			m_opponentLayer.add(t);
 		}
 		
-		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Bullet>();
+		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		
 		GameScreen gameplayScreen = new GameScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(m_bgLayer);
@@ -203,6 +208,35 @@ public class IronLegends2 extends ScrollingScreenGame {
 			m_physicsEngine.manageViewableSet(m_bulletLayer);
 			
 			// Register Collision Handlers
+			// Player tank to other tanks.
+			ISink_CPB_CPB htankopp = new ISink_CPB_CPB() {
+				@Override
+				public boolean onCollision(ConvexPolyBody main, ConvexPolyBody other,
+						Vector2D vCorrection) {
+					Tank t = (Tank) main;
+					t.stop();
+					return true;
+				}
+			};
+			m_physicsEngine.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(m_tankLayer, m_opponentLayer, htankopp));
+			
+			// Bullets and Opponents
+			ISink_CPB_Body htankbull = new ISink_CPB_Body() {
+				@Override
+				public boolean onCollision(ConvexPolyBody main, Body other,
+						Vector2D vCorrection) {
+					Tank t = (Tank) main;
+					Bullet b = (Bullet) other;
+					if (!t.equals(b.getOwner())) {
+						t.causeDamage(b.getDamage());
+						b.setActivation(false);
+						return true;
+					}
+					
+					return false;
+				}
+			};
+			m_physicsEngine.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(m_polygonFactory, m_opponentLayer, m_bulletLayer, 4, 27, htankbull));
 		}
 	}
 
@@ -230,9 +264,9 @@ public class IronLegends2 extends ScrollingScreenGame {
 
 	private Bullet getBullet() {
 		Bullet bullet = null;
-		for (Bullet b : m_bulletLayer) {
+		for (Body b : m_bulletLayer) {
 			if (!b.isActive()) {
-				bullet = b;
+				bullet = (Bullet) b;
 				break;
 			}
 		}

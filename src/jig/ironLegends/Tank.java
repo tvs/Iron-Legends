@@ -15,13 +15,12 @@ public class Tank extends MultiSpriteBody {
 	private static final double TURN_RATE = 2.0;
 	private static final int MAX_HEALTH = 100;
 	private static final int FIRE_DELAY = 300;
-	private static final int RESPAWN_DELAY = 500;
+	private static final int RESPAWN_DELAY = 1000;
 	
 	private Vector2D initialPosition;
 	private ATSprite turret;
 	private Animator m_animator;
 	
-	private double rotation;
 	private double speed;
 	private double angularVelocity;
 	private int health = MAX_HEALTH;
@@ -34,11 +33,12 @@ public class Tank extends MultiSpriteBody {
 	public Tank(PolygonFactory pf, Vector2D pos, String team) {
 		super(pf.createRectangle(pos, 85, 101), IronLegends2.SPRITE_SHEET + "#tank");
 		turret = getSprite(addSprite(IronLegends2.SPRITE_SHEET + "#cannon"));
+//		turret.setoffsetToRotation(new Vector2D(22.5, 79.0));
 		
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;
 		setTeam(team);
-		respawn();		
+		respawn();
 	}
 	
 	public Tank(PolygonFactory pf, String team) {
@@ -83,8 +83,8 @@ public class Tank extends MultiSpriteBody {
 		}
 		
 		timeSinceFired += deltaMs;
-		rotation += angularVelocity * deltaMs / 1000.0;		
-		Vector2D translateVec = Vector2D.getUnitLengthVector(rotation).scale(speed * deltaMs / 1000.0);
+		double rotation = getRotation() + (angularVelocity * deltaMs / 1000.0);
+		Vector2D translateVec = Vector2D.getUnitLengthVector(rotation + Math.toRadians(270)).scale(speed * deltaMs / 1000.0);
 		Vector2D p = position.translate(translateVec);
 		//p = p.clamp(IronLegends2.WORLD_BOUNDS);
 		p = p.clampX(0, IronLegends2.WORLD_WIDTH - getWidth());
@@ -94,15 +94,15 @@ public class Tank extends MultiSpriteBody {
 		setRotation(rotation);
 		if ((speed != 0 || angularVelocity != 0) && m_animator.update(deltaMs, translateVec)) {
 			getSprite(0).setFrame(m_animator.getFrame());
-		}
-	}	
+		}		
+	}
 
 	public void fire(Bullet b) {
 		if (timeSinceFired > FIRE_DELAY) {
 			timeSinceFired = 0;
 			b.reload(damageAmount, bulletRange);
 			b.fire(this, turret.getCenterPosition().translate(
-					new Vector2D(-25, 0).rotate(getTurretRotation())),
+					new Vector2D(37, 0).rotate(getTurretRotation())),
 					getTurretRotation());
 		}
 	}
@@ -133,8 +133,7 @@ public class Tank extends MultiSpriteBody {
 		}
 		
 		Point loc = mouse.getLocation();
-		setTurretRotation(Math.atan2(screenCenter.getY() - loc.y, 
-				screenCenter.getX()	- loc.x));
+		setTurretRotation(screenCenter.angleTo(new Vector2D(loc.getX(), loc.getY())));
 //		System.out.printf("p = %s, c = %s, mouse = %s, turretrotation = %.2f, width = %d, height = %d\n",
 //				getPosition(), screenCenter, loc, Math.toDegrees(getTurretRotation()), getWidth(), getHeight());
 	}
@@ -150,7 +149,7 @@ public class Tank extends MultiSpriteBody {
 	}
 	
 	public void respawn() {
-		rotation = 0.0;
+		setRotation(Math.toRadians(90));
 		speed = 0.0;
 		health = MAX_HEALTH;
 		setPosition(initialPosition);
