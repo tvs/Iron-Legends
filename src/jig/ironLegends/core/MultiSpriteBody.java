@@ -98,7 +98,11 @@ public class MultiSpriteBody extends ConvexPolyBody
 		super(shape);
 		addSprite(rsc);
 	}
-	
+	@Override
+	public Vector2D getCenterPosition()
+	{
+		return getShapeCenter();
+	}
 	public Vector2D getShapeCenter()
 	{
 		return getPosition().translate(getOffsetToRotation());
@@ -171,8 +175,9 @@ public class MultiSpriteBody extends ConvexPolyBody
 				ATSprite s = iter.next();
 				if (!s.isActive())
 					continue;
-				
+				//TODO compute appropriate offset (configurable relative to "body" center)
 				s.setCenterPosition(centerPos);
+				//s.setCenterPosition(centerPos.transform(s.getOffset()));
 			}
 		}
 		m_bSpritesInSync = true;

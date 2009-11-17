@@ -15,7 +15,9 @@ public class ATSprite extends Sprite {
 	private double m_rotationRad = 0;
 	private Vector2D m_offsetToRotation;
 	private boolean m_bAbsRotation = false;	
-
+	private Vector2D m_offset = new Vector2D(0,0);
+	private Vector2D m_rotationOffset  = new Vector2D(0,0);
+	
 	ATSprite(final List<ImageResource> frameset) {
 		super(frameset);
 		setoffsetToRotation();
@@ -31,7 +33,13 @@ public class ATSprite extends Sprite {
 		m_bAbsRotation = bAbsolute;
 	}
 	
-	public void setRotation(double rotRad) {
+	// set the location where the ATSprite's rotation center will be attached to the MultiSpriteBody
+	public void setOffset(Vector2D vOffset)
+	{
+		m_offset = vOffset;
+	}
+	public void setRotation(double rotRad) 
+	{
 		m_rotationRad = rotRad;
 	}
 
@@ -39,10 +47,17 @@ public class ATSprite extends Sprite {
 		return m_rotationRad;
 	}
 
-	public void setoffsetToRotation() {
+	// computes the "center" of the sprite as the starting point for where to rotate
+	private void setoffsetToRotation() {
 		this.m_offsetToRotation = new Vector2D(width / 2.0, height / 2.0);
 	}
 
+	// offset from sprite's center to the rotation point
+	public void setRotationOffset(Vector2D v)
+	{
+		m_rotationOffset = v;
+	}
+	/*
 	public void setoffsetToRotation(Vector2D m_offsetToRotation) {
 		this.m_offsetToRotation = m_offsetToRotation;
 	}
@@ -50,7 +65,7 @@ public class ATSprite extends Sprite {
 	public Vector2D getoffsetToRotation() {
 		return m_offsetToRotation;
 	}
-
+	 */
 	public void render(final RenderingContext rc, double dBaseRotationRad) {
 		double prevRotation = m_rotationRad;
 		if (!m_bAbsRotation)
@@ -63,17 +78,23 @@ public class ATSprite extends Sprite {
 	public void render(final RenderingContext rc) {
 		// adjust at
 		// offset to position
-		// offset to center
+		// offset to center of rotation
 		// rotate
 		// offset back
-		AffineTransform at = AffineTransform.getTranslateInstance(position
-				.getX()
-				+ m_offsetToRotation.getX(), position.getY()
-				+ m_offsetToRotation.getY());
-
+		
+		AffineTransform at = AffineTransform.getTranslateInstance(
+				  position.getX() + m_offset.getX() + m_offsetToRotation.getX()
+				, position.getY() + m_offset.getY() + m_offsetToRotation.getY()
+				);
 		at.rotate(m_rotationRad);
-		//at.rotate(Math.toRadians(45));
+		at.translate(-m_rotationOffset.getX(), -m_rotationOffset.getY());
 		at.translate(-m_offsetToRotation.getX(), -m_offsetToRotation.getY());
+		
 		frames.get(visibleFrame).render(rc, at);
+	}
+
+	public Vector2D getOffset() 
+	{
+		return m_offset;
 	}
 }

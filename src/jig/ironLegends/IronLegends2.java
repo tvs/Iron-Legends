@@ -221,7 +221,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 					Tank t = (Tank) main;
 					t.setPosition(t.getPosition().translate(vCorrection));
 					t.stop();
-					return true;
+					return false;
 				}
 			};
 			m_physicsEngine.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(m_tankLayer, m_opponentLayer, htankopp));

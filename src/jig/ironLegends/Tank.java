@@ -37,7 +37,13 @@ public class Tank extends MultiSpriteBody {
 		m_mapCalc = mapCalc;
 		turret = getSprite(addSprite(IronLegends2.SPRITE_SHEET + "#cannon"));
 //		turret.setoffsetToRotation(new Vector2D(22.5, 79.0));
+		// this sets the location at which the turret will rotate
+		// the rotation point will stay center over the MultiSpriteBody
+		turret.setRotationOffset(new Vector2D(0, turret.getHeight()/2.0-20));
+		
 		turret.setAbsRotation(true);
+		// this would move the turret's position by this offset from the rotation center 
+		//turret.setOffset(new Vector2D(turret.getHeight()/2-20, 0));
 		
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;
