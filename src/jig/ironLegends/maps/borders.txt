@@ -1,0 +1,10 @@
+t
+1200 800
+wall:0.0:0.0:-90.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:0.0:0.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:1200.0:0.0:-90.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:1200.0:0.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:0.0:800.0:-90.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:0.0:800.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:1200.0:800.0:-90.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+wall:1200.0:800.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall

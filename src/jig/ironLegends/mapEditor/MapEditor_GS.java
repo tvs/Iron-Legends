@@ -33,6 +33,7 @@ public class MapEditor_GS extends GameScreen
 	double m_rotationIncDeg;
 	double m_curRotationDeg;
 	
+	//TODO: add visible world borders
 	Vector<TileButton> m_tileButtons;
 	Point m_curMouse = new Point(0,0);
 	int m_buttonStartX = 16*IronLegends.SCREEN_WIDTH/20;
@@ -350,6 +351,7 @@ public class MapEditor_GS extends GameScreen
 		*/
 		
 		m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
+		m_mapCalc.centerOnPoint(m_centerPt.x, m_centerPt.y);
 	}
 
 }

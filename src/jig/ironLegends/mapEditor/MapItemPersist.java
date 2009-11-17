@@ -17,6 +17,7 @@ public class MapItemPersist
 	public String resource(){return m_sResource;}
 	public double centerX(){ return m_centerX;}
 	public double centerY(){ return m_centerY;}
+	public Vector2D centerPosition(){return new Vector2D(m_centerX, m_centerY);}
 	public double rotDeg(){return m_rotDeg;}
 	
 	public MapItemPersist(String sEncoding)

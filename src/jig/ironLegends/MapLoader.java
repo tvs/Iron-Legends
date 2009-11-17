@@ -12,7 +12,7 @@ import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
 //Level
 import jig.engine.util.Vector2D;
-import jig.ironLegends.core.ResourceReader;
+import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.Tile;
 import jig.misc.sat.PolygonFactory;
 
@@ -83,8 +83,8 @@ public class MapLoader
 				{			
 					// wall v,h always placed in same portion of tile?
 					//ConvexPolygon shape = polygonFactory.createRectangle(new Vector2D(x,y), 48, 132);
-					Obstacle ob = new Obstacle(x,y, cellInfo, polygonFactory);
-					tankObstacleLayer.add(ob);					
+					//Obstacle ob = new Obstacle(cellInfo, polygonFactory);
+					//tankObstacleLayer.add(ob);					
 				}
 				else if (cellInfo.startsWith("b"))
 				{
@@ -155,7 +155,7 @@ public class MapLoader
 	/*
 	 * saves a grid based map
 	 */
-	static public boolean saveGrid(String sName, String sFile, MapGrid grid, final ResourceReader rw)
+	static public boolean saveGrid(String sName, String sFile, MapGrid grid, final ResourceIO rw)
 	{
 		boolean bSuccess = true;
 		
@@ -201,7 +201,7 @@ public class MapLoader
 	/*
 	 * loads a grid based map
 	 */
-	static public boolean loadGrid(String sFile, MapGrid grid, final ResourceReader rr)
+	static public boolean loadGrid(String sFile, MapGrid grid, final ResourceIO rr)
 	{
 		// open file
 		// read line
@@ -307,7 +307,7 @@ public class MapLoader
 		String nextLine();
 	}
 	
-	public static boolean saveLayer(IMapSave source, String sFile, ResourceReader rw)
+	public static boolean saveLayer(IMapSave source, String sFile, ResourceIO rw)
 	{
 		boolean bSuccess = true;
 		
@@ -344,7 +344,7 @@ public class MapLoader
 		return bSuccess;
 	}
 	
-	public static boolean loadLayer(IMapLoadSink sink, String sFile, ResourceReader rr)
+	public static boolean loadLayer(IMapLoadSink sink, String sFile, ResourceIO rr)
 	{
 		//ResourceFactory resourceFactory = ResourceFactory.getFactory();
 		URL url = ResourceFactory.findResource(IronLegends.GAME_ROOT + sFile);

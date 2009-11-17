@@ -98,6 +98,12 @@ public class MultiSpriteBody extends ConvexPolyBody
 		super(shape);
 		addSprite(rsc);
 	}
+	@Override 
+	public void setCenterPosition(Vector2D shapeCenter)
+	{
+		Vector2D offsetToRotation = getOffsetToRotation();
+		setPosition(shapeCenter.translate(new Vector2D(-offsetToRotation.getX(), -offsetToRotation.getY())));
+	}
 	@Override
 	public Vector2D getCenterPosition()
 	{

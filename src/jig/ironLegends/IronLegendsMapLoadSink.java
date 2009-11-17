@@ -22,15 +22,15 @@ public class IronLegendsMapLoadSink implements IMapLoadSink
 	@Override
 	public void mapName(String sMapName) 
 	{
-		// TODO Auto-generated method stub
-		
+		m_ironLegends.setMapName(sMapName);
 	}
 
 	@Override
 	public void onLine(String line) 
 	{
-		// TODO Auto-generated method stub
 		MapItemPersist mapItem = new MapItemPersist(line);
+		Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory);
+		m_ironLegends.m_tankObstacleLayer.add(ob);
 	}
 
 }

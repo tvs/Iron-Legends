@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 
-// loads from jar or from disk?
-public class ResourceReader
+// loads from jar or from disk
+public class ResourceIO
 {
 	
 	private BufferedReader m_br;
@@ -25,7 +25,7 @@ public class ResourceReader
 	
 	String m_sInstallDir;
 
-	public ResourceReader(String installDir)
+	public ResourceIO(String installDir)
 	{
 		m_br = null;
 		m_urlConnection = null;

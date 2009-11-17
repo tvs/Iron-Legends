@@ -27,13 +27,13 @@ import jig.ironLegends.core.GameScreens;
 import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.KeyState;
-import jig.ironLegends.core.ResourceReader;
+import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.ui.MouseState;
 
 public class MapEditor extends ScrollingScreenGame 
 {
 	protected String m_sInstallDir;
-	protected ResourceReader m_rr;
+	protected ResourceIO m_rr;
 	protected Fonts m_fonts = new Fonts();
 	protected GameScreens m_screens = new GameScreens();
 	protected MapLayer m_mapLayer;
@@ -53,7 +53,7 @@ public class MapEditor extends ScrollingScreenGame
 		m_mapCalc.setWorldBounds(0,0, IronLegends.WORLD_WIDTH, IronLegends.WORLD_HEIGHT);
 		
 		m_sInstallDir 	= InstallInfo.getInstallDir("/" + IronLegends.GAME_ROOT + "IronLegends.class", "IronLegends.jar");
-		m_rr 			= new ResourceReader(m_sInstallDir);
+		m_rr 			= new ResourceIO(m_sInstallDir);
 		
 		loadResources();
 				

@@ -5,7 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import jig.ironLegends.core.ResourceReader;
+import jig.ironLegends.core.ResourceIO;
 
 
 public class HighScorePersistance 
@@ -14,15 +14,15 @@ public class HighScorePersistance
 	protected String m_sError;
 	protected String m_sHigh;
 	
-	protected ResourceReader m_rw;
-	protected ResourceReader m_rr;
+	protected ResourceIO m_rw;
+	protected ResourceIO m_rr;
 	
 	public HighScorePersistance(String installDir)
 	{
 		m_sInstallDir = installDir;
 
-		m_rr = new ResourceReader(installDir);
-		m_rw = new ResourceReader(installDir);
+		m_rr = new ResourceIO(installDir);
+		m_rw = new ResourceIO(installDir);
 	}
 	
 	public boolean save(HighScore highScore) 

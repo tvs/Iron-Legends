@@ -8,6 +8,7 @@ import jig.engine.physics.vpe.VanillaAARectangle;
 import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
+import jig.ironLegends.mapEditor.MapCalc;
 
 //public class Mitko extends VanillaAARectangle 
 //public class Mitko extends VanillaPolygon
@@ -28,10 +29,13 @@ public class Mitko extends MultiSpriteBody
 	protected static final long FEINT_FRAME_DURATION_MS = 400;
 	
 	protected static final long FRAME_DURATION_PIXELS = WIDTH/MITKO_FRAMES;
+	MapCalc m_mapCalc;
 	
-	public Mitko(ConvexPolygon shape)
+	public Mitko(ConvexPolygon shape, MapCalc mapCalc)
 	{
-		super(shape, IronLegends.SPRITE_SHEET + "#mitko");		
+		super(shape, IronLegends.SPRITE_SHEET + "#mitko");
+		m_mapCalc = mapCalc;
+		
 		int antHandle = super.addSprite(IronLegends.SPRITE_SHEET + "#ant");
 		super.setSpriteRotation(antHandle, Math.toRadians(90));
 		super.setSpriteVisible(antHandle, false);
@@ -125,9 +129,10 @@ public class Mitko extends MultiSpriteBody
 		if (moving)
 		{
 			translateVec = velocity.scale(deltaMs/1000.0);
+			System.out.println("Pos: " + position);
 			position = position.translate(translateVec);
-			position = position.clampX(0, IronLegends.WORLD_WIDTH - getWidth());
-			position = position.clampY(0, IronLegends.WORLD_HEIGHT - getHeight());
+			position = position.clampX(0, m_mapCalc.getWorldBounds().getWidth() - getWidth());
+			position = position.clampY(0, m_mapCalc.getWorldBounds().getHeight() - getHeight());
 			setPosition(position);
 			if (translateVec.getY() > 0)
 				setRotation(Math.toRadians(90));
