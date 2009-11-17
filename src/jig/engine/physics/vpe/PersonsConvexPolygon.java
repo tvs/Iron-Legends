@@ -16,7 +16,7 @@ public class PersonsConvexPolygon extends ConvexPolygon
 	public int getCorners(){return nCorners;}
 	// offset to rotation is a vector that when added to the position will be the rotation point
 	public Vector2D getOffsetToRotation() {return offsetToRotation;}
-	
+	public Vector2D getCenterPosition(){return getPosition().translate(offsetToRotation);}
 	protected PersonsConvexPolygon(int nCorners) {
 		super(nCorners);
 	}
@@ -490,12 +490,14 @@ public class PersonsConvexPolygon extends ConvexPolygon
 			//  s         -------------
 			//  o    ---------
 			if (selfMin.getX() > otherMin.getX() && selfMin.getX() < otherMax.getX())
+			{
 				return Math.sqrt(otherMax.difference(selfMin).magnitude2());
+			}
 			
 			//  s    ---------
 			//  o         -------------
 			if (selfMax.getX() < otherMax.getX() && selfMax.getX() > otherMin.getX()  )
-				return Math.sqrt(selfMax.difference(otherMin).magnitude2()); 
+				return -Math.sqrt(selfMax.difference(otherMin).magnitude2()); 
 
 			//  s   ---------
 			//  o       ---		
@@ -504,7 +506,7 @@ public class PersonsConvexPolygon extends ConvexPolygon
 				double d2Left = selfMax.difference(otherMin).magnitude2();
 				double d2Right = otherMax.difference(selfMin).magnitude2();
 				if (d2Left < d2Right)
-					return Math.sqrt(d2Left);
+					return -Math.sqrt(d2Left);
 				return Math.sqrt(d2Right);
 			}
 		}
@@ -590,8 +592,25 @@ public class PersonsConvexPolygon extends ConvexPolygon
 			return minAxis.scale(minPenetration - 0.5);
 		return minAxis.scale(minPenetration + 0.5);
 		*/
-		return minAxis.scale(absMinPenetration + 0.5);
+		//return minAxis.scale(absMinPenetration + 0.5);
 		//return minAxis.scale(minPenetration);
+		{
+			// hmmm, this seems to do the trick.. fingers crossed : )
+			// determine which direction on the axis to move "self" to get out of collision
+			// use the centers of the objects to determine "left/right" of and "top/bottom" of.
+			PersonsConvexPolygon pother = (PersonsConvexPolygon)other;
+			
+			double x = Math.abs(minAxis.getX());
+			double y = Math.abs(minAxis.getY());
+			if (getCenterPosition().getX() < pother.getCenterPosition().getX())
+				x = -Math.abs(minAxis.getX());
+			if (getCenterPosition().getY() < 
+					pother.getCenterPosition().getY())
+				y = -Math.abs(minAxis.getY());
+
+			return new Vector2D(x,y).scale(absMinPenetration + 0.5);
+		}
+				
 	}
 	
 }

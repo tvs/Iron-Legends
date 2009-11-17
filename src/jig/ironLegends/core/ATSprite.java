@@ -14,6 +14,7 @@ import jig.engine.util.Vector2D;
 public class ATSprite extends Sprite {
 	private double m_rotationRad = 0;
 	private Vector2D m_offsetToRotation;
+	private boolean m_bAbsRotation = false;	
 
 	ATSprite(final List<ImageResource> frameset) {
 		super(frameset);
@@ -25,6 +26,11 @@ public class ATSprite extends Sprite {
 		setoffsetToRotation();
 	}
 
+	public void setAbsRotation(boolean bAbsolute)
+	{
+		m_bAbsRotation = bAbsolute;
+	}
+	
 	public void setRotation(double rotRad) {
 		m_rotationRad = rotRad;
 	}
@@ -47,7 +53,8 @@ public class ATSprite extends Sprite {
 
 	public void render(final RenderingContext rc, double dBaseRotationRad) {
 		double prevRotation = m_rotationRad;
-		m_rotationRad += dBaseRotationRad;
+		if (!m_bAbsRotation)
+			m_rotationRad += dBaseRotationRad;
 		render(rc);
 		m_rotationRad = prevRotation;
 	}

@@ -28,6 +28,7 @@ import jig.ironLegends.core.GameScreens;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
+import jig.ironLegends.mapEditor.MapCalc;
 import jig.misc.sat.PolygonFactory;
 
 public class IronLegends2 extends ScrollingScreenGame {
@@ -69,12 +70,16 @@ public class IronLegends2 extends ScrollingScreenGame {
 	protected Navigator m_navigator;
 	protected String m_sError;
 	protected String m_sInstallDir;
+	MapCalc m_mapCalc = new MapCalc(IronLegends.SCREEN_WIDTH, IronLegends.SCREEN_HEIGHT);
 	
 	MapGrid m_grid;
 
 	public IronLegends2() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
+		
 		setWorldBounds(WORLD_BOUNDS);
+		m_mapCalc.setWorldBounds(WORLD_BOUNDS);
+		
 		gameframe.setTitle("Iron Legends");
 
 		// Load resources
@@ -162,14 +167,14 @@ public class IronLegends2 extends ScrollingScreenGame {
 		m_screens.addScreen(splashScreen);
 
 		// GamePlay Screen
-		m_tank = new Tank(m_polygonFactory, new Vector2D(100, 100), "Player");
+		m_tank = new Tank(m_polygonFactory, new Vector2D(100, 100), "Player", m_mapCalc);
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankLayer.add(m_tank);
 
 		m_opponentLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		while (m_opponentLayer.size() < 10) {
 			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(), VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(), VISIBLE_BOUNDS.getMaxY());
-			Tank t = new Tank(m_polygonFactory, pos, "Enemy");
+			Tank t = new Tank(m_polygonFactory, pos, "Enemy", m_mapCalc);
 			m_opponentLayer.add(t);
 		}
 		
@@ -214,6 +219,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 				public boolean onCollision(ConvexPolyBody main, ConvexPolyBody other,
 						Vector2D vCorrection) {
 					Tank t = (Tank) main;
+					t.setPosition(t.getPosition().translate(vCorrection));
 					t.stop();
 					return true;
 				}
@@ -290,9 +296,11 @@ public class IronLegends2 extends ScrollingScreenGame {
 		}
 		
 		// center screen on tank
-		Vector2D center = m_tank.getCenterPosition();
+		Vector2D center = m_tank.getShapeCenter();//.getCenterPosition();
 		// TODO: on right & bottom object moves beyond the bounds 
 		centerOnPoint(center.clamp(VISIBLE_BOUNDS));
+		m_mapCalc.centerOnPoint(center.clamp(VISIBLE_BOUNDS));
+		//System.out.println(m_mapCalc.screenToWorld(m_mapCalc.getCenter()));
 	}
 
 	@Override

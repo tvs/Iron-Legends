@@ -99,6 +99,11 @@ public class MultiSpriteBody extends ConvexPolyBody
 		addSprite(rsc);
 	}
 	
+	public Vector2D getShapeCenter()
+	{
+		return getPosition().translate(getOffsetToRotation());
+	}
+	
 	// returns handle to sprite (can be used later to manipulate sprite (ok, ok, its just an index)
 	public int addSprite(final String rsc)
 	{

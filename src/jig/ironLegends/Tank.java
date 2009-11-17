@@ -8,6 +8,7 @@ import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ATSprite;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.MultiSpriteBody;
+import jig.ironLegends.mapEditor.MapCalc;
 import jig.misc.sat.PolygonFactory;
 
 public class Tank extends MultiSpriteBody {
@@ -29,11 +30,14 @@ public class Tank extends MultiSpriteBody {
 	private String team = "unkown";
 	private long timeSinceFired = 0;
 	private long timeSinceDied = 0;
+	private MapCalc m_mapCalc = null;
 
-	public Tank(PolygonFactory pf, Vector2D pos, String team) {
+	public Tank(PolygonFactory pf, Vector2D pos, String team, MapCalc mapCalc) {
 		super(pf.createRectangle(pos, 85, 101), IronLegends2.SPRITE_SHEET + "#tank");
+		m_mapCalc = mapCalc;
 		turret = getSprite(addSprite(IronLegends2.SPRITE_SHEET + "#cannon"));
 //		turret.setoffsetToRotation(new Vector2D(22.5, 79.0));
+		turret.setAbsRotation(true);
 		
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;
@@ -41,8 +45,8 @@ public class Tank extends MultiSpriteBody {
 		respawn();
 	}
 	
-	public Tank(PolygonFactory pf, String team) {
-		this(pf, new Vector2D(1000, 1000), team);
+	public Tank(PolygonFactory pf, String team, MapCalc mapCalc) {
+		this(pf, new Vector2D(1000, 1000), team, mapCalc);
 	}
 
 	public double getTurretRotation() {
@@ -101,9 +105,15 @@ public class Tank extends MultiSpriteBody {
 		if (timeSinceFired > FIRE_DELAY) {
 			timeSinceFired = 0;
 			b.reload(damageAmount, bulletRange);
+			/*
 			b.fire(this, turret.getCenterPosition().translate(
 					new Vector2D(37, 0).rotate(getTurretRotation())),
 					getTurretRotation());
+			*/
+			b.fire(this, getShapeCenter().translate(
+					new Vector2D(0,-37).rotate(getTurretRotation()))
+					, getTurretRotation());
+			
 		}
 	}
 	
@@ -133,7 +143,15 @@ public class Tank extends MultiSpriteBody {
 		}
 		
 		Point loc = mouse.getLocation();
-		setTurretRotation(screenCenter.angleTo(new Vector2D(loc.getX(), loc.getY())));
+		Vector2D tankCenterPos = getShapeCenter();
+		
+		Vector2D mousePt = m_mapCalc.screenToWorld(new Vector2D(loc.x, loc.y));
+		double rot = tankCenterPos.angleTo(mousePt);
+		setTurretRotation(rot+Math.toRadians(90));
+		//System.out.print("MapCalc center: " + m_mapCalc.screenToWorld(m_mapCalc.getCenter()));
+		//System.out.println("AngleTo Angle: " + Math.toDegrees(rot));
+		
+		//setTurretRotation(screenCenter.angleTo(new Vector2D(loc.getX(), loc.getY())) + Math.toRadians(90));
 //		System.out.printf("p = %s, c = %s, mouse = %s, turretrotation = %.2f, width = %d, height = %d\n",
 //				getPosition(), screenCenter, loc, Math.toDegrees(getTurretRotation()), getWidth(), getHeight());
 	}
@@ -214,5 +232,10 @@ public class Tank extends MultiSpriteBody {
 
 	public int getBulletRange() {
 		return bulletRange;
+	}
+
+	public double getSpeed() {
+		// TODO Auto-generated method stub
+		return speed;
 	}	
 }

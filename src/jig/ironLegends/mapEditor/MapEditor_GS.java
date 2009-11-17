@@ -1,6 +1,7 @@
 package jig.ironLegends.mapEditor;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 import java.util.Vector;
@@ -51,6 +52,7 @@ public class MapEditor_GS extends GameScreen
 	
 	int m_mapWidth;
 	int m_mapHeight;
+	public Rectangle VISIBLE_BOUNDS = new Rectangle();
 	
 	public MapEditor_GS(MapLayer mapLayer, MapCalc mapCalc, Fonts fonts, MapEditor mapEditor) 
 	{
@@ -179,6 +181,7 @@ public class MapEditor_GS extends GameScreen
 			if (recalcMap)
 			{
 				//setMapCenter()
+				//public static final 
 				if (m_centerPt.x > (m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX)))
 					m_centerPt.x = m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX);
 				if (m_centerPt.x < IronLegends.SCREEN_WIDTH/2)
@@ -206,9 +209,17 @@ public class MapEditor_GS extends GameScreen
 				b.update(mouse, deltaMs);
 			}
 		}
-		
+
 		if (m_rotation.getText().length() > 0)
-			m_rotationIncDeg = Double.parseDouble(m_rotation.getText());
+		{
+			try{
+				m_rotationIncDeg = Double.parseDouble(m_rotation.getText());
+			}catch(java.lang.NumberFormatException ex)
+			{
+				m_rotationIncDeg = 0.0;
+				m_rotation.setText("");
+			}
+		}
 		else
 			m_rotationIncDeg = 0.0;
 		
@@ -320,6 +331,23 @@ public class MapEditor_GS extends GameScreen
 		
 		m_mapEditor.setWorldBounds(0,0, width, height);
 		m_mapCalc.setWorldBounds(0,0, width, height);
+		/*
+		 // todo turn into an update for visible bounds so can call it when needed just clamp to rectangle
+		if (m_centerPt.x > (m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX)))
+			m_centerPt.x = m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX);
+		if (m_centerPt.x < IronLegends.SCREEN_WIDTH/2)
+			m_centerPt.x = IronLegends.SCREEN_WIDTH/2;
+		
+		if (m_centerPt.y > (m_mapHeight - IronLegends.SCREEN_HEIGHT/2))
+			m_centerPt.y = m_mapHeight - IronLegends.SCREEN_HEIGHT/2;
+		if (m_centerPt.y < IronLegends.SCREEN_HEIGHT/2)
+			m_centerPt.y = IronLegends.SCREEN_HEIGHT/2;
+		
+		VISIBLE_BOUNDS = new Rectangle(
+				IronLegends.SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+				WORLD_WIDTH - 2 * (SCREEN_WIDTH / 2), WORLD_HEIGHT - 2 * (SCREEN_HEIGHT / 2));
+
+		*/
 		
 		m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
 	}
