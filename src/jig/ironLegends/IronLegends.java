@@ -115,12 +115,18 @@ public class IronLegends extends ScrollingScreenGame
 	protected SoundFx m_sfx;
 	PlayerInfo m_playerInfo;
 
+	void setWorldDim(int width, int height)
+	{
+		// TODO: actually change mapCalc and whatever else... (see MapEditor.setWorldDim)
+		setWorldBounds(0,0, WORLD_WIDTH, WORLD_HEIGHT);
+	}
+	
 	public IronLegends() 
 	{
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
 		gameframe.setTitle("Iron Legends");
 
-		setWorldBounds(0,0, WORLD_WIDTH, WORLD_HEIGHT);
+		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
 		
 		m_sInstallDir 	= InstallInfo.getInstallDir("/" + GAME_ROOT + "IronLegends.class", "IronLegends.jar");
 		m_levelProgress = new LevelProgress();
@@ -333,7 +339,7 @@ public class IronLegends extends ScrollingScreenGame
     	
     	m_keyCmds.addAlphabet();
 		
-		loadLevel(m_gameProgress.getCurLevel());
+		populateGameLayers();
 	}
 
 	
@@ -371,6 +377,17 @@ public class IronLegends extends ScrollingScreenGame
 		return bSuccess;
 	}
 	
+	protected boolean loadMap(String sMapFile)
+	{
+		boolean bSuccess = true;
+		
+		m_tankObstacleLayer.clear();
+		IronLegendsMapLoadSink sink = new IronLegendsMapLoadSink(this);
+		MapLoader.loadLayer(sink, sMapFile, m_rr);
+				
+		return bSuccess;
+	}
+	
 	protected boolean loadLevel(int level)
 	{
 		m_grid.clear();
@@ -386,6 +403,7 @@ public class IronLegends extends ScrollingScreenGame
 		m_levelProgress.reset();
 		
 		String sMap = "levels/level" + level + ".txt";
+		// hard code map for now
 		
 		if (!MapLoader.loadGrid(sMap, m_grid, m_rr))
 		{

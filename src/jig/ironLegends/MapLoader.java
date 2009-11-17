@@ -10,7 +10,6 @@ import java.util.Random;
 import jig.engine.ResourceFactory;
 import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
-import jig.engine.physics.vpe.ConvexPolygon;
 //Level
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ResourceReader;
@@ -296,7 +295,7 @@ public class MapLoader
 	public interface IMapLoadSink
 	{
 		void mapName(String sMapName);
-		void mapDim(int cols, int rows);
+		void mapDim(int width, int height);
 		void onLine(String line);
 	}
 	
