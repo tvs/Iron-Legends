@@ -2,7 +2,6 @@ package jig.ironLegends.mapEditor;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -83,9 +82,10 @@ public class MapEditor_GS extends GameScreen
 		
 		// create cmd buttons
 		createCmdButtons();
+		
+		// adjust locations to align to the right of the screen
 		setLocations();
 		
-		// todo: once determine width of toolbar and buttons adjust the m_buttonStartX location		
 	}
 	private void setLocations() 
 	{
@@ -103,6 +103,7 @@ public class MapEditor_GS extends GameScreen
 				b.setPosition(new Vector2D(cmdStartX, b.getPosition().getY()));
 			}
 		}
+		m_buttonStartX = buttonStartX;
 	}
 	private void createCmdButtons() 
 	{
@@ -156,9 +157,11 @@ public class MapEditor_GS extends GameScreen
 		btIdx++;
 	}
 
+	/*
+	 * @brief creates a button toolbar with sprites where the buttons are for placing "items" on the map 
+	 */
 	private void createSpriteToolbar() 
 	{
-		// TODO Auto-generated method stub
 		int sx = m_buttonStartX;
 		int sy = 10;
 		
@@ -173,6 +176,8 @@ public class MapEditor_GS extends GameScreen
 		tileButtonId++;
 		m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#tree"));			
 		tileButtonId++;
+		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#red-base"));			
+		//tileButtonId++;
 		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#testEditBox"));
 		TileButton b = m_tileToolbar.getButton(tileButtonId);
 		b.setDelete(true);

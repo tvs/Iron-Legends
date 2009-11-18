@@ -10,6 +10,7 @@ import jig.misc.sat.PolygonFactory;
 public class Obstacle extends MultiSpriteBody
 {
 	private String m_name;
+	private Destructible m_destructible;
 	
 	public String name(){return m_name;}
 	Obstacle(String cellInfo, PolygonFactory pf)
@@ -32,27 +33,44 @@ public class Obstacle extends MultiSpriteBody
 		setRotation(Math.toRadians(item.rotDeg()));
 		super.setCenterPosition(pos);
 		
-		
-		/*
-		if (tokens[0].endsWith("wall"))
-		{
-			if (tokens.length > 1)
-			{
-				if (tokens[1].equals("h"))
-					rotation = Math.toRadians(90);
-				else
-					rotation = 0;
-			}
-			//int h = addSprite(IronLegends.SPRITE_SHEET + "#testTile2");
-			int h = addSprite(IronLegends.SPRITE_SHEET2 + "#wall");
-			//setSpriteVisible(h, true);
-			Sprite s = getSprite(h);
-			Vector2D pos = IronLegends.bodyPosToPolyPos(s.getWidth(), s.getHeight(), new Vector2D(x, y));
-			super.setShape(pf.createRectangle(pos, s.getWidth(), s.getHeight()));
-			setRotation(rotation);
-			super.setPosition(getShape().getPosition());
-		}
-			*/
+		// set destructible data
+		setDestructibleData();
 	}
 
+	// allow caller to set damage? or create wrapper methods?
+	Destructible getDestructible()
+	{
+		return m_destructible;
+	}
+	
+	private static int WALL_MAX_HEALTH = 100;
+	
+	// TODO: override render and set frame based on health?
+	// TODO: on collision, get destructible and assign damage
+	
+	private void setDestructibleData()
+	{
+		// TODO: lookup from table?
+		
+		if (m_name.equals("wall"))
+		{
+			m_destructible = new Destructible(WALL_MAX_HEALTH);
+		}
+		else if (m_name.equals("rock1"))
+		{
+			//m_destructible = new Destructible(WALL_MAX_HEALTH);
+		}
+		else if (m_name.equals("rock2"))
+		{
+			//m_destructible = new Destructible(WALL_MAX_HEALTH);
+		}
+		else if (m_name.equals("tree"))
+		{
+			//m_destructible = new Destructible(WALL_MAX_HEALTH);
+		}
+		else if (m_name.equals(""))
+		{
+			//m_destructible = new Destructible(WALL_MAX_HEALTH);
+		}
+	}
 }
