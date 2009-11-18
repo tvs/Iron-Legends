@@ -35,3 +35,6 @@ export/*
 
 # Random Mac thing
 .DS_Store
+
+# High Score File
+HighScore.txt

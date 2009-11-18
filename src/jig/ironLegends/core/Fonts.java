@@ -15,7 +15,8 @@ public class Fonts
 		smInstructionalFont = null;
 		inYourFaceFont = null;
 		titleFont = null;
-		gameInfoFont = null;		
+		gameInfoFont = null;
+		textFont = null;
 	}
 	public void create(ResourceFactory resourceFactory)
 	{
@@ -33,6 +34,8 @@ public class Fonts
 		
 		gameInfoFont = resourceFactory.getFontResource(new Font("Sans Serif", Font.BOLD, 16)
 				, Color.black, null);
+		
+		textFont = resourceFactory.getFontResource(new Font("Sans Serif", Font.PLAIN, 12), Color.WHITE, null);
 	}
 	
 	public FontResource gameInfoFont;
@@ -41,4 +44,5 @@ public class Fonts
 	public FontResource smInstructionalFont;
 	public FontResource inYourFaceFont;
 	public FontResource titleFont;
+	public FontResource textFont;
 }

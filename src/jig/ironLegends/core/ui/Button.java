@@ -1,8 +1,10 @@
 package jig.ironLegends.core.ui;
 
 import java.awt.Point;
+import java.util.List;
 
 import jig.engine.FontResource;
+import jig.engine.ImageResource;
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.Sprite;
@@ -28,18 +30,26 @@ public class Button extends Sprite
 	public Button(int id, int sx, int sy, String rsc)
 	{
 		super(rsc);
-		
+		setData(id, sx, sy);	
+	}
+	
+	public Button(int id, int sx, int sy, List<ImageResource> rsc) {
+		super(rsc);
+		setData(id, sx, sy);
+	}
+	
+	private void setData(int id, int sx, int sy) {
 		m_sx = sx;
 		m_sy = sy;
 		m_id = id;
 		
 		setPosition(new Vector2D(sx, sy));
-
+		
 		m_sink = null;
 		m_font = null;
-		m_textPt = new Point(-1,-1);
-		
+		m_textPt = new Point(-1, -1);
 	}
+	
 	public boolean hasFocus()
 	{
 		return m_uis.isActive();

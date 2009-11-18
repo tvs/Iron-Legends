@@ -1,28 +1,24 @@
 package jig.ironLegends;
 
-import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.net.URL;
 import java.util.Iterator;
 
 import javax.imageio.spi.ServiceRegistry;
 
-import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
-import jig.engine.Sprite;
 import jig.engine.ViewableLayer;
 import jig.engine.hli.ScrollingScreenGame;
-//import jig.engine.hli.StaticScreenGame;
 import jig.engine.physics.AbstractBodyLayer;
 import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
 import jig.engine.physics.vpe.VanillaAARectangle;
-import jig.engine.util.Vector2D;
 import jig.engine.physics.vpe.VanillaPhysicsEngine;
-import jig.misc.sat.PolygonFactory;
-
-import jig.ironLegends.collision.*;
+import jig.engine.util.Vector2D;
+import jig.ironLegends.collision.CollisionSink_PowerUp;
+import jig.ironLegends.collision.Handler_CPB_BodyLayer;
+import jig.ironLegends.collision.Handler_CPB_CPBLayer;
+import jig.ironLegends.collision.Sink_CPB_CPB_Default;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.GameScreens;
@@ -33,12 +29,7 @@ import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.StaticBodyLayer;
-import jig.ironLegends.core.Tile;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
-import jig.ironLegends.core.ui.Button;
-import jig.ironLegends.core.ui.IUIEvent;
-import jig.ironLegends.core.ui.MouseState;
-import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.screens.CustomizePlayerGS;
 import jig.ironLegends.screens.CustomizePlayerTextLayer;
@@ -46,9 +37,11 @@ import jig.ironLegends.screens.GameInfoTextLayer;
 import jig.ironLegends.screens.GameOverTextLayer;
 import jig.ironLegends.screens.GamePlayTextLayer;
 import jig.ironLegends.screens.GameWonTextLayer;
+import jig.ironLegends.screens.HelpScreen;
 import jig.ironLegends.screens.HelpTextLayer;
-import jig.ironLegends.screens.SplashTextLayer;
+import jig.ironLegends.screens.SplashScreen;
 import jig.ironLegends.screens.TestUI_GS;
+import jig.misc.sat.PolygonFactory;
 
 public class IronLegends extends ScrollingScreenGame
 {
@@ -157,9 +150,9 @@ public class IronLegends extends ScrollingScreenGame
 		m_highScorePersist.load(m_highScore);		
 				
 		// SCREENS
-		m_screens.addScreen(new GameScreen(SPLASH_SCREEN));
+		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts));
 		m_screens.addScreen(new GameScreen(GAMEPLAY_SCREEN));
-		m_screens.addScreen(new GameScreen(HELP_SCREEN));
+		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
 		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
 		//m_screens.addScreen(new MPGameScreen(LEVELCOMPLETE_SCREEN));
 		m_screens.addScreen(new CustomizePlayerGS(CUSTOMIZEPLAYER_SCREEN, m_playerInfo));
@@ -185,47 +178,6 @@ public class IronLegends extends ScrollingScreenGame
 			customizePlayerScreen.addViewableLayer(customizePlayerScreen.m_textLayer);
 			
 			helpScreen.addViewableLayer(new HelpTextLayer(m_fonts));
-		}
-		// SPLASH Screen
-		{
-			VanillaAARectangle splashBg = new VanillaAARectangle(RESOURCE_ROOT + "hr-splash.png") 
-			{
-				@Override
-				public void update(long deltaMs) 
-				{
-					// TODO Auto-generated method stub
-				}
-			};
-			
-			splashBg.setPosition(new Vector2D(0, 0));
-			
-			// add splash bg to both splash screen and gameplay screen
-			GameScreen splashScreen = m_screens.getScreen(SPLASH_SCREEN);
-			GameScreen gameWonScreen = m_screens.getScreen(GAMEWON_SCREEN);
-			{
-				BodyLayer<Body> splashBgLayer = new StaticBodyLayer.NoUpdate<Body>();
-
-				splashBgLayer.add(splashBg);
-		
-				splashScreen.addViewableLayer(splashBgLayer);
-				splashScreen.addViewableLayer(new SplashTextLayer(m_fonts, m_highScore, m_playerInfo));
-			}
-			{
-				BodyLayer<Body> bgLayer = new AbstractBodyLayer.NoUpdate<Body>();
-
-				bgLayer.add(splashBg);
-				gameWonScreen.addViewableLayer(bgLayer);				
-
-				gameWonScreen.addViewableLayer(new GameWonTextLayer(m_fonts, m_gameProgress));
-			}
-			{
-				/*
-				BodyLayer<Body> gameBgLayer = new StaticBodyLayer.NoUpdate<Body>();
-				gameBgLayer.add(splashBg);
-				
-				gameplayScreen.addViewableLayer(gameBgLayer);
-				*/
-			}
 		}
 	
 

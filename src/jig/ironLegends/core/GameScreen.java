@@ -1,6 +1,5 @@
 package jig.ironLegends.core;
 
-import java.awt.image.renderable.RenderContext;
 import java.util.Iterator;
 import java.util.LinkedList;
 

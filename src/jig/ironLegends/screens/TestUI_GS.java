@@ -1,7 +1,5 @@
 package jig.ironLegends.screens;
 
-import java.awt.image.renderable.RenderContext;
-
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.ironLegends.IronLegends;
