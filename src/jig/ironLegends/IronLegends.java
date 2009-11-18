@@ -182,7 +182,43 @@ public class IronLegends extends ScrollingScreenGame
 			
 			helpScreen.addViewableLayer(new HelpTextLayer(m_fonts));
 		}
-	
+
+		 // SPLASH Screen
+//		{
+//			VanillaAARectangle splashBg = new VanillaAARectangle(RESOURCE_ROOT + "hr-splash.png") 
+//			{
+//				@Override
+//				public void update(long deltaMs) 
+//				{
+//					// TODO Auto-generated method stub
+//				}
+//			};
+//				splashBg.setPosition(new Vector2D(0, 0));
+//				
+//				// add splash bg to both splash screen and gameplay screen
+//				GameScreen splashScreen = m_screens.getScreen(SPLASH_SCREEN);
+//				GameScreen gameWonScreen = m_screens.getScreen(GAMEWON_SCREEN);
+//			{
+//				BodyLayer<Body> splashBgLayer = new StaticBodyLayer.NoUpdate<Body>();
+//				splashBgLayer.add(splashBg);
+//				
+//				splashScreen.addViewableLayer(splashBgLayer);
+//			}
+//			{
+//				BodyLayer<Body> bgLayer = new AbstractBodyLayer.NoUpdate<Body>();
+//				bgLayer.add(splashBg);
+//				gameWonScreen.addViewableLayer(bgLayer);                
+//				gameWonScreen.addViewableLayer(new GameWonTextLayer(m_fonts, m_gameProgress));
+//			}
+//			{
+//				/*
+//				BodyLayer<Body> gameBgLayer = new StaticBodyLayer.NoUpdate<Body>();
+//				gameBgLayer.add(splashBg);
+//				
+//				gameplayScreen.addViewableLayer(gameBgLayer);
+//				 */
+//			}
+//		}
 
 		// GAME OBJECTS
 		m_physicsEngine = new VanillaPhysicsEngine();

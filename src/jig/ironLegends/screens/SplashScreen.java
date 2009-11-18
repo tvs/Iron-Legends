@@ -13,8 +13,13 @@ import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ui.Button;
+import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
 
+/**
+ * A splash screen class with the corresponding button "links" and rollovers.
+ * @author Travis Hall
+ */
 public class SplashScreen extends GameScreen {
 	protected PlayerInfo m_playerInfo;
 	
@@ -35,8 +40,9 @@ public class SplashScreen extends GameScreen {
 		header = ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/header.png"); 
 		csbox = ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/callsignbox.png"); 
 		
-		hbutton = new Button(-1, 0, 535,
-			ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/helpbutton.png"));
+//		hbutton = new Button(-1, 0, 535,
+//			ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/helpbutton.png"));
+		hbutton = new RolloverButton(-1, 0, 535, IronLegends.SPRITE_SHEET2 + "#wall");
 		mbutton = new Button(-2, 0, 491,
 			ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/mpbutton.png"));
 		sbutton = new Button(-3, 0, 447,
@@ -69,10 +75,11 @@ public class SplashScreen extends GameScreen {
 			return IronLegends.HELP_SCREEN;
 		mbutton.update(mouse, deltaMs);
 		if (mbutton.wasLeftClicked())
-			System.out.println("Multiplayer");
+			System.out.println("Woah woah woah, not yet implemented. Settle down!");
 		sbutton.update(mouse, deltaMs);
 		if (sbutton.wasLeftClicked())
-			System.out.println("Singleplayer");
+			// TODO Push this to the correct "Lobby" screen
+			return IronLegends.GAMEPLAY_SCREEN;
 		
 		csEntryBox.update(mouse, deltaMs);
 		if (csEntryBox.isActive())

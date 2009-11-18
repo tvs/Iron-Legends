@@ -131,6 +131,22 @@ public class Button extends Sprite
 		return m_uis.wasLeftClicked();
 	}
 	
+	/**
+	 * When the mouse entered, change button state
+	 * Does nothing for standard buttons
+	 * 
+	 * @author Travis Hall
+	 */
+	protected void mouseEntered() {}
+	
+	/**
+	 * When the mouse leaves change button state
+	 * Does nothing for standard buttons
+	 * 
+	 * @author Travis Hall
+	 */
+	protected void mouseLeft() {}
+	
 	public void update(Mouse mouse, final long deltaMs)
 	{
 		Point mousePt = mouse.getLocation();
@@ -151,6 +167,7 @@ public class Button extends Sprite
 			if (!m_uis.isActive())
 			{
 				m_uis.onEnter(m_id, mousePt);
+				mouseEntered();
 				if (m_sink != null)
 				{
 					m_sink.onEnter(m_id, mousePt);					
@@ -173,6 +190,7 @@ public class Button extends Sprite
 			if (m_uis.isActive())
 			{
 				m_uis.onLeave(m_id, mousePt);
+				mouseLeft();
 				if (m_sink != null)
 					m_sink.onLeave(m_id, mousePt);
 			}
