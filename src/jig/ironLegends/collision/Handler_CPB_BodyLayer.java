@@ -43,6 +43,8 @@ public class Handler_CPB_BodyLayer implements CollisionHandler
 	{
 		// TODO Auto-generated method stub
 		boolean bCollisionFound = false;
+		if (!m_poly.isActive())
+			return;
 		
 		do
 		{

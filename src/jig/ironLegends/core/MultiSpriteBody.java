@@ -128,7 +128,7 @@ public class MultiSpriteBody extends ConvexPolyBody
 			return m_sprites.get(spriteHandle);
 		return null;
 	}
-	
+
 	public void setSpriteVisible(int spriteHandle, boolean bVisible)
 	{
 		ATSprite sprite = getSprite(spriteHandle);
