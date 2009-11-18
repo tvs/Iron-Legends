@@ -50,14 +50,24 @@ public class Button extends Sprite
 		m_textPt = new Point(-1, -1);
 	}
 	
+	@Override
+	public void setPosition(Vector2D pos)
+	{
+		m_sx = (int) pos.getX();
+		m_sy = (int) pos.getY();
+		super.setPosition(pos);
+	}
+	
 	public boolean hasFocus()
 	{
 		return m_uis.isActive();
 	}
+	
 	public void setText(String text)
 	{
 		m_sText = text;
 	}
+	
 	public void setFont(FontResource font)
 	{
 		m_font = font;

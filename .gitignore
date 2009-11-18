@@ -21,6 +21,7 @@ export/*
 # Temporary editor files
 *~
 *.swp
+*.orig
 
 # Class files
 *.class

@@ -16,6 +16,7 @@ import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ui.Button;
+import jig.ironLegends.core.ui.ButtonToolbar;
 import jig.ironLegends.core.ui.MouseState;
 import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.mapEditor.MapCalc;
@@ -29,12 +30,15 @@ public class MapEditor_GS extends GameScreen
 	Button m_loadBt;
 	TextEditBox m_mapName;
 	TextEditBox m_rotation;
+	int m_topSpriteIdx = 0;
 	
 	double m_rotationIncDeg;
 	double m_curRotationDeg;
 	
 	//TODO: add visible world borders
-	Vector<TileButton> m_tileButtons;
+	ButtonToolbar<TileButton> m_tileToolbar = new ButtonToolbar<TileButton>(0, 0);
+	
+	//Vector<TileButton> m_tileButtons;
 	Point m_curMouse = new Point(0,0);
 	int m_buttonStartX = 16*IronLegends.SCREEN_WIDTH/20;
 	TileButton m_selButton = null;
@@ -49,7 +53,7 @@ public class MapEditor_GS extends GameScreen
 	Fonts m_fonts;
 	
 	MapEditor m_mapEditor;
-	int m_maxSpriteWidth;
+	private int m_maxCmdWidth = 0;
 	
 	int m_mapWidth;
 	int m_mapHeight;
@@ -75,67 +79,106 @@ public class MapEditor_GS extends GameScreen
 		// create viewable layers in order to be rendered?
 		
 		// sprite tool bar
-		int sx = m_buttonStartX;
-		int sy = 10;
-		m_maxSpriteWidth = 0;
-		m_tileButtons = new Vector<TileButton>();
-		
-		int tileButtonId = 0;
-		m_tileButtons.add(new TileButton("wall", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#wall"));
-		sy += m_tileButtons.get(tileButtonId).getHeight();
-		if (m_maxSpriteWidth < m_tileButtons.get(tileButtonId).getWidth())
-			m_maxSpriteWidth = m_tileButtons.get(tileButtonId).getWidth();	
-		tileButtonId++;
-		
-		setActiveButton(m_tileButtons.get(0));
-		
-		m_tileButtons.add(new TileButton("rock1", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#rock1"));			
-		sy += m_tileButtons.get(tileButtonId).getHeight();
-		if (m_maxSpriteWidth < m_tileButtons.get(tileButtonId).getWidth())
-			m_maxSpriteWidth = m_tileButtons.get(tileButtonId).getWidth();	
-		tileButtonId++;
-		
-		m_tileButtons.add(new TileButton("rock2", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#rock2"));			
-		sy += m_tileButtons.get(tileButtonId).getHeight();
-		if (m_maxSpriteWidth < m_tileButtons.get(tileButtonId).getWidth())
-			m_maxSpriteWidth = m_tileButtons.get(tileButtonId).getWidth();	
-		tileButtonId++;
-		
-		m_tileButtons.add(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#testEditBox"));
-		sy += m_tileButtons.get(tileButtonId).getHeight();
-		if (m_maxSpriteWidth < m_tileButtons.get(tileButtonId).getWidth())
-			m_maxSpriteWidth = m_tileButtons.get(tileButtonId).getWidth();
-		m_tileButtons.get(tileButtonId).setDelete(true);
-		tileButtonId++;
+		createSpriteToolbar();
 		
 		// create cmd buttons
+		createCmdButtons();
+		setLocations();
+		
+		// todo: once determine width of toolbar and buttons adjust the m_buttonStartX location		
+	}
+	private void setLocations() 
+	{
+		// m_maxCmdWidth + m_maxSpriteWidth
+		int buttonStartX = MapEditor.SCREEN_WIDTH - m_maxCmdWidth - m_tileToolbar.getMaxWidth() - 2;
+		int cmdStartX = buttonStartX + m_tileToolbar.getMaxWidth() + 1;
+		
+		m_tileToolbar.setPosition(buttonStartX, (int)m_tileToolbar.getPosition().getY());
+		
+		{
+			Iterator<Button> iter = m_cmdButtons.iterator();
+			while (iter.hasNext())
+			{
+				Button b = iter.next();
+				b.setPosition(new Vector2D(cmdStartX, b.getPosition().getY()));
+			}
+		}
+	}
+	private void createCmdButtons() 
+	{
 		m_cmdButtons = new Vector<Button>();
 		
-		int btX = sx + m_maxSpriteWidth+2;
+		
+		int btX = (int)m_tileToolbar.getPosition().getX() + m_tileToolbar.getMaxWidth()+2;
 		int btY = 10;		
-
-		m_saveBt = new Button(-1, btX, 10, IronLegends.SPRITE_SHEET + "#testEditBox");
+		int cmdId = -1;
+		int btIdx = 0;
+		m_saveBt = new Button(cmdId, btX, 10, IronLegends.SPRITE_SHEET + "#testEditBox");
 		m_saveBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_saveBt.setText("SAVE");
-		m_cmdButtons.add(m_saveBt);		
-		btY += m_saveBt.getHeight();
+		m_cmdButtons.add(m_saveBt);
+		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
+			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
+		btY += m_cmdButtons.get(btIdx).getHeight();
+		cmdId--;
+		btIdx++;
 		
-		m_mapName = new TextEditBox(m_fonts.instructionalFont, -2, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
-		btY += m_mapName.getHeight();
-		m_cmdButtons.add(m_mapName);		
 		
-		m_loadBt = new Button(-3, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_mapName = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_cmdButtons.add(m_mapName);
+		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
+			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
+		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
+			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
+		btY += m_cmdButtons.get(btIdx).getHeight();
+		cmdId--;
+		btIdx++;
+	
+		m_loadBt = new Button(cmdId, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
 		m_loadBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_loadBt.setText("LOAD");
 		m_cmdButtons.add(m_loadBt);		
-		btY += m_loadBt.getHeight();
-		
-		m_rotation = new TextEditBox(m_fonts.instructionalFont, -4, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
-		btY += m_rotation.getHeight();
+		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
+			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
+		btY += m_cmdButtons.get(btIdx).getHeight();
+		cmdId--;
+		btIdx++;
+
+		m_rotation = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_rotation.setText("45");
+		m_rotationIncDeg = 45;
 		//m_rotation.setText(Double.toString(m_rotationIncDeg));
 		m_cmdButtons.add(m_rotation);			
+		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
+			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
+		btY += m_cmdButtons.get(btIdx).getHeight();
+		cmdId--;
+		btIdx++;
 	}
-	
+
+	private void createSpriteToolbar() 
+	{
+		// TODO Auto-generated method stub
+		int sx = m_buttonStartX;
+		int sy = 10;
+		
+		int tileButtonId = 0;
+		m_tileToolbar.setPosition(sx, sy);
+		m_tileToolbar.append(new TileButton("wall", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#wall"));
+		tileButtonId++;
+		
+		m_tileToolbar.append(new TileButton("rock1", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#rock1"));			
+		tileButtonId++;
+		m_tileToolbar.append(new TileButton("rock2", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#rock2"));			
+		tileButtonId++;
+		m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#tree"));			
+		tileButtonId++;
+		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#testEditBox"));
+		TileButton b = m_tileToolbar.getButton(tileButtonId);
+		b.setDelete(true);
+		tileButtonId++;
+	}
+
 	void setActiveButton(TileButton button)
 	{
 		m_selButton = button;
@@ -154,8 +197,13 @@ public class MapEditor_GS extends GameScreen
 		boolean recalcMap = false;
 		
 		boolean bMouseOnMap = false;
+		boolean bMouseOnTileButtons = false;
+		
 		if (m_curMouse.x < m_buttonStartX)
 			bMouseOnMap = true;
+		else if (m_curMouse.x < m_tileToolbar.getPosition().getX() + m_tileToolbar.getMaxWidth())
+			bMouseOnTileButtons = true;
+		// TODO: add a contains method
 		
 		if (bMouseOnMap)
 		{
@@ -183,21 +231,33 @@ public class MapEditor_GS extends GameScreen
 			{
 				//setMapCenter()
 				//public static final 
-				if (m_centerPt.x > (m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX)))
-					m_centerPt.x = m_mapWidth - IronLegends.SCREEN_WIDTH/2 + (IronLegends.SCREEN_WIDTH - m_buttonStartX);
-				if (m_centerPt.x < IronLegends.SCREEN_WIDTH/2)
-					m_centerPt.x = IronLegends.SCREEN_WIDTH/2;
+				if (m_centerPt.x > (m_mapWidth - MapEditor.SCREEN_WIDTH/2 + (MapEditor.SCREEN_WIDTH - m_buttonStartX)))
+					m_centerPt.x = m_mapWidth - MapEditor.SCREEN_WIDTH/2 + (MapEditor.SCREEN_WIDTH - m_buttonStartX);
+				if (m_centerPt.x < MapEditor.SCREEN_WIDTH/2)
+					m_centerPt.x = MapEditor.SCREEN_WIDTH/2;
 				
-				if (m_centerPt.y > (m_mapHeight - IronLegends.SCREEN_HEIGHT/2))
-					m_centerPt.y = m_mapHeight - IronLegends.SCREEN_HEIGHT/2;
-				if (m_centerPt.y < IronLegends.SCREEN_HEIGHT/2)
-					m_centerPt.y = IronLegends.SCREEN_HEIGHT/2;
+				if (m_centerPt.y > (m_mapHeight - MapEditor.SCREEN_HEIGHT/2))
+					m_centerPt.y = m_mapHeight - MapEditor.SCREEN_HEIGHT/2;
+				if (m_centerPt.y < MapEditor.SCREEN_HEIGHT/2)
+					m_centerPt.y = MapEditor.SCREEN_HEIGHT/2;
 				
 				m_mapEditor.centerOnPoint(m_centerPt.x, m_centerPt.y);
 				m_mapCalc.centerOnPoint(m_centerPt.x, m_centerPt.y);			
 			}
 		}
 		
+		if (bMouseOnTileButtons)
+		{
+			if (keyCmds.wasPressed("down"))
+			{
+				m_tileToolbar.scrollDown(1);
+			}
+			else if (keyCmds.wasPressed("up"))
+			{
+				m_tileToolbar.scrollUp(1);
+			}
+			
+		}
 		m_mouseState.update(mouse, deltaMs, -1);
 		
 		m_mapName.processInput(keyCmds);
@@ -228,18 +288,18 @@ public class MapEditor_GS extends GameScreen
 		{
 			String mapName = m_mapName.getText();
 			MapEditorSave save = new MapEditorSave(m_mapWidth, m_mapHeight, this);
-			MapLoader.saveLayer(save, mapName + ".txt", m_mapEditor.m_rr);
+			MapLoader.saveLayer(save, "maps/" + mapName + ".txt", m_mapEditor.m_rr);
 		}
 		if (m_loadBt.wasLeftClicked())
 		{
 			m_mapLayer.clear();
 			String mapName = m_mapName.getText();
 			MapEditorLoadSink sink = new MapEditorLoadSink(this);
-			MapLoader.loadLayer(sink, mapName + ".txt", m_mapEditor.m_rr);
+			MapLoader.loadLayer(sink, "maps/" + mapName + ".txt", m_mapEditor.m_rr);
 		}
 	
 		// update each button
-		Iterator<TileButton> btIter = m_tileButtons.iterator();
+		Iterator<TileButton> btIter = m_tileToolbar.iterator();
 		while (btIter.hasNext())
 		{
 			TileButton b = btIter.next();
@@ -274,7 +334,7 @@ public class MapEditor_GS extends GameScreen
 					// since dealing with rotation, either switch so can use contains method (shape)
 					// or just require that the center be within "delta" ..
 					// start with center within delta, switch if need to.
-					int idx = m_mapLayer.selectClosest(worldPt, m_maxSpriteWidth/2);
+					int idx = m_mapLayer.selectClosest(worldPt, m_tileToolbar.getMaxWidth()/2);
 					if (idx >= 0)
 						m_mapLayer.remove(idx);
 				}
@@ -292,13 +352,7 @@ public class MapEditor_GS extends GameScreen
 	public void render(RenderingContext rc)
 	{
 		// map item selection items
-		Iterator<TileButton> btIter = m_tileButtons.iterator();
-		while (btIter.hasNext())
-		{
-			Button b = btIter.next();
-			b.render(rc);
-		}
-		
+		m_tileToolbar.render(rc);		
 		// render cmd buttons
 		{
 			Iterator<Button> iter = m_cmdButtons.iterator();

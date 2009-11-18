@@ -9,11 +9,16 @@ import jig.misc.sat.PolygonFactory;
 
 public class Obstacle extends MultiSpriteBody
 {
+	private String m_name;
+	
+	public String name(){return m_name;}
 	Obstacle(String cellInfo, PolygonFactory pf)
 	{
 		super(null);
 		
 		MapItemPersist item = new MapItemPersist(cellInfo);
+		
+		m_name = item.name();
 		
 		Vector2D pos = item.centerPosition();
 		
