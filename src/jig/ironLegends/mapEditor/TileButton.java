@@ -6,8 +6,7 @@ public class TileButton extends Button
 {
 	protected String m_sCode;
 	protected boolean m_bIsDelete;
-	protected String m_sRsc;
-	
+	protected String m_sRsc;	
 	
 	public TileButton(String sCode, int id, int sx, int sy, String rsc)
 	{

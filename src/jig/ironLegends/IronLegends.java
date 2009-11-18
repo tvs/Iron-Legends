@@ -85,7 +85,10 @@ public class IronLegends extends ScrollingScreenGame
 	BodyLayer<Body> m_batLayer;
 	BodyLayer<Body> m_batCaveLayer;
 	
-	BodyLayer<Body> m_tankObstacleLayer;
+	// which layer do the rocks go in?
+	BodyLayer<Body> m_tankObstacleLayer;	// trees
+	BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings
+	
 	BodyLayer<Body> m_bgLayer;
 	BodyLayer<Body> m_powerUpLayer;
 	BodyLayer<Body> m_creatures;
@@ -108,8 +111,6 @@ public class IronLegends extends ScrollingScreenGame
 	protected String m_sInstallDir = "\\Temp";
 	protected HighScorePersistance m_highScorePersist;
 	protected PolygonFactory m_polygonFactory;
-	//MapGrid m_grid;
-	//VanillaAARectangle	m_mPos;
 	ResourceIO m_rr;
 	protected SoundFx m_sfx;
 	PlayerInfo m_playerInfo;
@@ -143,6 +144,8 @@ public class IronLegends extends ScrollingScreenGame
 		m_polygonFactory = null;
 
 		//*
+		// some places cast ConvexPolygon to PersonsConvexPolygon because some accessor methods are needed!!
+		// if ConvexPolygon had those missing methods, we would be able to
 		for (Iterator<PolygonFactory> f = ServiceRegistry.lookupProviders(PolygonFactory.class); f.hasNext();) 
 		{
 			m_polygonFactory = f.next();
@@ -232,7 +235,8 @@ public class IronLegends extends ScrollingScreenGame
 		// GAME OBJECTS
 		m_physicsEngine = new VanillaPhysicsEngine();
 
-		m_mitko = new Mitko(m_polygonFactory.createRectangle(new Vector2D(40,WORLD_HEIGHT-22), Mitko.WIDTH,Mitko.HEIGHT), m_mapCalc);
+		Vector2D startPos = new Vector2D(40,WORLD_HEIGHT-22);
+		m_mitko = new Mitko(m_polygonFactory.createRectangle(startPos, Mitko.WIDTH,Mitko.HEIGHT), m_mapCalc);
 		/*
 		{
 			PaintableCanvas c1  = new PaintableCanvas((int)Mitko.WIDTH, (int)Mitko.HEIGHT, 1, new Color(128,128,128));
@@ -256,6 +260,8 @@ public class IronLegends extends ScrollingScreenGame
 
 		// could be moved below to "creating level" section
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_tankBulletObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		
 		m_bgLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		
 		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
@@ -274,6 +280,7 @@ public class IronLegends extends ScrollingScreenGame
 		gameplayScreen.addViewableLayer(m_bgLayer);
 		gameplayScreen.addViewableLayer(m_batCaveLayer);
 		gameplayScreen.addViewableLayer(m_tankObstacleLayer);
+		gameplayScreen.addViewableLayer(m_tankBulletObstacleLayer);
 		gameplayScreen.addViewableLayer(m_powerUpLayer);
 		gameplayScreen.addViewableLayer(m_batLayer);
 		gameplayScreen.addViewableLayer(m_mitkoLayer);
@@ -380,6 +387,7 @@ public class IronLegends extends ScrollingScreenGame
 		boolean bSuccess = true;
 		
 		m_tankObstacleLayer.clear();
+		m_tankBulletObstacleLayer.clear();
 		IronLegendsMapLoadSink sink = new IronLegendsMapLoadSink(this);
 		MapLoader.loadLayer(sink, sMapFile, m_rr);
 				
@@ -388,8 +396,6 @@ public class IronLegends extends ScrollingScreenGame
 	
 	protected boolean loadLevel(int level)
 	{
-		m_tankObstacleLayer.clear();
-		
 		m_bgLayer.clear();
 		m_batLayer.clear();
 		m_powerUpLayer.clear();
@@ -399,7 +405,8 @@ public class IronLegends extends ScrollingScreenGame
 		
 		// hard code map for now
 		//loadMap("m1.txt");
-		loadMap("maps/borders.txt");
+		//loadMap("maps/borders.txt");
+		loadMap("maps/mapitems.txt");
 		/*
 		String sMap = "levels/level" + level + ".txt";
 		if (!MapLoader.loadGrid(sMap, m_grid, m_rr))
@@ -494,7 +501,9 @@ public class IronLegends extends ScrollingScreenGame
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_CPBLayer(m_mitko, m_tankObstacleLayer
 								, new Sink_CPB_CPB_Default()));
-								
+				m_physicsEngine.registerCollisionHandler(
+						new Handler_CPB_CPBLayer(m_mitko, m_tankBulletObstacleLayer
+								, new Sink_CPB_CPB_Default()));
 				// power-up
 				m_physicsEngine.registerCollisionHandler(
 						new Handler_CPB_BodyLayer(m_mitko, m_powerUpLayer, m_polygonFactory, PowerUp.WIDTH, PowerUp.HEIGHT

@@ -39,13 +39,15 @@ public class MapEditor extends ScrollingScreenGame
 	protected MapLayer m_mapLayer;
 
 	public static final int MAPEDIT_SCREEN = 0;
+	public static final int SCREEN_WIDTH = 1024;
+	public static final int SCREEN_HEIGHT = 768;
 
 	KeyCommands m_keyCmds = new KeyCommands();
-	MapCalc m_mapCalc = new MapCalc(IronLegends.SCREEN_WIDTH, IronLegends.SCREEN_HEIGHT);
+	MapCalc m_mapCalc = new MapCalc(MapEditor.SCREEN_WIDTH, MapEditor.SCREEN_HEIGHT);
 
 	public MapEditor() 
 	{
-		super(IronLegends.SCREEN_WIDTH, IronLegends.SCREEN_HEIGHT, false);
+		super(MapEditor.SCREEN_WIDTH, MapEditor.SCREEN_HEIGHT, false);
 
 		gameframe.setTitle("Iron Legends");
 
