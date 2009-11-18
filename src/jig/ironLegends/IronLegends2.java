@@ -167,14 +167,14 @@ public class IronLegends2 extends ScrollingScreenGame {
 		m_screens.addScreen(splashScreen);
 
 		// GamePlay Screen
-		m_tank = new Tank(m_polygonFactory, new Vector2D(100, 100), "Player", m_mapCalc);
+		m_tank = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.WHITE, new Vector2D(100, 100));
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankLayer.add(m_tank);
 
 		m_opponentLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		while (m_opponentLayer.size() < 10) {
 			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(), VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(), VISIBLE_BOUNDS.getMaxY());
-			Tank t = new Tank(m_polygonFactory, pos, "Enemy", m_mapCalc);
+			Tank t = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.RED, pos);
 			m_opponentLayer.add(t);
 		}
 		
@@ -261,7 +261,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 		}
 		
 		if (activeScreen == GAMEPLAY_SCREEN) {
-			m_tank.controlMovement(m_keyCmds, mouse, getCenter());
+			m_tank.controlMovement(m_keyCmds, mouse);
 			if (mouse.isLeftButtonPressed()) {
 				m_tank.fire(getBullet());
 			}
@@ -296,7 +296,7 @@ public class IronLegends2 extends ScrollingScreenGame {
 		}
 		
 		// center screen on tank
-		Vector2D center = m_tank.getShapeCenter();//.getCenterPosition();
+		Vector2D center = m_tank.getShapeCenter();
 		// TODO: on right & bottom object moves beyond the bounds 
 		centerOnPoint(center.clamp(VISIBLE_BOUNDS));
 		m_mapCalc.centerOnPoint(center.clamp(VISIBLE_BOUNDS));
