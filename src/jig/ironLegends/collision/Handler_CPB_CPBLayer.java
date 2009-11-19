@@ -7,9 +7,7 @@ import jig.engine.physics.BodyLayer;
 import jig.engine.physics.vpe.CollisionHandler;
 import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.ConvexPolyBody;
-import jig.ironLegends.core.MultiSpriteBody;
 
 public class Handler_CPB_CPBLayer implements CollisionHandler 
 {

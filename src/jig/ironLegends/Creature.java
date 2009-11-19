@@ -1,10 +1,7 @@
 package jig.ironLegends;
 
-import java.awt.geom.AffineTransform;
-
 import jig.engine.RenderingContext;
 import jig.engine.physics.vpe.ConvexPolygon;
-import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
 

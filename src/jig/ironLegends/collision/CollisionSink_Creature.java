@@ -1,14 +1,12 @@
 package jig.ironLegends.collision;
 
+import jig.engine.util.Vector2D;
 import jig.ironLegends.Bat;
 import jig.ironLegends.Creature;
 import jig.ironLegends.LevelProgress;
 import jig.ironLegends.Mitko;
 import jig.ironLegends.core.ConvexPolyBody;
 import jig.ironLegends.core.SoundFx;
-import jig.engine.physics.Body;
-import jig.engine.physics.vpe.VanillaPolygon;
-import jig.engine.util.Vector2D;
 
 public class CollisionSink_Creature implements ISink_CPB_CPB 
 {
@@ -43,18 +41,18 @@ public class CollisionSink_Creature implements ISink_CPB_CPB
 				body.setActivation(false);
 				// increment score
 				m_levelProgress.trappedCreature((Creature)body);
-				m_sfx.play("trapCreature2");
+//				m_sfx.play("trapCreature2");
 			}
 			else
 			{
-				m_sfx.play("faint2");
+//				m_sfx.play("faint2");
 			}
 		}
 		else
 		{
 			// feint!
 			if (!m.isFainting())
-				m_sfx.play("faint1");
+//				m_sfx.play("faint1");
 			m.activateFaint();
 			//super.onCollision(poly, body, vCorrection);
 		}

@@ -2,12 +2,10 @@ package jig.ironLegends.collision;
 
 import java.util.Random;
 
+import jig.engine.physics.Body;
+import jig.engine.util.Vector2D;
 import jig.ironLegends.MapGrid;
 import jig.ironLegends.Navigator;
-
-import jig.engine.physics.Body;
-import jig.engine.physics.vpe.VanillaPolygon;
-import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ConvexPolyBody;
 
 public class CollisionSink_CreatureHedge extends Sink_CPB_Body_Default 

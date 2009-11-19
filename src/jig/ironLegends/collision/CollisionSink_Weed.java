@@ -1,12 +1,12 @@
 package jig.ironLegends.collision;
 
+import jig.engine.physics.Body;
+import jig.engine.util.Vector2D;
 import jig.ironLegends.LevelProgress;
 import jig.ironLegends.Mitko;
 import jig.ironLegends.Weed;
-import jig.ironLegends.core.SoundFx;
-import jig.engine.physics.Body;
-import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ConvexPolyBody;
+import jig.ironLegends.core.SoundFx;
 
 public class CollisionSink_Weed implements ISink_CPB_Body 
 {
@@ -35,11 +35,11 @@ public class CollisionSink_Weed implements ISink_CPB_Body
 				Mitko m = (Mitko)poly;
 				m.collectPowerUp();
 				// play sound
-				m_sfx.play("collectPowerup1");
+//				m_sfx.play("collectPowerup1");
 			}
 			else
 			{
-				m_sfx.play("weedPulled1");
+//				m_sfx.play("weedPulled1");
 			}
 			m_levelProgress.addWeedCollected();
 		}

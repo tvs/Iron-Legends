@@ -10,7 +10,6 @@ import java.util.Random;
 import jig.engine.ResourceFactory;
 import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
-//Level
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.Tile;

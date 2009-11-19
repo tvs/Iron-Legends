@@ -1,0 +1,8 @@
+<resources>
+
+    <spritesheet>
+        <imagesrc>menus-spritesheet.png</imagesrc>
+        <framesrc>menus-spritesheet.xml</framesrc>
+    </spritesheet>
+
+</resources>

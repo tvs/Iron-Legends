@@ -1,7 +1,6 @@
 package jig.ironLegends;
 
 import jig.engine.Sprite;
-import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
 import jig.ironLegends.mapEditor.MapItemPersist;

@@ -5,8 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import jig.ironLegends.core.ResourceIO;
-
 
 public class HighScorePersistance 
 {

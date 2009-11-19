@@ -1,13 +1,12 @@
 package jig.ironLegends.collision;
 
+import jig.engine.physics.Body;
+import jig.engine.util.Vector2D;
 import jig.ironLegends.LevelProgress;
 import jig.ironLegends.Mitko;
 import jig.ironLegends.PowerUp;
 import jig.ironLegends.core.ConvexPolyBody;
 import jig.ironLegends.core.SoundFx;
-import jig.engine.physics.Body;
-import jig.engine.physics.vpe.VanillaPolygon;
-import jig.engine.util.Vector2D;
 
 public class CollisionSink_PowerUp implements ISink_CPB_Body 
 {
@@ -35,14 +34,14 @@ public class CollisionSink_PowerUp implements ISink_CPB_Body
 			
 			if (pu.isImmediate())
 			{
-				m_sfx.play("powerup1");
+//				m_sfx.play("powerup1");
 	
 				// go through all creates and set scared? nah, just do it during update
 				m.activatePowerup(0);
 			}
 			else
 			{
-				m_sfx.play("collectPowerup1");
+//				m_sfx.play("collectPowerup1");
 				m.collectPowerUp();		
 			}
 		}

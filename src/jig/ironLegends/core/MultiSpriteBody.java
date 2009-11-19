@@ -8,7 +8,6 @@ import jig.engine.ImageResource;
 import jig.engine.RenderingContext;
 import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.core.ConvexPolyBody;
 
 /**
  * Allows multiple sprites to overlay the body

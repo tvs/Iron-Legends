@@ -1,42 +1,41 @@
 package jig.ironLegends.screens;
 
-import java.awt.geom.AffineTransform;
-import java.util.List;
-
-import jig.engine.ImageResource;
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
-import jig.engine.ResourceFactory;
+import jig.engine.Sprite;
+import jig.engine.util.Vector2D;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.PlayerInfo;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
-import jig.ironLegends.core.ui.Button;
-import jig.ironLegends.core.ui.TextEditBox;
+import jig.ironLegends.core.ui.RolloverButton;
 
 public class HelpScreen extends GameScreen {
 	protected PlayerInfo m_playerInfo;
 	
-	List<ImageResource> bg;
-	List<ImageResource> hSign;
-	Button bbutton;
+	Sprite bg;
+	Sprite hSign;
+	RolloverButton bbutton;
 		
 	public HelpScreen(int name, Fonts fonts) {
 		super(name);
 
 		// TODO Sprite-ify these instead of dynamically loading
-		bg = ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/background.png");
-		hSign = ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/helpsign.png");
+		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
+		bg.setPosition(new Vector2D(0, 0));
 		
-		bbutton = new Button(-3, 0, 535,
-			ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/backbutton.png"));
+		hSign = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#help-frame");
+		hSign.setPosition(new Vector2D(70, 33));
+		
+		bbutton = new RolloverButton(-3, 0, 535,
+			IronLegends.SCREEN_SPRITE_SHEET + "#back-button");
 	}
 	
 	@Override
 	public void render(RenderingContext rc) {
-		bg.get(0).render(rc, AffineTransform.getTranslateInstance(0, 0));
-		hSign.get(0).render(rc, AffineTransform.getTranslateInstance(70, 33));
+		bg.render(rc);
+		hSign.render(rc);
 		bbutton.render(rc);
 	}
 	

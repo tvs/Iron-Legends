@@ -4,9 +4,7 @@ import jig.ironLegends.GameProgress;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.ScreenTextLayer;
-import jig.ironLegends.core.TextLayer;
 import jig.ironLegends.core.TextWriter;
-import jig.engine.RenderingContext;
 
 public class LevelCompleteTextLayer  extends ScreenTextLayer
 {

@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import jig.engine.RenderingContext;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.mapEditor.TileButton;
 
 public class ButtonToolbar <B extends Button>
 {

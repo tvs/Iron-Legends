@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
-import jig.engine.physics.vpe.VanillaPolygon;
 import jig.ironLegends.core.ConvexPolyBody;
 import jig.misc.sat.PolygonFactory;
 

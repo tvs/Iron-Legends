@@ -6,62 +6,32 @@
 	<height>402</height>
 	
 	<!-- @group Upgrades -->
+	<!-- Frame order: Empty, Upgrade, Repair, Shield, Life, Damage -->
 	<frameset>
-		<name>upgrade</name>
+		<name>powerups</name>
 		<top>0</top>
 		<left>93</left>
-		<width>37</width>
-		<height>37</height>
-	</frameset>
-	
-	<frameset>
-		<name>repair</name>
-		<top>0</top>
-		<left>130</left>
-		<width>37</width>
-		<height>37</height>
-	</frameset>
-	
-	<frameset>
-		<name>shield</name>
-		<top>0</top>
-		<left>167</left>
-		<width>37</width>
-		<height>37</height>
-	</frameset>
-	
-	<frameset>
-		<name>extralife</name>
-		<top>0</top>
-		<left>204</left>
-		<width>37</width>
-		<height>37</height>
-	</frameset>
-	
-	<frameset>
-		<name>damage</name>
-		<top>0</top>
-		<left>241</left>
-		<width>37</width>
-		<height>37</height>
+		<width>36</width>
+		<height>36</height>
+		<columns>6</columns>
 	</frameset>
 	<!-- @end Upgrades -->
 		
 	<!-- @group Weaponry -->
 	<frameset>
 		<name>mine</name>
-		<top>0</top>
-		<left>278</left>
+		<top>61</top>
+		<left>429</left>
 		<width>37</width>
 		<height>37</height>
 	</frameset>
 	
 	<frameset>
 		<name>bullet</name>
-		<top>0</top>
-		<left>317</left>
+		<top>70</top>
+		<left>471</left>
 		<width>4</width>
-		<height>27</height>
+		<height>17</height>
 	</frameset>
 	<!-- @end Weaponry -->
 	
@@ -134,9 +104,9 @@
 	
 	<frameset>
 		<name>rock2</name>
-		<top>37</top>
-		<left>527</left>
-		<width>97</width>
+		<top>0</top>
+		<left>528</left>
+		<width>96</width>
 		<height>105</height>
 	</frameset>
 	

@@ -36,7 +36,6 @@ import jig.ironLegends.screens.CustomizePlayerTextLayer;
 import jig.ironLegends.screens.GameInfoTextLayer;
 import jig.ironLegends.screens.GameOverTextLayer;
 import jig.ironLegends.screens.GamePlayTextLayer;
-import jig.ironLegends.screens.GameWonTextLayer;
 import jig.ironLegends.screens.HelpScreen;
 import jig.ironLegends.screens.HelpTextLayer;
 import jig.ironLegends.screens.SplashScreen;
@@ -53,12 +52,15 @@ public class IronLegends extends ScrollingScreenGame
 	public static final int SCREEN_HEIGHT = 600;
 	public static final String GAME_ROOT = "jig/ironLegends/";
 	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
+	public static final String RESOURCE_SCREEN = "jig/ironLegends/resources/screens/";
 	
 	public static final String SPRITE_SHEET = RESOURCE_ROOT + "hr-spritesheet.png";
 	public static final String SPRITE_SHEET2 = RESOURCE_ROOT + "ironLegends-spritesheet.png";
+	public static final String SCREEN_SPRITE_SHEET = RESOURCE_ROOT + "screens/menus-spritesheet.png";
 	
 	public static final String MY_RESOURCES = "hr-resources.xml";
 	public static final String IRON_LEGENDS_RESOURCES = "ironLegends-resources.xml";
+	public static final String IRON_LEGENDS_SCREEN_RESOURCES = "menus-resources.xml";
 
 	static final int START_LIVES = 2;
 	
@@ -183,43 +185,6 @@ public class IronLegends extends ScrollingScreenGame
 			helpScreen.addViewableLayer(new HelpTextLayer(m_fonts));
 		}
 
-		 // SPLASH Screen
-//		{
-//			VanillaAARectangle splashBg = new VanillaAARectangle(RESOURCE_ROOT + "hr-splash.png") 
-//			{
-//				@Override
-//				public void update(long deltaMs) 
-//				{
-//					// TODO Auto-generated method stub
-//				}
-//			};
-//				splashBg.setPosition(new Vector2D(0, 0));
-//				
-//				// add splash bg to both splash screen and gameplay screen
-//				GameScreen splashScreen = m_screens.getScreen(SPLASH_SCREEN);
-//				GameScreen gameWonScreen = m_screens.getScreen(GAMEWON_SCREEN);
-//			{
-//				BodyLayer<Body> splashBgLayer = new StaticBodyLayer.NoUpdate<Body>();
-//				splashBgLayer.add(splashBg);
-//				
-//				splashScreen.addViewableLayer(splashBgLayer);
-//			}
-//			{
-//				BodyLayer<Body> bgLayer = new AbstractBodyLayer.NoUpdate<Body>();
-//				bgLayer.add(splashBg);
-//				gameWonScreen.addViewableLayer(bgLayer);                
-//				gameWonScreen.addViewableLayer(new GameWonTextLayer(m_fonts, m_gameProgress));
-//			}
-//			{
-//				/*
-//				BodyLayer<Body> gameBgLayer = new StaticBodyLayer.NoUpdate<Body>();
-//				gameBgLayer.add(splashBg);
-//				
-//				gameplayScreen.addViewableLayer(gameBgLayer);
-//				 */
-//			}
-//		}
-
 		// GAME OBJECTS
 		m_physicsEngine = new VanillaPhysicsEngine();
 
@@ -343,6 +308,7 @@ public class IronLegends extends ScrollingScreenGame
 
 		resourceFactory.loadResources(RESOURCE_ROOT, IRON_LEGENDS_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
+		resourceFactory.loadResources(RESOURCE_SCREEN, IRON_LEGENDS_SCREEN_RESOURCES);
 		// FONTS
 		m_fonts.create(resourceFactory);
 
@@ -352,20 +318,6 @@ public class IronLegends extends ScrollingScreenGame
 		String audioRoot = RESOURCE_ROOT;
 		//m_audioBallBrick2 = resourceFactory.getAudioClip(audioRoot + "hr-ballBrick2.wav");
 		//m_audioBallBrick3 = resourceFactory.getAudioClip(audioRoot + "hr-ballBrick3.wav");
-		
-		m_sfx.addSfx("faint1", resourceFactory.getAudioClip(audioRoot + "hr-sfx-AyeYay.wav"));
-		m_sfx.addSfx("faint2", resourceFactory.getAudioClip(audioRoot + "hr-sfx-CreatureMeal.wav"));
-		
-		m_sfx.addSfx("weedPulled1", resourceFactory.getAudioClip(audioRoot + "hr-sfx-PickingWeed.wav"));
-		
-		m_sfx.addSfx("collectPowerup1", resourceFactory.getAudioClip(audioRoot + "hr-sfx-CollectPowerUp.wav"));
-		
-		m_sfx.addSfx("powerup1", resourceFactory.getAudioClip(audioRoot + "hr-sfx-Courage.wav"));
-		
-		m_sfx.addSfx("trapCreature1", resourceFactory.getAudioClip(audioRoot + "hr-sfx-Gotcha.wav"));
-		m_sfx.addSfx("trapCreature2", resourceFactory.getAudioClip(audioRoot + "hr-sfx-CreatureSmash.wav"));
-		
-		m_sfx.addSfx("smoke1", resourceFactory.getAudioClip(audioRoot + "hr-sfx-YumYum.wav"));
 		
 		return bSuccess;
 	}
@@ -610,7 +562,7 @@ public class IronLegends extends ScrollingScreenGame
 		if (smoke && m_mitko.getStoredPowerUps() > 0)
 		{
 			m_mitko.smoke();
-			m_sfx.play("smoke1");
+//			m_sfx.play("smoke1");
 		}
 		
 		m_mitko.move(left, right, up, down, deltaMs);

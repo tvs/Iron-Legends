@@ -18,7 +18,6 @@ import jig.ironLegends.core.ui.Button;
 import jig.ironLegends.core.ui.ButtonToolbar;
 import jig.ironLegends.core.ui.MouseState;
 import jig.ironLegends.core.ui.TextEditBox;
-import jig.ironLegends.mapEditor.MapCalc;
 
 public class MapEditor_GS extends GameScreen 
 {

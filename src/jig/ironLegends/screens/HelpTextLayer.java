@@ -1,13 +1,11 @@
 package jig.ironLegends.screens;
 
+import jig.engine.Sprite;
+import jig.engine.util.Vector2D;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.ScreenTextLayer;
-import jig.ironLegends.core.TextLayer;
 import jig.ironLegends.core.TextWriter;
-import jig.engine.RenderingContext;
-import jig.engine.Sprite;
-import jig.engine.util.Vector2D;
 
 public class HelpTextLayer extends ScreenTextLayer
 {	

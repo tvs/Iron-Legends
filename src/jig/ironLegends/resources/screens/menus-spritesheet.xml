@@ -1,0 +1,97 @@
+<spriteset>
+	<author>Travis Hall</author>
+	<name>Iron Legends Menu Sprites</name>
+	<type>image/png</type>
+	<width>904</width>
+	<height>1625</height>
+	
+	<!-- @group Static Frame Elements -->
+	<frameset>
+		<name>background</name>
+		<top>0</top>
+		<left>0</left>
+		<width>800</width>
+		<height>600</height>
+	</frameset>
+	<!-- @end Static Frame Elements -->
+	
+	<!-- @group Splash -->
+	<frameset>
+		<name>header</name>
+		<top>600</top>
+		<left>0</left>
+		<width>800</width>
+		<height>380</height>
+	</frameset>
+	
+	<frameset>
+		<name>csbox</name>
+		<top>980</top>
+		<left>0</left>
+		<width>280</width>
+		<height>115</height>
+	</frameset>
+	
+	<frameset>
+		<name>csshader</name>
+		<top>1095</top>
+		<left>0</left>
+		<width>227</width>
+		<height>38</height>
+	</frameset>
+	
+		<!-- @group Buttons -->
+		<frameset>
+			<name>help-button</name>
+			<top>980</top>
+			<left>280</left>
+			<width>186</width>
+			<height>35</height>
+			<rows>2</rows>
+		</frameset>
+		
+		<frameset>
+			<name>mp-button</name>
+			<top>980</top>
+			<left>466</left>
+			<width>208</width>
+			<height>35</height>
+			<rows>2</rows>
+		</frameset>
+		
+		<frameset>
+			<name>sp-button</name>
+			<top>980</top>
+			<left>674</left>
+			<width>230</width>
+			<height>35</height>
+			<rows>2</rows>
+		</frameset>
+		
+		<!-- @end Buttons -->
+	
+	<!-- @end Splash -->
+	
+	<!-- @group Help Menu -->
+	<frameset>
+		<name>help-frame</name>
+		<top>1133</top>
+		<left>0</left>
+		<width>657</width>
+		<height>492</height>
+	</frameset>
+	
+		<!-- @group Buttons -->
+		<frameset>
+			<name>back-button</name>
+			<top>1050</top>
+			<left>280</left>
+			<width>186</width>
+			<height>35</height>
+			<rows>2</rows>
+		</frameset>
+		<!-- @end Buttons -->
+	
+	<!-- @end Help Menu -->
+	
+</spriteset>
