@@ -23,6 +23,6 @@ public class LevelCompleteTextLayer  extends ScreenTextLayer
 		text.setY(IronLegends.WORLD_HEIGHT/8);
 		text.setLineStart(-1);
 		
-		text.println("Level " + (m_gameProgress.getCurLevel()-1) + " complete");
+		//text.println("Level " + (m_gameProgress.getCurLevel()-1) + " complete");
 	}	
 }

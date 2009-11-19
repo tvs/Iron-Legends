@@ -32,9 +32,10 @@ public class SplashScreen extends GameScreen {
 	
 	protected TextEditBox csEntryBox;
 		
-	public SplashScreen(int name, Fonts fonts) {
+	public SplashScreen(int name, Fonts fonts, PlayerInfo playerInfo) {
 		super(name);
 
+		m_playerInfo = playerInfo;
 		// TODO Sprite-ify these instead of dynamically loading
 		bg = ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/background.png");
 		header = ResourceFactory.getFactory().getFrames(IronLegends.RESOURCE_ROOT + "screens/header.png"); 
@@ -85,6 +86,7 @@ public class SplashScreen extends GameScreen {
 		if (csEntryBox.isActive())
 		{
 			csEntryBox.processInput(keyCmds);
+			m_playerInfo.setName(csEntryBox.getText());
 		}
 		
 		return name();		

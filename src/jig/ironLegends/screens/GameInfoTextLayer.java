@@ -57,22 +57,13 @@ public class GameInfoTextLayer extends ScreenTextLayer
 		
 		text.println("Total Score: " + m_gameProgress.getTotalScore());
 		
-		text.println("Level: " + m_gameProgress.getCurLevel());
+		//text.println("Map: " + m_gameProgress.getCurLevel());
 		text.println("Level Score: " + m_gameProgress.m_levelProgress.getScore());
 		
-		long powerUpRemainingMs = (long)m_mitko.getPowerUpRemainingMs();
-		if (powerUpRemainingMs > 0)
-			text.println("Courage: " + powerUpRemainingMs);
-		else
-			text.println("Courage: None");
 		
-		text.println("Faints Rem: " + m_gameProgress.getLivesRemaining());
-		
-		
-		text.println("");
-		
-		text.println("Stash: " + m_mitko.getStoredPowerUps());
-		
+		// TODO: put mini tank icons for lives remaining (print the sprite) 
+		text.println("Lives Rem: " + m_gameProgress.getLivesRemaining());
+				
 		text.setY(300);
 		text.println("High Score: " + m_highScore.getHighScore());
 		text = null;

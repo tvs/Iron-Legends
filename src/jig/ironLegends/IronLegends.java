@@ -157,7 +157,7 @@ public class IronLegends extends ScrollingScreenGame
 		m_mitkoLayer.add(m_mitko);
 		
 		// SCREENS
-		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts));
+		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts, m_playerInfo));
 		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
 		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
@@ -264,7 +264,7 @@ public class IronLegends extends ScrollingScreenGame
 		gameplayScreen.addViewableLayer(new GamePlayTextLayer(m_fonts, m_gameProgress, m_playerInfo));
 
 		// start with splash screen
-		m_screens.addTransition(SPLASH_SCREEN, GAMEPLAY_SCREEN, "enter");
+		//m_screens.addTransition(SPLASH_SCREEN, GAMEPLAY_SCREEN, "enter");
 		m_screens.addTransition(GAMEOVER_SCREEN, SPLASH_SCREEN, "enter");
 		m_screens.addTransition(SPLASH_SCREEN, HELP_SCREEN, "F1");
 		m_screens.addTransition(SPLASH_SCREEN, HELP_SCREEN, "h" );
@@ -299,8 +299,7 @@ public class IronLegends extends ScrollingScreenGame
 		m_keyCmds.addCommand("backspace", KeyEvent.VK_BACK_SPACE);
 		// cheat codes
 		m_keyCmds.addCommand("splat", KeyEvent.VK_8);
-		m_keyCmds.addCommand("faint", KeyEvent.VK_F);
-		m_keyCmds.addCommand("weedsCollected", KeyEvent.VK_W);
+		m_keyCmds.addCommand("die", KeyEvent.VK_F);
 			
     	m_keyCmds.addCommand("smoke", KeyEvent.VK_S);
     	
@@ -356,7 +355,7 @@ public class IronLegends extends ScrollingScreenGame
 		return bSuccess;
 	}
 	
-	protected boolean loadLevel(int level)
+	protected boolean loadLevel()
 	{
 		m_batLayer.clear();
 		m_powerUpLayer.clear();
@@ -364,29 +363,9 @@ public class IronLegends extends ScrollingScreenGame
 		m_levelProgress.reset();
 		
 		// hard code map for now
-		//loadMap("m1.txt");
 		//loadMap("maps/borders.txt");
 		loadMap("maps/mapitems.txt");
-		/*
-		String sMap = "levels/level" + level + ".txt";
-		if (!MapLoader.loadGrid(sMap, m_grid, m_rr))
-		{
-			// TODO: won the game?... or error. for now "won" the game
-			int totalScore = m_gameProgress.gameOver(); 
-			if (totalScore > m_highScore.getHighScore())
-			{
-				m_highScore.setHighScore(totalScore);
-				m_highScore.setPlayer(m_playerInfo.getName());
-				m_highScorePersist.save(m_highScore);
-			}	
-			m_screens.setActiveScreen(GAMEWON_SCREEN);
-			populateGameLayers();
-			return true;
-		}		
-		 
-		*/
-		// for now require just set to 1 so people can still play until we get game over logic/criteria
-		m_levelProgress.setWeedsRequired(1);
+
 		populateGameLayers();
 		m_levelProgress.setIntro(2999);
 		m_bFirstLevelUpdate = false; 
@@ -414,7 +393,7 @@ public class IronLegends extends ScrollingScreenGame
 
 		m_gameProgress.reset();
 		m_mitko.newGame();
-		loadLevel(m_gameProgress.getCurLevel());
+		loadLevel();
 	}
 	
 	protected KeyCommands m_keyCmds = new KeyCommands();
@@ -457,6 +436,15 @@ public class IronLegends extends ScrollingScreenGame
 		{
 			if (m_keyCmds.wasPressed("die"))
 			{
+				m_gameProgress.playerDied();
+				if (m_gameProgress.getLivesRemaining() < 0)
+				{
+					m_screens.setActiveScreen(GAMEOVER_SCREEN);
+					//!m_levelProgress.isExitActivated()
+					m_gameProgress.getLevelProgress().setExit(true);
+				}
+				else
+					m_mitko.reset();
 			}
 		}
 
@@ -466,11 +454,7 @@ public class IronLegends extends ScrollingScreenGame
 			GameScreen newScreen = m_screens.getActiveScreen();
 			// TODO: create handlers for transition so game can be modified appropriately
 			// e.g. no need to test what the transition is to execute newGame
-			if (t.m_to == GAMEPLAY_SCREEN && t.m_from == SPLASH_SCREEN)
-			{
-				newGame();
-			}
-			else if (t.m_to == SPLASH_SCREEN && t.m_from == GAMEOVER_SCREEN)
+			if (t.m_to == SPLASH_SCREEN && t.m_from == GAMEOVER_SCREEN)
 			{
 				m_mitko.reset();
 				populateGameLayers();
@@ -554,6 +538,7 @@ public class IronLegends extends ScrollingScreenGame
 			case SPLASH_SCREEN:
 			break;
 			case GAMEOVER_SCREEN:
+				// allow things to keep moving
 				m_physicsEngine.applyLawsOfPhysics(deltaMs);
 			break;
 			case GAMEPLAY_SCREEN:
@@ -589,13 +574,14 @@ public class IronLegends extends ScrollingScreenGame
 					}
 					else
 					{
-						m_gameProgress.mitkoFainted();
+						m_gameProgress.playerDied();
 						m_mitko.reset();
 					}
 					
 					populateGameLayers();			
 				}
 
+				/*
 				if (m_levelProgress.isLevelComplete()) 
 				{
 					if (!m_levelProgress.isExitActivated())
@@ -603,6 +589,7 @@ public class IronLegends extends ScrollingScreenGame
 						m_levelProgress.setExit(true);
 					}
 				}
+				*/
 
 			break;
 		}
