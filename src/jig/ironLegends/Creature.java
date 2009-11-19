@@ -1,10 +1,7 @@
 package jig.ironLegends;
 
-import java.awt.geom.AffineTransform;
-
 import jig.engine.RenderingContext;
 import jig.engine.physics.vpe.ConvexPolygon;
-import jig.engine.physics.vpe.VanillaPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
 
@@ -104,8 +101,6 @@ public class Creature extends MultiSpriteBody
 			
 			if (!m_bOrtho)
 			{
-				//double dBrgRad = Math2D.trueBrg(new Vector2D(0,0), new Vector2D(velocity.getX(), -velocity.getY()));
-				//double dBrgRad = MPmath2D.trueBrg(new Vector2D(0,0), velocity);
 				double dBrgRad = Math.atan2(0 -velocity.getY(), 
 						0	- velocity.getX());				
 				dBrgRad += Math.PI/2.0;

@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import jig.engine.FontResource;
-import jig.ironLegends.PlayerInfo;
-
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.KeyState;
 import jig.ironLegends.core.KeyCommands.FinalPair;

@@ -67,13 +67,10 @@ public class IronLegends2 extends ScrollingScreenGame {
 	protected BodyLayer<Body> m_opponentLayer;
 	protected BodyLayer<Body> m_bulletLayer;
 	
-	protected Navigator m_navigator;
 	protected String m_sError;
 	protected String m_sInstallDir;
 	MapCalc m_mapCalc = new MapCalc(IronLegends.SCREEN_WIDTH, IronLegends.SCREEN_HEIGHT);
 	
-	MapGrid m_grid;
-
 	public IronLegends2() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
 		

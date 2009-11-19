@@ -1,10 +1,8 @@
 package jig.ironLegends.screens;
 
-import jig.engine.RenderingContext;
 import jig.ironLegends.GameProgress;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.ScreenTextLayer;
-import jig.ironLegends.core.TextLayer;
 import jig.ironLegends.core.TextWriter;
 
 public class CustomizePlayerTextLayer  extends ScreenTextLayer

@@ -13,7 +13,6 @@ import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ui.Button;
-import jig.ironLegends.core.ui.TextEditBox;
 
 public class HelpScreen extends GameScreen {
 	protected PlayerInfo m_playerInfo;

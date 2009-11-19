@@ -1,8 +1,5 @@
 package jig.ironLegends.core;
 
-import java.util.List;
-
-import jig.engine.ImageResource;
 import jig.engine.PaintableCanvas;
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
@@ -11,7 +8,6 @@ import jig.engine.physics.Body;
 import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.physics.vpe.PersonsConvexPolygon;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.IronLegends;
 
 public class ConvexPolyBody extends Body 
 {

@@ -1,7 +1,6 @@
 package jig.ironLegends;
 
 import jig.engine.Sprite;
-import jig.engine.physics.vpe.ConvexPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
 import jig.ironLegends.mapEditor.MapItemPersist;
@@ -24,8 +23,6 @@ public class Obstacle extends MultiSpriteBody
 		Vector2D pos = item.centerPosition();
 		
 
-		String tokens[] = cellInfo.split(":");
-		
 		int h = addSprite(item.resource());
 		Sprite s = getSprite(h);
 		super.setShape(pf.createRectangle(pos, s.getWidth(), s.getHeight()));

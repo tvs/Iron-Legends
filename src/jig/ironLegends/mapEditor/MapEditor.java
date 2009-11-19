@@ -1,34 +1,16 @@
 package jig.ironLegends.mapEditor;
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
-import jig.engine.Sprite;
 import jig.engine.hli.ScrollingScreenGame;
-import jig.engine.physics.Body;
-import jig.engine.util.Vector2D;
-import jig.ironLegends.GridCell;
 import jig.ironLegends.IronLegends;
-import jig.ironLegends.MapGrid;
-import jig.ironLegends.MapLoader;
 import jig.ironLegends.core.Fonts;
-import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.GameScreens;
 import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
-import jig.ironLegends.core.KeyState;
 import jig.ironLegends.core.ResourceIO;
-import jig.ironLegends.core.ui.MouseState;
 
 public class MapEditor extends ScrollingScreenGame 
 {

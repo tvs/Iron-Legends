@@ -1,15 +1,10 @@
 package jig.ironLegends.screens;
 
-import java.awt.geom.AffineTransform;
-
 import jig.ironLegends.GameProgress;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.ScreenTextLayer;
-import jig.ironLegends.core.TextLayer;
 import jig.ironLegends.core.TextWriter;
-
-import jig.engine.RenderingContext;
 
 public class GameOverTextLayer extends ScreenTextLayer
 {

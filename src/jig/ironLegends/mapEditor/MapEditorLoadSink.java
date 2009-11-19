@@ -1,7 +1,6 @@
 package jig.ironLegends.mapEditor;
 
 import jig.engine.util.Vector2D;
-import jig.ironLegends.IronLegends;
 import jig.ironLegends.MapLoader.IMapLoadSink;
 
 public class MapEditorLoadSink implements IMapLoadSink 

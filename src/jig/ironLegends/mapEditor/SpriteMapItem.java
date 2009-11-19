@@ -1,7 +1,6 @@
 package jig.ironLegends.mapEditor;
 
 import jig.engine.RenderingContext;
-import jig.engine.Sprite;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.ATSprite;
 

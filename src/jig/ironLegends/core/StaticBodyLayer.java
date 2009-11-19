@@ -1,13 +1,11 @@
 package jig.ironLegends.core;
 
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import jig.engine.RenderingContext;
 import jig.engine.physics.AbstractBodyLayer;
 import jig.engine.physics.Body;
-import jig.engine.physics.BodyLayer;
 
 public abstract class StaticBodyLayer<V extends Body> extends AbstractBodyLayer<V> 
 {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project Iron-Legends">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="C:/Users/Michael/Documents/School/WSU/CS547/Proj2/Exec/IronLegends.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jig.ironLegends.IronLegends"/>
+                <attribute name="Class-Path" value=". jig-1.7.5.jar sat-1.7.5-13-109.jar"/>
+            </manifest>
+            <fileset dir="C:/Users/Michael/Documents/School/WSU/CS547/Project2/Iron-Legends/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Michael/Documents/School/WSU/CS547/Project2/Iron-Legends/lib/jig-1.7.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Michael/Documents/School/WSU/CS547/Project2/Iron-Legends/lib/sat-1.7.5-13-109.jar"/>
+        </jar>
+    </target>
+</project>

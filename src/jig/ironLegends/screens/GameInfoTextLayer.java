@@ -1,19 +1,14 @@
 package jig.ironLegends.screens;
 
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
-
 import jig.ironLegends.GameProgress;
 import jig.ironLegends.Mitko;
-import jig.ironLegends.Tank;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.HighScore;
 import jig.ironLegends.core.ScreenTextLayer;
-import jig.ironLegends.core.TextLayer;
 import jig.ironLegends.core.TextWriter;
 
 import jig.engine.PaintableCanvas;
-import jig.engine.RenderingContext;
 import jig.engine.physics.vpe.VanillaAARectangle;
 import jig.engine.util.Vector2D;
 
