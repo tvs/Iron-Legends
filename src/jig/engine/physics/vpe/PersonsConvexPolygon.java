@@ -79,7 +79,6 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		Vector2D newPolygon[]=getTrueVertices();
 		
 		newPolygon 		= unrotatedVertexCoordinates.clone();
-		int vertices 	= unrotatedVertexCoordinates.length;
 		
 		// performance -> only recalculate data when change position or rotation (store as members)
 		// performance -> use matrix to perform all operations at once

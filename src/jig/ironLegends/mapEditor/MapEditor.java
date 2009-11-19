@@ -2,7 +2,6 @@ package jig.ironLegends.mapEditor;
 
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
-
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
 import jig.engine.hli.ScrollingScreenGame;

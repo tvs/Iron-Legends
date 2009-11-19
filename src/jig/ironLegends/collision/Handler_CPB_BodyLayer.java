@@ -41,37 +41,28 @@ public class Handler_CPB_BodyLayer implements CollisionHandler
 	@Override
 	public void findAndReconcileCollisions() 
 	{
-		// TODO Auto-generated method stub
-		boolean bCollisionFound = false;
 		if (!m_poly.isActive())
 			return;
 		
-		do
-		{
-			bCollisionFound = false;
-			ConvexPolygon mPoly = m_poly.getShape();
-			ConvexPolygon p = m_polygonFactory.createRectangle(new Vector2D(0,0), m_bodyWidth, m_bodyHeight);
-			
-			Iterator<Body> iter = m_bodyLayer.iterator();
-			while (iter.hasNext())
-			{
-				Body b = iter.next();
-				if (!b.isActive())
-					continue;
-				
-				p.setPosition(IronLegends.bodyPosToPolyPos(b.getWidth(), b.getHeight(), b.getPosition()));
-
-				Vector2D vCorrection = mPoly.minPenetration(p, false);
-				if (vCorrection != null)
-				{
-					bCollisionFound = true;
-					if (m_collisionSink.onCollision(m_poly, b, vCorrection))
-						break;
-				}
-			}
-			
-		}while (false && bCollisionFound);		
+		ConvexPolygon mPoly = m_poly.getShape();
+		ConvexPolygon p = m_polygonFactory.createRectangle(new Vector2D(0,0), m_bodyWidth, m_bodyHeight);
 		
+		Iterator<Body> iter = m_bodyLayer.iterator();
+		while (iter.hasNext())
+		{
+			Body b = iter.next();
+			if (!b.isActive())
+				continue;
+			
+			p.setPosition(IronLegends.bodyPosToPolyPos(b.getWidth(), b.getHeight(), b.getPosition()));
+
+			Vector2D vCorrection = mPoly.minPenetration(p, false);
+			if (vCorrection != null)
+			{
+				if (m_collisionSink.onCollision(m_poly, b, vCorrection))
+					break;
+			}
+		}
 	}
 
 }

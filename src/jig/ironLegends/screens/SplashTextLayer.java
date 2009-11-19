@@ -1,13 +1,13 @@
 package jig.ironLegends.screens;
 
-import jig.engine.Sprite;
-import jig.engine.util.Vector2D;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.PlayerInfo;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.HighScore;
 import jig.ironLegends.core.ScreenTextLayer;
 import jig.ironLegends.core.TextWriter;
+import jig.engine.Sprite;
+import jig.engine.util.Vector2D;
 
 public class SplashTextLayer extends ScreenTextLayer
 {

@@ -5,6 +5,7 @@ import jig.engine.RenderingContext;
 import jig.engine.Sprite;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.IronLegends;
+import jig.ironLegends.PlayerInfo;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
@@ -16,6 +17,8 @@ import jig.ironLegends.core.ui.TextEditBox;
  * @author Travis Hall
  */
 public class SplashScreen extends GameScreen {
+	PlayerInfo m_playerInfo;
+	
 	Sprite bg;
 	Sprite header;
 	Sprite csbox;
@@ -25,8 +28,10 @@ public class SplashScreen extends GameScreen {
 	
 	protected TextEditBox csEntryBox;
 		
-	public SplashScreen(int name, Fonts fonts) {
+	public SplashScreen(int name, Fonts fonts, PlayerInfo playerInfo) {
 		super(name);
+		
+		m_playerInfo = playerInfo;
 
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -36,6 +41,7 @@ public class SplashScreen extends GameScreen {
 		
 		csbox = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#csbox");
 		csbox.setPosition(new Vector2D(266, 300));
+
 		
 		sbutton = new RolloverButton(-3, 0, 447,IronLegends.SCREEN_SPRITE_SHEET + "#sp-button");
 		mbutton = new RolloverButton(-2, 0, 491,IronLegends.SCREEN_SPRITE_SHEET + "#mp-button");
@@ -43,7 +49,7 @@ public class SplashScreen extends GameScreen {
 		
 		csEntryBox = new TextEditBox(fonts.textFont, -2, 292, 360, 
 				IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
-		csEntryBox.setText("ace");
+		csEntryBox.setText(playerInfo.getName());
 	}
 	
 	@Override
@@ -77,6 +83,7 @@ public class SplashScreen extends GameScreen {
 		if (csEntryBox.isActive())
 		{
 			csEntryBox.processInput(keyCmds);
+			m_playerInfo.setName(csEntryBox.getText());
 		}
 		
 		return name();		

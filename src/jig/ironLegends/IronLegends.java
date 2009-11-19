@@ -2,7 +2,6 @@ package jig.ironLegends;
 
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
-
 import javax.imageio.spi.ServiceRegistry;
 
 import jig.engine.RenderingContext;
@@ -15,10 +14,6 @@ import jig.engine.physics.BodyLayer;
 import jig.engine.physics.vpe.VanillaAARectangle;
 import jig.engine.physics.vpe.VanillaPhysicsEngine;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.collision.CollisionSink_PowerUp;
-import jig.ironLegends.collision.Handler_CPB_BodyLayer;
-import jig.ironLegends.collision.Handler_CPB_CPBLayer;
-import jig.ironLegends.collision.Sink_CPB_CPB_Default;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.GameScreens;
@@ -36,6 +31,7 @@ import jig.ironLegends.screens.CustomizePlayerTextLayer;
 import jig.ironLegends.screens.GameInfoTextLayer;
 import jig.ironLegends.screens.GameOverTextLayer;
 import jig.ironLegends.screens.GamePlayTextLayer;
+import jig.ironLegends.screens.GamePlay_GS;
 import jig.ironLegends.screens.HelpScreen;
 import jig.ironLegends.screens.HelpTextLayer;
 import jig.ironLegends.screens.SplashScreen;
@@ -74,21 +70,17 @@ public class IronLegends extends ScrollingScreenGame
 	public static final int TESTUI_SCREEN = -1;
 	
 	Fonts m_fonts = new Fonts();
+		
+	public Mitko m_mitko;
+	public BodyLayer<Body> m_mitkoLayer;
+	public BodyLayer<Body> m_batLayer;
 	
-	Mitko m_mitko;
-	BodyLayer<Body> m_mitkoLayer;
-	BodyLayer<Body> m_batLayer;
-	BodyLayer<Body> m_batCaveLayer;
+	public BodyLayer<Body> m_tankObstacleLayer;	// trees
+	public BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings, rocks
 	
-	// which layer do the rocks go in?
-	BodyLayer<Body> m_tankObstacleLayer;	// trees
-	BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings
-	
-	BodyLayer<Body> m_bgLayer;
-	BodyLayer<Body> m_powerUpLayer;
-	BodyLayer<Body> m_creatures;
-	
-	jig.engine.physics.vpe.VanillaPhysicsEngine m_physicsEngine;
+	public BodyLayer<Body> m_powerUpLayer;
+
+	public jig.engine.physics.vpe.VanillaPhysicsEngine m_physicsEngine;
 	
 	// TODO: move into level class
 	LevelProgress m_levelProgress;
@@ -131,7 +123,7 @@ public class IronLegends extends ScrollingScreenGame
 		m_gameProgress 	= new GameProgress(m_levelProgress);
 		m_rr 			= new ResourceIO(m_sInstallDir);
 		m_sfx 			= new SoundFx();
-		m_playerInfo    = new PlayerInfo("Mitko");
+		m_playerInfo    = new PlayerInfo("ace");
 		
 		loadResources();
 		
@@ -154,9 +146,22 @@ public class IronLegends extends ScrollingScreenGame
 		m_highScorePersist = new HighScorePersistance(m_sInstallDir);
 		m_highScorePersist.load(m_highScore);		
 				
+		// GAME OBJECTS
+		m_physicsEngine = new VanillaPhysicsEngine();
+
+		Vector2D startPos = new Vector2D(40,WORLD_HEIGHT-22);
+		m_mitko = new Mitko(m_polygonFactory.createRectangle(startPos, Mitko.WIDTH,Mitko.HEIGHT), m_mapCalc);
+		
+		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_tankBulletObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
+		m_batLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_mitkoLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_mitkoLayer.add(m_mitko);
+		
 		// SCREENS
-		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts));
-		m_screens.addScreen(new GameScreen(GAMEPLAY_SCREEN));
+		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts, m_playerInfo));
+		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
 		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
 		//m_screens.addScreen(new MPGameScreen(LEVELCOMPLETE_SCREEN));
@@ -165,78 +170,7 @@ public class IronLegends extends ScrollingScreenGame
 		
 		GameScreen gameplayScreen = m_screens.getScreen(GAMEPLAY_SCREEN);
 		
-		// HELP Screen
-		{
-			GameScreen helpScreen = m_screens.getScreen(HELP_SCREEN);
-
-			BodyLayer<VanillaAARectangle> bgTileLayer = new StaticBodyLayer.NoUpdate<VanillaAARectangle>();
-			
-			BgTileGenerator tileGenerator = new BgTileGenerator();
-			tileGenerator.Tile(bgTileLayer, IronLegends.SPRITE_SHEET + "#testTile2"
-					, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, TILE_WIDTH,TILE_HEIGHT);
-			
-			helpScreen.addViewableLayer(bgTileLayer);
-			CustomizePlayerGS customizePlayerScreen = (CustomizePlayerGS)m_screens.getScreen(CUSTOMIZEPLAYER_SCREEN);
-			
-			customizePlayerScreen.addViewableLayer(bgTileLayer);
-			customizePlayerScreen.setTextLayer(new CustomizePlayerTextLayer(m_fonts, m_gameProgress));
-			customizePlayerScreen.addViewableLayer(customizePlayerScreen.m_textLayer);
-			
-			helpScreen.addViewableLayer(new HelpTextLayer(m_fonts));
-		}
-
-		// GAME OBJECTS
-		m_physicsEngine = new VanillaPhysicsEngine();
-
-		Vector2D startPos = new Vector2D(40,WORLD_HEIGHT-22);
-		m_mitko = new Mitko(m_polygonFactory.createRectangle(startPos, Mitko.WIDTH,Mitko.HEIGHT), m_mapCalc);
-		/*
-		{
-			PaintableCanvas c1  = new PaintableCanvas((int)Mitko.WIDTH, (int)Mitko.HEIGHT, 1, new Color(128,128,128));
-			
-			c1.setWorkingFrame(0);
-			c1.fillRectangle(0,0, (int)Mitko.WIDTH, (int)Mitko.HEIGHT, new Color(0,255,0));
-			//c1.fillRectangle(0,0, 1, (int)Mitko.HEIGHT, new Color(128,128,128));
-			//c1.fillRectangle(0,0, 1, (int)Mitko.HEIGHT, new Color(128,128,128));
-			c1.loadFrames("mitkoPoly");
-			
-			m_mPos = new VanillaAARectangle("mitkoPoly") {
-				
-				@Override
-				public void update(long deltaMs) {
-					// TODO Auto-generated method stub
-					
-				}
-			};
-		}
-		*/
-
 		// could be moved below to "creating level" section
-		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		m_tankBulletObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		
-		m_bgLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		
-		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
-
-		m_batLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		
-		m_batCaveLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
-		m_creatures = new AbstractBodyLayer.NoUpdate<Body>();
-		
-		//m_grid 		= new MapGrid(TILE_WIDTH, TILE_HEIGHT);
-		//m_navigator = new Navigator(m_grid);
-		
-		m_mitkoLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		m_mitkoLayer.add(m_mitko);
-
-		gameplayScreen.addViewableLayer(m_bgLayer);
-		gameplayScreen.addViewableLayer(m_batCaveLayer);
-		gameplayScreen.addViewableLayer(m_tankObstacleLayer);
-		gameplayScreen.addViewableLayer(m_tankBulletObstacleLayer);
-		gameplayScreen.addViewableLayer(m_powerUpLayer);
-		gameplayScreen.addViewableLayer(m_batLayer);
-		gameplayScreen.addViewableLayer(m_mitkoLayer);
 		
 		gameplayScreen.addViewableLayer(new GameInfoTextLayer(m_fonts, m_gameProgress, m_mitko, m_highScore));
 		
@@ -255,17 +189,17 @@ public class IronLegends extends ScrollingScreenGame
 		gameplayScreen.addViewableLayer(new GamePlayTextLayer(m_fonts, m_gameProgress, m_playerInfo));
 
 		// start with splash screen
-		m_screens.addTransition(SPLASH_SCREEN, GAMEPLAY_SCREEN, "enter");
-		m_screens.addTransition(GAMEOVER_SCREEN, SPLASH_SCREEN, "enter");
-		m_screens.addTransition(SPLASH_SCREEN, HELP_SCREEN, "F1");
-		m_screens.addTransition(SPLASH_SCREEN, HELP_SCREEN, "h" );
-		m_screens.addTransition(HELP_SCREEN, SPLASH_SCREEN, "enter");
-		m_screens.addTransition(HELP_SCREEN, SPLASH_SCREEN, "esc");
-		m_screens.addTransition(GAMEWON_SCREEN, SPLASH_SCREEN, "enter");
-		m_screens.addTransition(SPLASH_SCREEN, CUSTOMIZEPLAYER_SCREEN, "c");
-		m_screens.addTransition(CUSTOMIZEPLAYER_SCREEN, SPLASH_SCREEN, "enter");
-		m_screens.addTransition(CUSTOMIZEPLAYER_SCREEN, SPLASH_SCREEN, "esc");
-		m_screens.addTransition(SPLASH_SCREEN, TESTUI_SCREEN, "t");
+		//m_screens.addTransition(SPLASH_SCREEN, GAMEPLAY_SCREEN, "enter");
+//		m_screens.addTransition(GAMEOVER_SCREEN, SPLASH_SCREEN, "enter");
+//		m_screens.addTransition(SPLASH_SCREEN, HELP_SCREEN, "F1");
+//		m_screens.addTransition(SPLASH_SCREEN, HELP_SCREEN, "h" );
+//		m_screens.addTransition(HELP_SCREEN, SPLASH_SCREEN, "enter");
+//		m_screens.addTransition(HELP_SCREEN, SPLASH_SCREEN, "esc");
+//		m_screens.addTransition(GAMEWON_SCREEN, SPLASH_SCREEN, "enter");
+//		m_screens.addTransition(SPLASH_SCREEN, CUSTOMIZEPLAYER_SCREEN, "c");
+//		m_screens.addTransition(CUSTOMIZEPLAYER_SCREEN, SPLASH_SCREEN, "enter");
+//		m_screens.addTransition(CUSTOMIZEPLAYER_SCREEN, SPLASH_SCREEN, "esc");
+//		m_screens.addTransition(SPLASH_SCREEN, TESTUI_SCREEN, "t");
 		m_screens.setActiveScreen(SPLASH_SCREEN);
 		
 		// Configure Commands
@@ -290,8 +224,7 @@ public class IronLegends extends ScrollingScreenGame
 		m_keyCmds.addCommand("backspace", KeyEvent.VK_BACK_SPACE);
 		// cheat codes
 		m_keyCmds.addCommand("splat", KeyEvent.VK_8);
-		m_keyCmds.addCommand("faint", KeyEvent.VK_F);
-		m_keyCmds.addCommand("weedsCollected", KeyEvent.VK_W);
+		m_keyCmds.addCommand("die", KeyEvent.VK_F);
 			
     	m_keyCmds.addCommand("smoke", KeyEvent.VK_S);
     	
@@ -315,7 +248,7 @@ public class IronLegends extends ScrollingScreenGame
 		// AUDIO
 		// works within IDE using MP3, but when package as executable jar, must
 		// be a wav file
-		String audioRoot = RESOURCE_ROOT;
+//		String audioRoot = RESOURCE_ROOT;
 		//m_audioBallBrick2 = resourceFactory.getAudioClip(audioRoot + "hr-ballBrick2.wav");
 		//m_audioBallBrick3 = resourceFactory.getAudioClip(audioRoot + "hr-ballBrick3.wav");
 		
@@ -334,57 +267,23 @@ public class IronLegends extends ScrollingScreenGame
 		return bSuccess;
 	}
 	
-	protected boolean loadLevel(int level)
+	protected boolean loadLevel()
 	{
-		m_bgLayer.clear();
 		m_batLayer.clear();
 		m_powerUpLayer.clear();
-		m_creatures.clear();
 		
 		m_levelProgress.reset();
 		
 		// hard code map for now
-		//loadMap("m1.txt");
 		//loadMap("maps/borders.txt");
 		loadMap("maps/mapitems.txt");
-		/*
-		String sMap = "levels/level" + level + ".txt";
-		if (!MapLoader.loadGrid(sMap, m_grid, m_rr))
-		{
-			// TODO: won the game?... or error. for now "won" the game
-			int totalScore = m_gameProgress.gameOver(); 
-			if (totalScore > m_highScore.getHighScore())
-			{
-				m_highScore.setHighScore(totalScore);
-				m_highScore.setPlayer(m_playerInfo.getName());
-				m_highScorePersist.save(m_highScore);
-			}	
-			m_screens.setActiveScreen(GAMEWON_SCREEN);
-			populateGameLayers();
-			return true;
-		}		
-		 
-		if (!MapLoader.populate(level, m_grid, m_mitko, m_polygonFactory
-				, m_hedgeLayer, m_tankObstacleLayer, m_bgLayer
-				, m_antLayer, m_batLayer, m_powerUpLayer
-				, m_batCaveLayer, m_creatures))
-		{
-			return  false;
-		}
-		*/
-		// for now require just set to 1 so people can still play until we get game over logic/criteria
-		m_levelProgress.setWeedsRequired(1);
+
 		populateGameLayers();
 		m_levelProgress.setIntro(2999);
 		m_bFirstLevelUpdate = false; 
 		return true;
 	}
 	
-	protected boolean advanceLevel() 
-	{
-		m_mitko.reset();
-		return loadLevel(m_gameProgress.advanceLevel());
-	}
 
 	/**
 	 * based on which state game is in, 
@@ -396,85 +295,21 @@ public class IronLegends extends ScrollingScreenGame
 		gameObjectLayers.clear();
 		m_physicsEngine.clear();
 
-		Iterator<ViewableLayer> layerIterator = null;
-		
-		// TODO: switch active screen to numbers instead of names!
-		layerIterator = m_screens.getScreen(m_screens.activeScreen()).getViewableLayers();			
-		
-		if (layerIterator != null)
-		{
-			while (layerIterator.hasNext()) {
-				gameObjectLayers.add(layerIterator.next());
-			}
-		}
-
-		// configure physics engine to handle updates only if 
-		// in state gameplay and not game over
-		int curScreen = m_screens.activeScreen();
-		switch (curScreen)
-		{
-			case SPLASH_SCREEN:
-			case GAMEOVER_SCREEN:
-			case HELP_SCREEN:
-			case GAMEWON_SCREEN:
-			case CUSTOMIZEPLAYER_SCREEN:
-			break;
-			case GAMEPLAY_SCREEN:
-			default:
-				m_physicsEngine.manageViewableSet(m_mitkoLayer);
-				m_physicsEngine.manageViewableSet(m_batLayer);
-				
-				/*
-				 collision resolution in following order
-				 mitko - hedge
-				 creature - hedge
-				 mitko - creatures
-				 mitko - weeds/powerups
-				 */
-				
-				// don't hit the obstacles
-				/*
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPBLayer_CPBLayer(m_polygonFactory, m_antLayer, m_hedgeLayer, Tile.WIDTH, Tile.HEIGHT
-									, new CollisionSink_CreatureHedge(m_grid)));
-				*/
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPB_CPBLayer(m_mitko, m_tankObstacleLayer
-								, new Sink_CPB_CPB_Default()));
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPB_CPBLayer(m_mitko, m_tankBulletObstacleLayer
-								, new Sink_CPB_CPB_Default()));
-				// power-up
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPB_BodyLayer(m_mitko, m_powerUpLayer, m_polygonFactory, PowerUp.WIDTH, PowerUp.HEIGHT
-								, new CollisionSink_PowerUp(m_levelProgress, m_sfx)));
-				
-				// mitko-creatures
-				/*
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPB_CPBLayer(m_mitko, m_batLayer
-								, new CollisionSink_Creature(m_levelProgress, m_sfx)));
-				// bat-creatures
-				m_physicsEngine.registerCollisionHandler(
-						new Handler_CPBLayer_CPBLayer(m_batLayer, m_antLayer
-								, new CollisionSink_BatCreature(m_levelProgress, m_sfx)));
-				*/
-			break;
-		}
+		GameScreen gs = m_screens.getActiveScreen();		
+		gs.populateLayers(gameObjectLayers);
 	}
 
-	protected void newGame() 
+	public void newGame() 
 	{
 		m_bGameOver = false;
 
 		m_gameProgress.reset();
 		m_mitko.newGame();
-		loadLevel(m_gameProgress.getCurLevel());
+		loadLevel();
 	}
 	
 	protected KeyCommands m_keyCmds = new KeyCommands();
 	protected boolean m_paused = false;
-	
 
 	protected void processCommands(final long deltaMs)
 	{
@@ -494,8 +329,8 @@ public class IronLegends extends ScrollingScreenGame
 				m_screens.setActiveScreen(iNewScreen);
 				GameScreen newScreen = m_screens.getActiveScreen();
 				curScreen.deactivate();
-				newScreen.activate(iCurScreen);
 				populateGameLayers();
+				newScreen.activate(iCurScreen);
 			}
 		}		
 		
@@ -513,7 +348,15 @@ public class IronLegends extends ScrollingScreenGame
 		{
 			if (m_keyCmds.wasPressed("die"))
 			{
-				m_mitko.activateFaint();
+				m_gameProgress.playerDied();
+				if (m_gameProgress.getLivesRemaining() < 0)
+				{
+					m_screens.setActiveScreen(GAMEOVER_SCREEN);
+					//!m_levelProgress.isExitActivated()
+					m_gameProgress.getLevelProgress().setExit(true);
+				}
+				else
+					m_mitko.reset();
 			}
 		}
 
@@ -523,11 +366,7 @@ public class IronLegends extends ScrollingScreenGame
 			GameScreen newScreen = m_screens.getActiveScreen();
 			// TODO: create handlers for transition so game can be modified appropriately
 			// e.g. no need to test what the transition is to execute newGame
-			if (t.m_to == GAMEPLAY_SCREEN && t.m_from == SPLASH_SCREEN)
-			{
-				newGame();
-			}
-			else if (t.m_to == SPLASH_SCREEN && t.m_from == GAMEOVER_SCREEN)
+			if (t.m_to == SPLASH_SCREEN && t.m_from == GAMEOVER_SCREEN)
 			{
 				m_mitko.reset();
 				populateGameLayers();
@@ -589,7 +428,7 @@ public class IronLegends extends ScrollingScreenGame
 			super.update(deltaMs);
 			processCommands(deltaMs);
 			if (m_levelProgress.isExitComplete())
-				advanceLevel();
+				;//advanceLevel();
 			//m_levelProgress.update(deltaMs);
 			return;
 		}
@@ -611,6 +450,7 @@ public class IronLegends extends ScrollingScreenGame
 			case SPLASH_SCREEN:
 			break;
 			case GAMEOVER_SCREEN:
+				// allow things to keep moving
 				m_physicsEngine.applyLawsOfPhysics(deltaMs);
 			break;
 			case GAMEPLAY_SCREEN:
@@ -646,54 +486,27 @@ public class IronLegends extends ScrollingScreenGame
 					}
 					else
 					{
-						m_gameProgress.mitkoFainted();
+						m_gameProgress.playerDied();
 						m_mitko.reset();
 					}
 					
 					populateGameLayers();			
 				}
 
+				/*
 				if (m_levelProgress.isLevelComplete()) 
 				{
 					if (!m_levelProgress.isExitActivated())
 					{
-						//m_levelProgress.setExit(3000);
 						m_levelProgress.setExit(true);
 					}
 				}
+				*/
 
 			break;
 		}
 
 		move(deltaMs);
-		/*
-		{
-			Iterator<Body> iter =  m_antLayer.iterator();
-			while (iter.hasNext())
-			{
-				Ant a = (Ant)iter.next();
-				double dLastChangeMs = a.getLastMoveChange();
-				if (dLastChangeMs > 2000)
-				{
-					if (m_navigator.selectOption(a))
-						a.resetMoveChange();
-				}
-			}
-		}
-		{
-			Iterator<Body> iter =  m_batLayer.iterator();
-			while (iter.hasNext())
-			{
-				Bat a = (Bat)iter.next();
-				double dLastChangeMs = a.getLastMoveChange();
-				if (dLastChangeMs > 4000)
-				{
-					if (m_navigator.selectRandom(a))
-						a.resetMoveChange();
-				}
-			}
-		}
-		*/
 		// don't center if would cause scrolling past "edge" of screen
 		{
 			//Vector2D pos = m_mitko.getCenterPosition();
@@ -709,7 +522,6 @@ public class IronLegends extends ScrollingScreenGame
 		m_mapCalc.centerOnPoint(centerPosition);
 	}
 
-	//protected Navigator m_navigator;
 	private String m_mapName;
 		
 	@Override

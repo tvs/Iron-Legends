@@ -29,9 +29,7 @@ public class GroundEngine
 	// return true if reached destination
 	public boolean move(Body body, Vector2D dest, long deltaMs)
 	{
-		Vector2D v = body.getVelocity();
 		Vector2D newV = null;
-		boolean bMoving = true;
 		
 		Vector2D p = body.getCenterPosition();
 		//Vector2D p = body.getPosition();

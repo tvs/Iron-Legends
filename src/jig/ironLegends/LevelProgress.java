@@ -52,24 +52,11 @@ public class LevelProgress
 	
 	double m_introRemainingMs;
 	//double m_exitRemainingMs;
-	double m_powerupRemainingMs;
 	boolean m_bExitActivated;
 	boolean m_bExitComplete;
 	
-	public void trappedCreature(Creature creature)
-	{
-		m_levelScore += creature.getTrapScore();
-	}
-	
-	public boolean areAntsScared()
-	{
-		return m_powerupRemainingMs > 0?true:false;
-	}
-	
 	public void update(double deltaMs)
 	{
-		if (m_powerupRemainingMs > 0)
-			m_powerupRemainingMs -= deltaMs;
 		if (m_introRemainingMs > 0)
 			m_introRemainingMs -= deltaMs;
 		
@@ -79,10 +66,7 @@ public class LevelProgress
 	
 	public void reset()
 	{
-		m_weedsCollected 	= 0;	
 		m_levelScore 		= 0;
-		m_weedsRequired 	= 0;
-		m_powerupRemainingMs = 0;
 		m_introRemainingMs = 0;
 		//m_exitRemainingMs = 0;
 		m_bExitActivated= false;
@@ -91,31 +75,8 @@ public class LevelProgress
 	
 	public boolean isExitActivated(){return m_bExitActivated;}
 	// returns true if no more weeds required for level
-	public boolean addWeedCollected()
-	{
-		m_weedsCollected += 1;
-		// adjust score
-		m_levelScore += 1;
-		if (m_weedsCollected >= m_weedsRequired)
-			return true;
-		return false;
-	}
-	public int getWeedsRemaining()
-	{
-		return m_weedsRequired - m_weedsCollected;
-	}
-	
-	public boolean isLevelComplete()
-	{
-		if (m_weedsCollected >= m_weedsRequired)
-			return true;
-		return false;		
-	}
-	
-	public void setWeedsRequired(int weedsRequired){ m_weedsRequired = weedsRequired;}
+
 	public int getScore() { return m_levelScore;}
 
-	protected int m_weedsCollected;
-	protected int m_weedsRequired;
 	protected int m_levelScore;
 }

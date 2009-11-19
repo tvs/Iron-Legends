@@ -101,20 +101,6 @@ public class Mitko extends MultiSpriteBody
 	public void update(long deltaMs) 
 	{
 		
-		if (m_bFeinting)
-		{
-			if (m_bWaitForReset)
-				return;
-			
-			if (m_animator.update(deltaMs, new Vector2D(0,0)))
-			{	
-				if (m_animator.getFrame() == 7)
-					m_bWaitForReset = true;
-				setFrame(m_animator.getFrame());
-			}	
-			return;
-		}
-		
 		if (m_powerupRemainingMs > 0)
 			m_powerupRemainingMs -= deltaMs;
 		
@@ -125,7 +111,7 @@ public class Mitko extends MultiSpriteBody
 		if (moving)
 		{
 			translateVec = velocity.scale(deltaMs/1000.0);
-			System.out.println("Pos: " + position);
+			//System.out.println("Pos: " + position);
 			position = position.translate(translateVec);
 			position = position.clampX(0, m_mapCalc.getWorldBounds().getWidth() - getWidth());
 			position = position.clampY(0, m_mapCalc.getWorldBounds().getHeight() - getHeight());
@@ -141,27 +127,6 @@ public class Mitko extends MultiSpriteBody
 				setRotation(Math.toRadians(0));
 		}
 		//*/
-		/*
-		// debugging rotations of VanillaPolygon when constructing a sphere
-		m_deltaMs += deltaMs;
-		if (m_deltaMs > 4000)
-		{
-			m_deltaMs = 0;
-			setRotation(Math.toRadians(0));
-		}
-		else if (m_deltaMs > 3000)
-		{
-			setRotation(Math.toRadians(90));
-		}
-		else if (m_deltaMs > 2000)
-		{
-			setRotation(Math.toRadians(180));
-		}
-		else if (m_deltaMs > 1000)
-		{
-			setRotation(Math.toRadians(270));
-		}
-		*/
 		// set appropriate frame set (currently just 1)
 		// advance frame
 		if (m_animator.update(deltaMs, translateVec))
@@ -174,21 +139,11 @@ public class Mitko extends MultiSpriteBody
 	
 	public boolean isFainting()
 	{
-		return m_bFeinting;
+		return false;
 	}
 	public boolean doneFainting()
 	{
 		return m_bWaitForReset;
-	}
-	public void activateFaint()
-	{	
-		if (m_bFeinting)
-			return;
-
-		m_bFeinting = true;
-		m_animator.setFrame(0);
-		m_animator.setFrameBase(4);
-		m_animator.setFrameDurationMs(FEINT_FRAME_DURATION_MS);
 	}
 	
 	public void collectPowerUp()

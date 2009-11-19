@@ -2,6 +2,7 @@ package jig.ironLegends.core;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
@@ -44,4 +45,18 @@ public class GameScreen
 	
 	protected LinkedList<ViewableLayer> m_viewableLayers = new LinkedList<ViewableLayer>();
 	protected int m_name;
+	public void populateLayers(List<ViewableLayer> gameObjectLayers) {
+		// TODO Auto-generated method stub
+		Iterator<ViewableLayer> layerIterator = null;
+		
+		layerIterator = m_viewableLayers.iterator();			
+		
+		if (layerIterator != null)
+		{
+			while (layerIterator.hasNext()) {
+				gameObjectLayers.add(layerIterator.next());
+			}
+		}
+		
+	}
 }

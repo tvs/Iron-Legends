@@ -23,8 +23,6 @@ public class Obstacle extends MultiSpriteBody
 		Vector2D pos = item.centerPosition();
 		
 
-		String tokens[] = cellInfo.split(":");
-		
 		int h = addSprite(item.resource());
 		Sprite s = getSprite(h);
 		super.setShape(pf.createRectangle(pos, s.getWidth(), s.getHeight()));
