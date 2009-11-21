@@ -3,43 +3,34 @@ package jig.ironLegends;
 import jig.ironLegends.MapLoader.IMapLoadSink;
 import jig.ironLegends.mapEditor.MapItemPersist;
 
-public class IronLegendsMapLoadSink implements IMapLoadSink 
-{
+public class IronLegendsMapLoadSink implements IMapLoadSink {
 
 	IronLegends m_ironLegends;
-	
-	public IronLegendsMapLoadSink(IronLegends ironLegends)
-	{
+
+	public IronLegendsMapLoadSink(IronLegends ironLegends) {
 		m_ironLegends = ironLegends;
-	}
-	
-	@Override
-	public void mapDim(int width, int height) 
-	{
-		m_ironLegends.setWorldDim(width, height);	
 	}
 
 	@Override
-	public void mapName(String sMapName) 
-	{
+	public void mapDim(int width, int height) {
+		m_ironLegends.setWorldDim(width, height);
+	}
+
+	@Override
+	public void mapName(String sMapName) {
 		m_ironLegends.setMapName(sMapName);
 	}
 
 	@Override
-	public void onLine(String line) 
-	{
+	public void onLine(String line) {
 		MapItemPersist mapItem = new MapItemPersist(line);
 		Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory);
-		
-		if (mapItem.name().equals("wall") ||
-			mapItem.name().equals("building"))
-		{
+
+		if (mapItem.name().equals("wall") || mapItem.name().equals("building")) {
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
-		}
-		else
-		{
+		} else {
 			// "tree"
-			m_ironLegends.m_tankObstacleLayer.add(ob);			
+			m_ironLegends.m_tankObstacleLayer.add(ob);
 		}
 	}
 

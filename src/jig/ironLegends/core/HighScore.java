@@ -1,31 +1,27 @@
 package jig.ironLegends.core;
 
-public class HighScore 
-{
+public class HighScore {
 	private String m_sPlayerName;
 	public int m_highScore;
-	
-	public HighScore()
-	{
+
+	public HighScore() {
 		m_highScore = 0;
-		m_sPlayerName = "Mitko";
+		m_sPlayerName = "ace";
 	}
-	
-	public void setHighScore(int highScore)
-	{
+
+	public void setHighScore(int highScore) {
 		m_highScore = highScore;
 	}
-	public void setPlayer(String playerName)
-	{
+
+	public void setPlayer(String playerName) {
 		m_sPlayerName = playerName;
 	}
 
-	public String getPlayer()
-	{
+	public String getPlayer() {
 		return m_sPlayerName;
 	}
-	public int getHighScore()
-	{
+
+	public int getHighScore() {
 		return m_highScore;
 	}
 

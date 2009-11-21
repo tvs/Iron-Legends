@@ -8,7 +8,7 @@ public class PowerUp extends VanillaAARectangle
 	protected boolean m_bImmediate;
 	PowerUp(int x, int y, String encoded)
 	{
-		super(IronLegends.SPRITE_SHEET + "#powerup");
+		super(IronLegends.HR_SPRITE_SHEET + "#powerup");
 		if (encoded.endsWith("2"))
 		{
 			m_bImmediate = false;

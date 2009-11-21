@@ -34,29 +34,30 @@ public class Tank extends MultiSpriteBody {
 	private ATSprite turret;
 	private Animator m_animator;
 	private MapCalc m_mapCalc = null;
+	private Type type = Type.BASIC;
+	private Team team = Team.WHITE;
+	private Weapon weapon = Weapon.CANNON;
 
 	private double speed;
 	private double angularVelocity;
 	private int health = MAX_HEALTH;
 	private int damageAmount = 20;
 	private int bulletRange = 300;
-	private Team team = Team.WHITE;
-	private Weapon weapon = Weapon.CANNON;
 	private long timeSinceFired = 0;
 	private long timeSinceDied = 0;
 
 	public Tank(MapCalc mapCalc, PolygonFactory pf, Team team, Vector2D pos) {
-		super(pf.createRectangle(pos, 85, 101), IronLegends2.SPRITE_SHEET
+		super(pf.createRectangle(pos, 85, 101), IronLegends.SPRITE_SHEET
 				+ "#tank");
 		m_mapCalc = mapCalc;
 		setTeam(team);
 		
-		ATSprite teamflag = getSprite(addSprite(IronLegends2.SPRITE_SHEET
+		ATSprite teamflag = getSprite(addSprite(IronLegends.SPRITE_SHEET
 				+ "#star"));
 		teamflag.setOffset(new Vector2D(0, teamflag.getHeight()/2 + 20));
 		teamflag.setFrame(team.ordinal());
 
-		turret = getSprite(addSprite(IronLegends2.SPRITE_SHEET + "#cannon"));
+		turret = getSprite(addSprite(IronLegends.SPRITE_SHEET + "#cannon"));
 		// this sets the location at which the turret will rotate
 		// the rotation point will stay center over the MultiSpriteBody
 		turret.setRotationOffset(new Vector2D(0,
@@ -115,8 +116,8 @@ public class Tank extends MultiSpriteBody {
 		Vector2D translateVec = Vector2D.getUnitLengthVector(
 				rotation + Math.toRadians(270)).scale(speed * deltaMs / 1000.0);
 		Vector2D p = position.translate(translateVec);
-		p = p.clampX(0, IronLegends2.WORLD_WIDTH - getWidth());
-		p = p.clampY(0, IronLegends2.WORLD_HEIGHT - getHeight());
+		p = p.clampX(0, IronLegends.WORLD_WIDTH - getWidth());
+		p = p.clampY(0, IronLegends.WORLD_HEIGHT - getHeight());
 
 		setPosition(p);
 		setRotation(rotation);
@@ -248,5 +249,13 @@ public class Tank extends MultiSpriteBody {
 
 	public void setSpeed(double speed) {
 		this.speed = speed;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Type getType() {
+		return type;
 	}
 }

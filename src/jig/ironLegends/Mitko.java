@@ -29,10 +29,10 @@ public class Mitko extends MultiSpriteBody
 	
 	public Mitko(ConvexPolygon shape, MapCalc mapCalc)
 	{
-		super(shape, IronLegends.SPRITE_SHEET + "#mitko");
+		super(shape, IronLegends.HR_SPRITE_SHEET + "#mitko");
 		m_mapCalc = mapCalc;
 		
-		int antHandle = super.addSprite(IronLegends.SPRITE_SHEET + "#ant");
+		int antHandle = super.addSprite(IronLegends.HR_SPRITE_SHEET + "#ant");
 		super.setSpriteRotation(antHandle, Math.toRadians(90));
 		super.setSpriteVisible(antHandle, false);
 		

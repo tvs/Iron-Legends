@@ -25,23 +25,23 @@ public class SplashTextLayer extends ScreenTextLayer
 		m_highScore = highScore;
 		m_playerInfo = playerInfo;
 		// create icons?
-		m_weed = new Sprite(IronLegends.SPRITE_SHEET + "#weed1");
+		m_weed = new Sprite(IronLegends.HR_SPRITE_SHEET + "#weed1");
 		m_weed.setPosition(new Vector2D(0,0));
 		m_weed.setFrame(0);
 		
-		m_weedPU = new Sprite(IronLegends.SPRITE_SHEET + "#weed1");
+		m_weedPU = new Sprite(IronLegends.HR_SPRITE_SHEET + "#weed1");
 		m_weedPU.setPosition(new Vector2D(0,0));
 		m_weedPU.setFrame(1);
 		
-		m_pu1 = new Sprite(IronLegends.SPRITE_SHEET + "#powerup");
+		m_pu1 = new Sprite(IronLegends.HR_SPRITE_SHEET + "#powerup");
 		m_pu1.setPosition(new Vector2D(0,0));
 		m_pu1.setFrame(0);
 		
-		m_pu2 = new Sprite(IronLegends.SPRITE_SHEET + "#powerup");
+		m_pu2 = new Sprite(IronLegends.HR_SPRITE_SHEET + "#powerup");
 		m_pu2.setPosition(new Vector2D(0,0));
 		m_pu2.setFrame(1);
 		
-		m_mitko = new Sprite(IronLegends.SPRITE_SHEET + "#mitko");
+		m_mitko = new Sprite(IronLegends.HR_SPRITE_SHEET + "#mitko");
 		m_mitko.setPosition(new Vector2D(0,0));		
 	}
 	

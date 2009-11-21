@@ -8,7 +8,7 @@ public class Tile extends VanillaAARectangle
 {
 	public Tile(int x, int y, String img)
 	{
-		super(IronLegends.SPRITE_SHEET + "#" + img);
+		super(IronLegends.HR_SPRITE_SHEET + "#" + img);
 		setPosition(new Vector2D(x,y));
 	}
 

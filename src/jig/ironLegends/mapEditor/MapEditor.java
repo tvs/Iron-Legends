@@ -42,8 +42,8 @@ public class MapEditor extends ScrollingScreenGame
 		loadResources();
 				
 		m_mapLayer = new MapLayer();
-		//m_mapLayer.add(new SpriteMapItem(new Vector2D(400,400), 0, "wall", IronLegends.SPRITE_SHEET2 + "#wall"));
-		//m_mapLayer.add(new SpriteMapItem(new Vector2D(300,400), Math.toRadians(45), "wall", IronLegends.SPRITE_SHEET2 + "#wall"));
+		//m_mapLayer.add(new SpriteMapItem(new Vector2D(400,400), 0, "wall", IronLegends.SPRITE_SHEET + "#wall"));
+		//m_mapLayer.add(new SpriteMapItem(new Vector2D(300,400), Math.toRadians(45), "wall", IronLegends.SPRITE_SHEET + "#wall"));
 				
 		m_screens.addScreen(new MapEditor_GS(m_mapLayer, m_mapCalc, m_fonts, this));
 
@@ -72,8 +72,8 @@ public class MapEditor extends ScrollingScreenGame
 		
 		ResourceFactory resourceFactory = ResourceFactory.getFactory();
 
+		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.HR_RESOURCES);
 		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.MY_RESOURCES);
-		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.IRON_LEGENDS_RESOURCES);
 
 		// FONTS
 		

@@ -14,7 +14,7 @@ public class Bullet extends VanillaSphere {
 	private Body owner;
 	
 	public Bullet() {
-		super(IronLegends2.SPRITE_SHEET + "#bullet");
+		super(IronLegends.SPRITE_SHEET + "#bullet");
 		active = false;
 	}
 

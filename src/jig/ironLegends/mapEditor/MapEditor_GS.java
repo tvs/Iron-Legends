@@ -113,7 +113,7 @@ public class MapEditor_GS extends GameScreen
 		int btY = 10;		
 		int cmdId = -1;
 		int btIdx = 0;
-		m_saveBt = new Button(cmdId, btX, 10, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_saveBt = new Button(cmdId, btX, 10, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
 		m_saveBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_saveBt.setText("SAVE");
 		m_cmdButtons.add(m_saveBt);
@@ -124,7 +124,7 @@ public class MapEditor_GS extends GameScreen
 		btIdx++;
 		
 		
-		m_mapName = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_mapName = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
 		m_cmdButtons.add(m_mapName);
 		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
 			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
@@ -134,7 +134,7 @@ public class MapEditor_GS extends GameScreen
 		cmdId--;
 		btIdx++;
 	
-		m_loadBt = new Button(cmdId, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_loadBt = new Button(cmdId, btX, btY, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
 		m_loadBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_loadBt.setText("LOAD");
 		m_cmdButtons.add(m_loadBt);		
@@ -144,7 +144,7 @@ public class MapEditor_GS extends GameScreen
 		cmdId--;
 		btIdx++;
 
-		m_rotation = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_rotation = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
 		m_rotation.setText("45");
 		m_rotationIncDeg = 45;
 		//m_rotation.setText(Double.toString(m_rotationIncDeg));
@@ -166,18 +166,18 @@ public class MapEditor_GS extends GameScreen
 		
 		int tileButtonId = 0;
 		m_tileToolbar.setPosition(sx, sy);
-		m_tileToolbar.append(new TileButton("wall", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#wall"));
+		m_tileToolbar.append(new TileButton("wall", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#wall"));
 		tileButtonId++;
 		
-		m_tileToolbar.append(new TileButton("rock1", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#rock1"));			
+		m_tileToolbar.append(new TileButton("rock1", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#rock1"));			
 		tileButtonId++;
-		m_tileToolbar.append(new TileButton("rock2", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#rock2"));			
+		m_tileToolbar.append(new TileButton("rock2", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#rock2"));			
 		tileButtonId++;
-		m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#tree"));			
+		m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#tree"));			
 		tileButtonId++;
-		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET2 + "#red-base"));			
+		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			
 		//tileButtonId++;
-		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#testEditBox"));
+		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.HR_SPRITE_SHEET + "#testEditBox"));
 		TileButton b = m_tileToolbar.getButton(tileButtonId);
 		b.setDelete(true);
 		tileButtonId++;

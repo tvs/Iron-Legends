@@ -15,7 +15,7 @@ public class Creature extends MultiSpriteBody
 	Creature(String sprite, int frames, long frameDurationMs
 			, boolean bHorizontal, ConvexPolygon shape, Mitko mitko)
 	{
-		super(shape, IronLegends.SPRITE_SHEET + "#" + sprite);
+		super(shape, IronLegends.HR_SPRITE_SHEET + "#" + sprite);
 		
 		if (bHorizontal)
 			velocity = new Vector2D(-20,0);

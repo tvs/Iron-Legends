@@ -60,11 +60,9 @@ public class ResourceIO
 	
 	public void close()
 	{
-		boolean bSuccess = true;
-		
 		if (m_br != null)
 		{
-			try{m_br.close();} catch (IOException ex){bSuccess = false;}
+			try{m_br.close();} catch (IOException ex){}
 			m_br = null;
 		}
 		if (m_urlConnection != null)
@@ -73,17 +71,17 @@ public class ResourceIO
 		}
 		if (m_fis != null)
 		{
-			try { m_fis.close();} catch (IOException ex){bSuccess = false;}
+			try { m_fis.close();} catch (IOException ex){}
 			m_fis = null;
 		}
 		if (m_bw != null)
 		{
-			try{m_bw.close();} catch (IOException ex){bSuccess = false;}
+			try{m_bw.close();} catch (IOException ex){}
 			m_bw = null;
 		}
 		if (m_fos != null)
 		{
-			try { m_fos.close();} catch (IOException ex){bSuccess = false;}
+			try { m_fos.close();} catch (IOException ex){}
 			m_fos = null;
 		}
 	}

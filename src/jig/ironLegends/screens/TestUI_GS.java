@@ -18,15 +18,15 @@ public class TestUI_GS extends GameScreen
 
 		// button test
 		// TODO put collection of buttons as part of each GameScreen?..
-		m_btnTest = new Button(-1, 200, 100, IronLegends.SPRITE_SHEET + "#powerup");
+		m_btnTest = new Button(-1, 200, 100, IronLegends.HR_SPRITE_SHEET + "#powerup");
 		m_btnTest.setFont(fonts.smInstructionalFont);
 		//m_btnTest.initText(-1,-1, m_fonts.smInstructionalFont);
 		m_btnTest.setText("Centered Button Text");
 		
-		m_editBoxTest = new TextEditBox(fonts.smInstructionalFont, -2, 200, 300, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_editBoxTest = new TextEditBox(fonts.smInstructionalFont, -2, 200, 300, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
 		m_editBoxTest.setText("Edit Box");
 		
-		m_btnExit = new Button(-1, 200, 400, IronLegends.SPRITE_SHEET + "#testEditBox");
+		m_btnExit = new Button(-1, 200, 400, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
 		m_btnExit.setFont(fonts.instructionalFont);
 		m_btnExit.setText("EXIT");
 	}
