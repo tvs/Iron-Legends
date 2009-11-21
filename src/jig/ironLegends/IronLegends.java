@@ -191,6 +191,8 @@ public class IronLegends extends ScrollingScreenGame {
 		m_keyCmds.addCommand("up", KeyEvent.VK_UP);
 		m_keyCmds.addCommand("down", KeyEvent.VK_DOWN);
 
+		m_keyCmds.addCommand("fixturret", KeyEvent.VK_T);
+		m_keyCmds.addCommand("fire", KeyEvent.VK_CONTROL);
 		m_keyCmds.addCommand("space", KeyEvent.VK_SPACE);
 		m_keyCmds.addCommand("pause", KeyEvent.VK_P);
 		m_keyCmds.addCommand("enter", KeyEvent.VK_ENTER);

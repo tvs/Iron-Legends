@@ -38,6 +38,7 @@ public class Tank extends MultiSpriteBody {
 	private Team team = Team.WHITE;
 	private Weapon weapon = Weapon.CANNON;
 
+	private boolean fixturret = false;
 	private double speed;
 	private double angularVelocity;
 	private int health = MAX_HEALTH;
@@ -51,23 +52,18 @@ public class Tank extends MultiSpriteBody {
 				+ "#tank");
 		m_mapCalc = mapCalc;
 		setTeam(team);
-		
+
 		ATSprite teamflag = getSprite(addSprite(IronLegends.SPRITE_SHEET
 				+ "#star"));
-		teamflag.setOffset(new Vector2D(0, teamflag.getHeight()/2 + 20));
+		teamflag.setOffset(new Vector2D(0, 30));
 		teamflag.setFrame(team.ordinal());
 
 		turret = getSprite(addSprite(IronLegends.SPRITE_SHEET + "#cannon"));
+		turret.setOffset(new Vector2D(0, -5));
 		// this sets the location at which the turret will rotate
 		// the rotation point will stay center over the MultiSpriteBody
-		turret.setRotationOffset(new Vector2D(0,
-						turret.getHeight() / 2.0 - 20));
-
+		turret.setRotationOffset(new Vector2D(0, 22));		
 		turret.setAbsRotation(true);
-		setTurretRotation(Math.toRadians(90));
-		// this would move the turret's position by this offset from the
-		// rotation center
-		// turret.setOffset(new Vector2D(turret.getHeight()/2-20, 0));
 
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;
@@ -138,36 +134,46 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void controlMovement(KeyCommands m_keyCmds, Mouse mouse) {
-		if (m_keyCmds.isPressed("up")) {
+		if (m_keyCmds.isPressed("up") || m_keyCmds.isPressed("w")) {
 			speed = SPEED;
 		}
 
-		if (m_keyCmds.isPressed("down")) {
+		if (m_keyCmds.isPressed("down") || m_keyCmds.isPressed("s")) {
 			speed = -SPEED;
 		}
 
-		if (!m_keyCmds.isPressed("up") && !m_keyCmds.isPressed("down")) {
+		if (!m_keyCmds.isPressed("up") && !m_keyCmds.isPressed("down")
+				&& !m_keyCmds.isPressed("w") && !m_keyCmds.isPressed("s")) {
 			stop();
 		}
 
-		if (m_keyCmds.isPressed("left")) {
+		if (m_keyCmds.isPressed("left") || m_keyCmds.isPressed("a")) {
 			angularVelocity = -TURN_RATE;
 		}
 
-		if (m_keyCmds.isPressed("right")) {
+		if (m_keyCmds.isPressed("right") || m_keyCmds.isPressed("d")) {
 			angularVelocity = TURN_RATE;
 		}
 
-		if (!m_keyCmds.isPressed("left") && !m_keyCmds.isPressed("right")) {
+		if (!m_keyCmds.isPressed("left") && !m_keyCmds.isPressed("right")
+				&& !m_keyCmds.isPressed("a") && !m_keyCmds.isPressed("d")) {
 			angularVelocity = 0.0;
 		}
 
-		Point loc = mouse.getLocation();
-		Vector2D tankCenterPos = getShapeCenter();
+		if (m_keyCmds.wasReleased("fixturret")) {
+			fixturret = !fixturret;
+		}
 
-		Vector2D mousePt = m_mapCalc.screenToWorld(new Vector2D(loc.x, loc.y));
-		double rot = tankCenterPos.angleTo(mousePt);
-		setTurretRotation(rot + Math.toRadians(90));
+		if (fixturret) {
+			setTurretRotation(getRotation());
+		} else {
+			Point loc = mouse.getLocation();
+			Vector2D tankCenterPos = getShapeCenter();
+			Vector2D mousePt = m_mapCalc.screenToWorld(new Vector2D(loc.x,
+					loc.y));
+			double rot = tankCenterPos.angleTo(mousePt);
+			setTurretRotation(rot + Math.toRadians(90));
+		}
 	}
 
 	public void stop() {
@@ -181,9 +187,10 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void respawn() {
-		setRotation(Math.toRadians(90));
 		speed = 0.0;
 		health = MAX_HEALTH;
+		setRotation(Math.toRadians(90));
+		setTurretRotation(Math.toRadians(90));
 		setPosition(initialPosition);
 		m_animator.setFrameBase(0);
 		getSprite(0).setFrame(m_animator.getFrame());

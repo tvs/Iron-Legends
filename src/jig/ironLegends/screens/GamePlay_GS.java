@@ -109,7 +109,7 @@ public class GamePlay_GS extends GameScreen {
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs) {
 		m_ironLegends.m_tank.controlMovement(keyCmds, mouse);
-		if (mouse.isLeftButtonPressed()) {
+		if (mouse.isLeftButtonPressed() || keyCmds.isPressed("fire")) {
 			m_ironLegends.m_tank.fire(m_ironLegends.getBullet());
 		}
 		
