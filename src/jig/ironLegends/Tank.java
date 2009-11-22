@@ -55,7 +55,7 @@ public class Tank extends MultiSpriteBody {
 
 		ATSprite teamflag = getSprite(addSprite(IronLegends.SPRITE_SHEET
 				+ "#star"));
-		teamflag.setOffset(new Vector2D(0, 30));
+		teamflag.setOffset(new Vector2D(0, 35));
 		teamflag.setFrame(team.ordinal());
 
 		turret = getSprite(addSprite(IronLegends.SPRITE_SHEET + "#cannon"));

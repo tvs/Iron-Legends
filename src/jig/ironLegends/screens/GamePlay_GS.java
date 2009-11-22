@@ -8,6 +8,7 @@ import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.Bullet;
 import jig.ironLegends.IronLegends;
+import jig.ironLegends.Obstacle;
 import jig.ironLegends.Tank;
 import jig.ironLegends.collision.Handler_CPBLayer_BodyLayer;
 import jig.ironLegends.collision.Handler_CPBLayer_CPBLayer;
@@ -20,37 +21,36 @@ import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
 
 public class GamePlay_GS extends GameScreen {
-
-	IronLegends m_ironLegends;
-
-	public GamePlay_GS(int name, IronLegends ironLegends) {
+	IronLegends game;
+	
+	public GamePlay_GS(int name, IronLegends gm) {
 		super(name);
-		m_ironLegends = ironLegends;
+		this.game = gm;
 
-		addViewableLayer(m_ironLegends.m_bgLayer);
-		addViewableLayer(m_ironLegends.m_tankLayer);
-		addViewableLayer(m_ironLegends.m_opponentLayer);
-		addViewableLayer(m_ironLegends.m_bulletLayer);
-		addViewableLayer(m_ironLegends.m_tankObstacleLayer);
-		addViewableLayer(m_ironLegends.m_tankBulletObstacleLayer);
-		addViewableLayer(m_ironLegends.m_powerUpLayer);
+		addViewableLayer(game.m_bgLayer);
+		addViewableLayer(game.m_tankObstacleLayer);
+		addViewableLayer(game.m_tankBulletObstacleLayer);
+		addViewableLayer(game.m_powerUpLayer);
+		addViewableLayer(game.m_opponentLayer);
+		addViewableLayer(game.m_tankLayer);
+		addViewableLayer(game.m_bulletLayer);
 	}
 
 	@Override
 	public void activate(int prevScreen) {
-		m_ironLegends.newGame();
+		game.newGame();
 	}
 
 	@Override
 	public void populateLayers(List<ViewableLayer> gameObjectLayers) {
 		super.populateLayers(gameObjectLayers);
 
-		m_ironLegends.m_physicsEngine
-				.manageViewableSet(m_ironLegends.m_tankLayer);
-		m_ironLegends.m_physicsEngine
-				.manageViewableSet(m_ironLegends.m_opponentLayer);
-		m_ironLegends.m_physicsEngine
-				.manageViewableSet(m_ironLegends.m_bulletLayer);
+		game.m_physicsEngine
+				.manageViewableSet(game.m_tankLayer);
+		game.m_physicsEngine
+				.manageViewableSet(game.m_opponentLayer);
+		game.m_physicsEngine
+				.manageViewableSet(game.m_bulletLayer);
 
 		// Register Collision Handlers
 		// Player tank to other tanks.
@@ -64,10 +64,10 @@ public class GamePlay_GS extends GameScreen {
 				return false;
 			}
 		};
-		m_ironLegends.m_physicsEngine
+		game.m_physicsEngine
 				.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(
-						m_ironLegends.m_tankLayer,
-						m_ironLegends.m_opponentLayer, htankopp));
+						game.m_tankLayer,
+						game.m_opponentLayer, htankopp));
 
 		// Bullets and Opponents
 		ISink_CPB_Body htankbull = new ISink_CPB_Body() {
@@ -79,40 +79,89 @@ public class GamePlay_GS extends GameScreen {
 				if (!t.equals(b.getOwner())) {
 					t.causeDamage(b.getDamage());
 					b.setActivation(false);
+
+					// TODO: give points to the bullet owner
 					return true;
 				}
 
 				return false;
 			}
 		};
-		m_ironLegends.m_physicsEngine
-				.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(
-						m_ironLegends.m_polygonFactory,
-						m_ironLegends.m_opponentLayer,
-						m_ironLegends.m_bulletLayer, 4, 27, htankbull));
 
-		// don't hit the obstacles
-		m_ironLegends.m_physicsEngine
+		game.m_physicsEngine
+				.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(
+						game.m_polygonFactory,
+						game.m_opponentLayer,
+						game.m_bulletLayer, 4, 27, htankbull));
+
+		// Tank & Destroyable
+		game.m_physicsEngine
 				.registerCollisionHandler(new Handler_CPB_CPBLayer(
-						m_ironLegends.m_tank,
-						m_ironLegends.m_tankObstacleLayer,
+						game.m_tank,
+						game.m_tankBulletObstacleLayer,
 						new Sink_CPB_CPB_Default()));
-		
-		m_ironLegends.m_physicsEngine
-				.registerCollisionHandler(new Handler_CPB_CPBLayer(
-						m_ironLegends.m_tank,
-						m_ironLegends.m_tankBulletObstacleLayer,
-						new Sink_CPB_CPB_Default()));
+
+		// Bullets & Destroyable
+		ISink_CPB_Body bulldestroyable = new ISink_CPB_Body() {
+			@Override
+			public boolean onCollision(ConvexPolyBody main, Body other,
+					Vector2D vCorrection) {
+				Obstacle o = (Obstacle) main;
+				Bullet b = (Bullet) other;
+
+				if (o.getDestructible().causeDamage(b.getDamage())) {
+					o.setActivation(false);
+				}
+
+				b.setActivation(false);
+				// TODO: give points to the bullet owner
+				return true;
+			}
+		};
+
+		game.m_physicsEngine
+				.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(
+						game.m_polygonFactory,
+						game.m_tankBulletObstacleLayer,
+						game.m_bulletLayer, 4, 27, bulldestroyable));
+
+		// Tank & Obstacles
+		game.m_physicsEngine
+		.registerCollisionHandler(new Handler_CPB_CPBLayer(
+				game.m_tank,
+				game.m_tankObstacleLayer,
+				new Sink_CPB_CPB_Default()));
+
+		// Bullet & Obstacles
+		ISink_CPB_Body bullobstacles = new ISink_CPB_Body() {
+			@Override
+			public boolean onCollision(ConvexPolyBody main, Body other,
+					Vector2D vCorrection) {
+				Obstacle o = (Obstacle) main;
+				if (!o.isTree()) { // if tree -> let bullet pass thru
+					Bullet b = (Bullet) other;
+					b.setActivation(false);
+				}
+				return true;
+			}
+		};
+
+		game.m_physicsEngine
+				.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(
+						game.m_polygonFactory,
+						game.m_tankObstacleLayer,
+						game.m_bulletLayer, 4, 27, bullobstacles));
 
 	}
-	
+
 	@Override
-	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs) {
-		m_ironLegends.m_tank.controlMovement(keyCmds, mouse);
+	public int processCommands(KeyCommands keyCmds, Mouse mouse,
+			final long deltaMs) {
+		game.m_tank.controlMovement(keyCmds, mouse);
 		if (mouse.isLeftButtonPressed() || keyCmds.isPressed("fire")) {
-			m_ironLegends.m_tank.fire(m_ironLegends.getBullet());
+			game.m_tank.fire(game.getBullet());
 		}
-		
-		return name();		
-	}	
+
+		return name();
+	}
 }

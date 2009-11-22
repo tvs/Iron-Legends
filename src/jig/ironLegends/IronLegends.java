@@ -230,7 +230,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		m_tankBulletObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_tankBulletObstacleLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
