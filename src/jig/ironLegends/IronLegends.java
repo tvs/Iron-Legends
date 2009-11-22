@@ -93,7 +93,6 @@ public class IronLegends extends ScrollingScreenGame {
 	public Tank m_tank;
 	public ViewableLayer m_bgLayer;
 	public BodyLayer<Body> m_tankLayer;
-	public BodyLayer<Body> m_opponentLayer;
 	public BodyLayer<Body> m_bulletLayer;
 	public BodyLayer<Body> m_tankObstacleLayer; // trees
 	public BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings, rocks
@@ -214,24 +213,25 @@ public class IronLegends extends ScrollingScreenGame {
 				ImageBackgroundLayer.TILE_IMAGE);
 
 		// GamePlay Layers
+		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		// Main player
 		m_tank = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.WHITE,
 				new Vector2D(100, 100));
-		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankLayer.add(m_tank);
 
-		m_opponentLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		while (m_opponentLayer.size() < 10) {
+		// Temporary: add random 10 tanks
+		while (m_tankLayer.size() < 11) {
 			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
 					VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
 					VISIBLE_BOUNDS.getMaxY());
 			Tank t = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.RED, pos);
-			m_opponentLayer.add(t);
+			m_tankLayer.add(t);
 		}
 
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankBulletObstacleLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
-		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
+		m_powerUpLayer = new AbstractBodyLayer.NoUpdate<Body>();
 
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
 				m_playerInfo));
@@ -395,6 +395,9 @@ public class IronLegends extends ScrollingScreenGame {
 				m_physicsEngine.applyLawsOfPhysics(deltaMs);
 			}
 
+			// TODO: Temporary hack to show score
+			m_levelProgress.setScore(m_tank.getScore());
+			
 			if (m_gameProgress.getLivesRemaining() == 0) {
 				m_screens.setActiveScreen(GAMEOVER_SCREEN);
 

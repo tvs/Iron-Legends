@@ -31,7 +31,6 @@ public class GamePlay_GS extends GameScreen {
 		addViewableLayer(game.m_tankObstacleLayer);
 		addViewableLayer(game.m_tankBulletObstacleLayer);
 		addViewableLayer(game.m_powerUpLayer);
-		addViewableLayer(game.m_opponentLayer);
 		addViewableLayer(game.m_tankLayer);
 		addViewableLayer(game.m_bulletLayer);
 	}
@@ -48,39 +47,42 @@ public class GamePlay_GS extends GameScreen {
 		game.m_physicsEngine
 				.manageViewableSet(game.m_tankLayer);
 		game.m_physicsEngine
-				.manageViewableSet(game.m_opponentLayer);
-		game.m_physicsEngine
 				.manageViewableSet(game.m_bulletLayer);
 
 		// Register Collision Handlers
-		// Player tank to other tanks.
-		ISink_CPB_CPB htankopp = new ISink_CPB_CPB() {
+		// Tank to Tank
+		ISink_CPB_CPB htanktank = new ISink_CPB_CPB() {
 			@Override
 			public boolean onCollision(ConvexPolyBody main,
 					ConvexPolyBody other, Vector2D vCorrection) {
-				Tank t = (Tank) main;
-				t.setPosition(t.getPosition().translate(vCorrection));
-				t.stop();
+				if (!main.equals(other)) {
+					Tank t = (Tank) main;
+					t.setPosition(t.getPosition().translate(vCorrection));
+					t.stop();
+				}
 				return false;
 			}
 		};
 		game.m_physicsEngine
 				.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(
 						game.m_tankLayer,
-						game.m_opponentLayer, htankopp));
+						game.m_tankLayer, htanktank));
 
-		// Bullets and Opponents
+		// Bullets and Tanks
 		ISink_CPB_Body htankbull = new ISink_CPB_Body() {
 			@Override
 			public boolean onCollision(ConvexPolyBody main, Body other,
 					Vector2D vCorrection) {
 				Tank t = (Tank) main;
 				Bullet b = (Bullet) other;
-				if (!t.equals(b.getOwner())) {
-					t.causeDamage(b.getDamage());
+				Tank bo = (Tank) b.getOwner();
+				if (!t.equals(bo)) { // not killing self
+					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
+						t.causeDamage(b.getDamage());
+						bo.addPoints(b.getDamage());
+					}
+					
 					b.setActivation(false);
-
-					// TODO: give points to the bullet owner
 					return true;
 				}
 
@@ -91,7 +93,7 @@ public class GamePlay_GS extends GameScreen {
 		game.m_physicsEngine
 				.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(
 						game.m_polygonFactory,
-						game.m_opponentLayer,
+						game.m_tankLayer,
 						game.m_bulletLayer, 4, 27, htankbull));
 
 		// Tank & Destroyable
@@ -113,8 +115,9 @@ public class GamePlay_GS extends GameScreen {
 					o.setActivation(false);
 				}
 
+				Tank bo = (Tank) b.getOwner();
+				bo.addPoints(b.getDamage());
 				b.setActivation(false);
-				// TODO: give points to the bullet owner
 				return true;
 			}
 		};

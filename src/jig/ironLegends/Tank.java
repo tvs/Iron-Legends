@@ -46,7 +46,8 @@ public class Tank extends MultiSpriteBody {
 	private int bulletRange = 300;
 	private long timeSinceFired = 0;
 	private long timeSinceDied = 0;
-
+	private int score = 0;
+	
 	public Tank(MapCalc mapCalc, PolygonFactory pf, Team team, Vector2D pos) {
 		super(pf.createRectangle(pos, 85, 101), IronLegends.SPRITE_SHEET
 				+ "#tank");
@@ -264,5 +265,17 @@ public class Tank extends MultiSpriteBody {
 
 	public Type getType() {
 		return type;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public int getScore() {
+		return score;
+	}
+	
+	public void addPoints(int p) {
+		this.score += p;
 	}
 }
