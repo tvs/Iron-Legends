@@ -34,6 +34,7 @@ import jig.ironLegends.screens.GameOverTextLayer;
 import jig.ironLegends.screens.GamePlayTextLayer;
 import jig.ironLegends.screens.GamePlay_GS;
 import jig.ironLegends.screens.HelpScreen;
+import jig.ironLegends.screens.ServerSelectScreen;
 import jig.ironLegends.screens.SplashScreen;
 import jig.misc.sat.PolygonFactory;
 
@@ -68,12 +69,11 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public static final int SPLASH_SCREEN = 0;
 	public static final int HELP_SCREEN = 1;
-	public static final int GAMEOVER_SCREEN = 2;
-	public static final int GAMEPLAY_SCREEN = 3;
-	public static final int GAMEWON_SCREEN = 4;
-	public static final int LEVELCOMPLETE_SCREEN = 5;
-	public static final int CUSTOMIZEPLAYER_SCREEN = 6;
-	public static final int TESTUI_SCREEN = -1;
+	public static final int SERVER_SCREEN = 2;
+	public static final int LOBBY_SCREEN = 3;
+	public static final int GAMEOVER_SCREEN = 4;
+	public static final int GAMEPLAY_SCREEN = 5;
+	public static final int GAMEWON_SCREEN = 6;
 
 	public static final int START_LIVES = 2;
 	public VanillaPhysicsEngine m_physicsEngine;
@@ -236,14 +236,12 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
 				m_playerInfo));
-		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
+		
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
+		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts));
+		
+		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
 		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
-		/*
-		 * m_screens.addScreen(new CustomizePlayerGS(CUSTOMIZEPLAYER_SCREEN,
-		 * m_playerInfo)); m_screens.addScreen(new TestUI_GS(TESTUI_SCREEN,
-		 * m_fonts));
-		 */
 
 		GameScreen gameplayScreen = m_screens.getScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(new GameInfoTextLayer(m_fonts,

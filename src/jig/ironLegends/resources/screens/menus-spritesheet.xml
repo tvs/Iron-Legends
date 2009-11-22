@@ -2,8 +2,8 @@
 	<author>Travis Hall</author>
 	<name>Iron Legends Menu Sprites</name>
 	<type>image/png</type>
-	<width>904</width>
-	<height>1625</height>
+	<width>1880</width>
+	<height>1371</height>
 	
 	<!-- @group Static Frame Elements -->
 	<frameset>
@@ -13,85 +13,209 @@
 		<width>800</width>
 		<height>600</height>
 	</frameset>
+	
+	<frameset>
+		<name>banner</name>
+		<top>405</top>
+		<left>800</left>
+		<width>730</width>
+		<height>495</height>
+	</frameset>
+	
+	<frameset>
+		<name>big-shader</name>
+		<top>679</top>
+		<left>0</left>
+		<width>608</width>
+		<height>357</height>
+	</frameset>
+	
+	<frameset>
+		<name>back-button</name>
+		<top>369</top>
+		<left>1600</left>
+		<width>186</width>
+		<height>36</height>
+		<rows>2</rows>
+	</frameset>
 	<!-- @end Static Frame Elements -->
 	
 	<!-- @group Splash -->
 	<frameset>
 		<name>header</name>
-		<top>600</top>
-		<left>0</left>
+		<top>0</top>
+		<left>800</left>
 		<width>800</width>
-		<height>380</height>
+		<height>405</height>
 	</frameset>
 	
 	<frameset>
 		<name>csbox</name>
-		<top>980</top>
-		<left>0</left>
+		<top>0</top>
+		<left>1600</left>
 		<width>280</width>
 		<height>115</height>
 	</frameset>
 	
 	<frameset>
 		<name>csshader</name>
-		<top>1095</top>
-		<left>0</left>
+		<top>115</top>
+		<left>1600</left>
 		<width>227</width>
 		<height>38</height>
 	</frameset>
 	
 		<!-- @group Buttons -->
 		<frameset>
-			<name>help-button</name>
-			<top>980</top>
-			<left>280</left>
-			<width>186</width>
-			<height>35</height>
+			<name>sp-button</name>
+			<top>153</top>
+			<left>1600</left>
+			<width>230</width>
+			<height>36</height>
 			<rows>2</rows>
 		</frameset>
 		
 		<frameset>
 			<name>mp-button</name>
-			<top>980</top>
-			<left>466</left>
+			<top>225</top>
+			<left>1600</left>
 			<width>208</width>
-			<height>35</height>
+			<height>36</height>
 			<rows>2</rows>
 		</frameset>
-		
+				
 		<frameset>
-			<name>sp-button</name>
-			<top>980</top>
-			<left>674</left>
-			<width>230</width>
-			<height>35</height>
+			<name>help-button</name>
+			<top>297</top>
+			<left>1600</left>
+			<width>186</width>
+			<height>36</height>
 			<rows>2</rows>
-		</frameset>
-		
+		</frameset>		
 		<!-- @end Buttons -->
 	
 	<!-- @end Splash -->
 	
-	<!-- @group Help Menu -->
+	<!-- @group Server Select -->
 	<frameset>
-		<name>help-frame</name>
-		<top>1133</top>
+		<name>separator</name>
+		<top>1036</top>
 		<left>0</left>
-		<width>657</width>
-		<height>492</height>
+		<width>608</width>
+		<height>335</height>
 	</frameset>
 	
 		<!-- @group Buttons -->
 		<frameset>
-			<name>back-button</name>
-			<top>1050</top>
-			<left>280</left>
+			<name>connect-button</name>
+			<top>513</top>
+			<left>1600</left>
 			<width>186</width>
-			<height>35</height>
+			<height>36</height>
 			<rows>2</rows>
 		</frameset>
+		
+		<frameset>
+			<name>create-button</name>
+			<top>585</top>
+			<left>1600</left>
+			<width>208</width>
+			<height>36</height>
+			<rows>2</rows>
+		</frameset>
+		
 		<!-- @end Buttons -->
 	
-	<!-- @end Help Menu -->
+	<!-- @end Server Select -->
+	
+	<!-- @group Server Lobby -->
+	<frameset>
+		<name>player-shader</name>
+		<top>900</top>
+		<left>800</left>
+		<width>300</width>
+		<height>336</height>
+	</frameset>
+	
+	<frameset>
+		<name>options-shader</name>
+		<top>900</top>
+		<left>1100</left>
+		<width>223</width>
+		<height>142</height>
+	</frameset>
+	<!-- @end Server Lobby -->
+
+	<!-- @group Text -->
+	<frameset>
+		<name>help-text</name>
+		<top>600</top>
+		<left>0</left>
+		<width>58</width>
+		<height>21</height>
+	</frameset>
+	
+	<frameset>
+		<name>players-text</name>
+		<top>621</top>
+		<left>0</left>
+		<width>92</width>
+		<height>19</height>
+	</frameset>
+	
+	<frameset>
+		<name>map-text</name>
+		<top>640</top>
+		<left>0</left>
+		<width>52</width>
+		<height>19</height>
+	</frameset>
+	
+	<frameset>
+		<name>server-text</name>
+		<top>659</top>
+		<left>0</left>
+		<width>85</width>
+		<height>20</height>
+	</frameset>
+	<!-- @end Text -->
+	
+	<!-- @group Widgets -->
+	<frameset>
+		<name>down-arrow</name>
+		<top>600</top>
+		<left>92</left>
+		<width>11</width>
+		<height>9</height>
+		<rows>2</rows>
+	</frameset>
+	
+	<frameset>
+		<name>up-arrow</name>
+		<top>600</top>
+		<left>103</left>
+		<width>11</width>
+		<height>9</height>
+		<rows>2</rows>
+	</frameset>
+	
+	<frameset>
+		<name>left-arrow</name>
+		<top>600</top>
+		<left>114</left>
+		<width>7</width>
+		<height>8</height>
+		<rows>2</rows>
+	</frameset>
+	
+	<frameset>
+		<name>right-arrow</name>
+		<top>600</top>
+		<left>121</left>
+		<width>7</width>
+		<height>8</height>
+		<rows>2</rows>
+	</frameset>
+	<!-- @end Widgets -->
 	
 </spriteset>

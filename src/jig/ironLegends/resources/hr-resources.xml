@@ -9,6 +9,8 @@
     	<src>hr-splash.png</src>
     </image>
     
+    <!-- @group Sounds -->
+    <!--
     <audioclip>
         <src>hr-sfx-AyeYay.wav</src>
     </audioclip>
@@ -33,4 +35,6 @@
     <audioclip>
         <src>hr-sfx-Courage.wav</src>
     </audioclip>
+    -->
+    <!-- @end Sounds -->
 </resources>
