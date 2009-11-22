@@ -58,7 +58,8 @@ public class GamePlay_GS extends GameScreen {
 				if (!main.equals(other)) {
 					Tank t = (Tank) main;
 					t.setPosition(t.getPosition().translate(vCorrection));
-					t.stop();
+					t.stopMoving();
+					t.stopTurning();
 				}
 				return false;
 			}
@@ -161,10 +162,6 @@ public class GamePlay_GS extends GameScreen {
 	public int processCommands(KeyCommands keyCmds, Mouse mouse,
 			final long deltaMs) {
 		game.m_tank.controlMovement(keyCmds, mouse);
-		if (mouse.isLeftButtonPressed() || keyCmds.isPressed("fire")) {
-			game.m_tank.fire(game.getBullet());
-		}
-
 		return name();
 	}
 }

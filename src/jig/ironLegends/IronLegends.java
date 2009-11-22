@@ -7,6 +7,7 @@ import java.util.Iterator;
 import javax.imageio.spi.ServiceRegistry;
 
 import jig.engine.ImageResource;
+import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
 import jig.engine.ViewableLayer;
@@ -215,16 +216,16 @@ public class IronLegends extends ScrollingScreenGame {
 		// GamePlay Layers
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		// Main player
-		m_tank = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.WHITE,
-				new Vector2D(100, 100));
+		m_tank = new Tank(this, Tank.Team.WHITE, new Vector2D(100, 100));
 		m_tankLayer.add(m_tank);
 
-		// Temporary: add random 10 tanks
+		// Temporary: add random 10 AI tanks
 		while (m_tankLayer.size() < 11) {
 			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
 					VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
 					VISIBLE_BOUNDS.getMaxY());
-			Tank t = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.RED, pos);
+			Tank t = new Tank(this, Tank.Team.RED, pos, true);
+			t.setTarget(m_tank);
 			m_tankLayer.add(t);
 		}
 
@@ -334,19 +335,15 @@ public class IronLegends extends ScrollingScreenGame {
 	}
 
 	public Bullet getBullet() {
-		Bullet bullet = null;
+		// search for inactive bullet
 		for (Body b : m_bulletLayer) {
 			if (!b.isActive()) {
-				bullet = (Bullet) b;
-				break;
+				return (Bullet) b;
 			}
 		}
 
-		if (bullet == null) {
-			bullet = new Bullet();
-			m_bulletLayer.add(bullet);
-		}
-
+		Bullet bullet = new Bullet();
+		m_bulletLayer.add(bullet);
 		return bullet;
 	}
 
@@ -448,5 +445,9 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public String getMapName() {
 		return m_mapName;
+	}
+	
+	public Mouse getMouse() {
+		return mouse;
 	}
 }
