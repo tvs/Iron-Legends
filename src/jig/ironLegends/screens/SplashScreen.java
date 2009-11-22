@@ -50,7 +50,6 @@ public class SplashScreen extends GameScreen {
 		mbutton = new RolloverButton(-2, 0, 491,IronLegends.SCREEN_SPRITE_SHEET + "#mp-button");
 		hbutton = new RolloverButton(-1, 0, 535,IronLegends.SCREEN_SPRITE_SHEET + "#help-button");
 		
-		// TODO change the input font to the right one (FFF Atlantis Trial sz. 8)
 		csEntryBox = new TextEditBox(fonts.textFont, -2, 292, 360, 
 				IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		csEntryBox.setText(playerInfo.getName());

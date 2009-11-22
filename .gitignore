@@ -22,6 +22,7 @@ export/*
 *~
 *.swp
 *.orig
+*.dict
 
 # Class files
 *.class
