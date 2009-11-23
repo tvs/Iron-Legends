@@ -121,11 +121,11 @@ public class Tank extends MultiSpriteBody {
 			return;
 		}
 
+		timeSinceFired += deltaMs;
 		if (!playerControlled) {
 			AIMovement(deltaMs);
 		}
-
-		timeSinceFired += deltaMs;
+		
 		double rotation = getRotation() + (angularVelocity * deltaMs / 1000.0);
 		Vector2D translateVec = Vector2D.getUnitLengthVector(
 				rotation + Math.toRadians(270)).scale(speed * deltaMs / 1000.0);
@@ -207,10 +207,21 @@ public class Tank extends MultiSpriteBody {
 		}
 
 		Vector2D tp = target.getCenterPosition();
-		Vector2D sp = getCenterPosition();
-		setTurretRotation(sp.angleTo(tp) + Math.toRadians(90));
-		if (tp.distance2(sp) <= 1.25 * bulletRange * bulletRange) {			
+		Vector2D sp = getCenterPosition();		
+		double dist = Math.sqrt(tp.distance2(sp));
+		double target_angle = sp.angleTo(tp);
+		if (dist <= 1.25 * bulletRange) { // close enough start firing			
+			stopMoving();
+			stopTurning();
+			setTurretRotation(target_angle + Math.toRadians(90));
 			fire();
+		} else if (dist <= 2 * bulletRange) { // go towards the target
+			speed = SPEED;
+			setRotation(target_angle + Math.toRadians(90));
+			setTurretRotation(getRotation()); // fix turret
+		} else {
+			stopMoving();
+			stopTurning();
 		}
 	}
 
@@ -243,6 +254,7 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void causeDamage(int damage) {
+		if (playerControlled) return; //TODO: hack
 		health -= damage;
 		if (health <= 0) {
 			explode();

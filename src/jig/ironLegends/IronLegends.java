@@ -155,10 +155,9 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public void loadResources() {
 		ResourceFactory resourceFactory = ResourceFactory.getFactory();
+		
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
-		resourceFactory.loadResources(RESOURCE_ROOT, HR_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_SCREEN, SCREEN_RESOURCES);
-
 		m_fonts.create(resourceFactory);
 	}
 
@@ -173,8 +172,6 @@ public class IronLegends extends ScrollingScreenGame {
 		m_powerUpLayer.clear();
 		m_levelProgress.reset();
 
-		// hard code map for now
-		// loadMap("maps/borders.txt");
 		loadMap("maps/mapitems.txt");
 
 		populateGameLayers();
@@ -220,13 +217,8 @@ public class IronLegends extends ScrollingScreenGame {
 		m_tankLayer.add(m_tank);
 
 		// Temporary: add random 10 AI tanks
-		while (m_tankLayer.size() < 11) {
-			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
-					VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
-					VISIBLE_BOUNDS.getMaxY());
-			Tank t = new Tank(this, Tank.Team.RED, pos, true);
-			t.setTarget(m_tank);
-			m_tankLayer.add(t);
+		while (m_tankLayer.size() < 3) {
+			addAITank();
 		}
 
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
@@ -447,5 +439,14 @@ public class IronLegends extends ScrollingScreenGame {
 	
 	public Mouse getMouse() {
 		return mouse;
+	}
+	
+	public void addAITank() {
+		Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
+				VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
+				VISIBLE_BOUNDS.getMaxY());
+		Tank t = new Tank(this, Tank.Team.RED, pos, true);
+		t.setTarget(m_tank);
+		m_tankLayer.add(t);		
 	}
 }
