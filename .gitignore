@@ -17,6 +17,7 @@ export/*
 .classpath
 .project
 .settings/*
+.ironLegends.dict
 
 # Temporary editor files
 *~
