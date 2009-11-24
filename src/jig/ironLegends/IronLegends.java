@@ -109,7 +109,7 @@ public class IronLegends extends ScrollingScreenGame {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
 		gameframe.setTitle("Iron Legends");
 
-		m_mapCalc = new MapCalc(WORLD_WIDTH, WORLD_HEIGHT);
+		m_mapCalc = new MapCalc(SCREEN_WIDTH, SCREEN_HEIGHT);
 		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
 
 		// Load resources
@@ -214,6 +214,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		// Main player
 		m_tank = new Tank(this, Tank.Team.WHITE, new Vector2D(100, 100));
+
 		m_tankLayer.add(m_tank);
 
 		// Temporary: add random 10 AI tanks
