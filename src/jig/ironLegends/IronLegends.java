@@ -206,7 +206,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public void setupScreens() {
 		// background layer
 		ImageResource bkg = ResourceFactory.getFactory().getFrames(
-				SPRITE_SHEET + "#background").get(0);
+				RESOURCE_ROOT + "background.png").get(0);
 		m_bgLayer = new ImageBackgroundLayer(bkg, WORLD_WIDTH, WORLD_HEIGHT,
 				ImageBackgroundLayer.TILE_IMAGE);
 

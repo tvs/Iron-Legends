@@ -5,8 +5,8 @@
         <framesrc>ironLegends-spritesheet.xml</framesrc>
     </spritesheet>
 
-    <image>
-        <src>splash.png</src>
-    </image>    
+	<image>
+		<src>background.png</src>
+	</image>
 
 </resources>

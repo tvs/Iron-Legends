@@ -5,36 +5,4 @@
         <framesrc>hr-spritesheet.xml</framesrc>
     </spritesheet>
 
-   <image>
-    	<src>hr-splash.png</src>
-    </image>
-    
-    <!-- @group Sounds -->
-    <!--
-    <audioclip>
-        <src>hr-sfx-AyeYay.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-CreatureMeal.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-PickingWeed.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-CollectPowerUp.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-YumYum.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-Gotcha.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-CreatureSmash.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>hr-sfx-Courage.wav</src>
-    </audioclip>
-    -->
-    <!-- @end Sounds -->
 </resources>
