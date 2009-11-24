@@ -191,6 +191,10 @@ public class MultiSpriteBody extends ConvexPolyBody
 	@Override
 	public void render(final RenderingContext rc)
 	{
+		if (!isActive()) {
+			return;
+		}
+		
 		syncSprites();
 		// rc should contain world -> screen transform?
 		// just call render on each sprite (but with each sprites orientation)

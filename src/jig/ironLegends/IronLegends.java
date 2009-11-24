@@ -7,6 +7,7 @@ import java.util.Iterator;
 import javax.imageio.spi.ServiceRegistry;
 
 import jig.engine.ImageResource;
+import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
 import jig.engine.ViewableLayer;
@@ -33,6 +34,7 @@ import jig.ironLegends.screens.GameOverTextLayer;
 import jig.ironLegends.screens.GamePlayTextLayer;
 import jig.ironLegends.screens.GamePlay_GS;
 import jig.ironLegends.screens.HelpScreen;
+import jig.ironLegends.screens.ServerSelectScreen;
 import jig.ironLegends.screens.SplashScreen;
 import jig.misc.sat.PolygonFactory;
 
@@ -67,12 +69,11 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public static final int SPLASH_SCREEN = 0;
 	public static final int HELP_SCREEN = 1;
-	public static final int GAMEOVER_SCREEN = 2;
-	public static final int GAMEPLAY_SCREEN = 3;
-	public static final int GAMEWON_SCREEN = 4;
-	public static final int LEVELCOMPLETE_SCREEN = 5;
-	public static final int CUSTOMIZEPLAYER_SCREEN = 6;
-	public static final int TESTUI_SCREEN = -1;
+	public static final int SERVER_SCREEN = 2;
+	public static final int LOBBY_SCREEN = 3;
+	public static final int GAMEOVER_SCREEN = 4;
+	public static final int GAMEPLAY_SCREEN = 5;
+	public static final int GAMEWON_SCREEN = 6;
 
 	public static final int START_LIVES = 2;
 	public VanillaPhysicsEngine m_physicsEngine;
@@ -93,7 +94,6 @@ public class IronLegends extends ScrollingScreenGame {
 	public Tank m_tank;
 	public ViewableLayer m_bgLayer;
 	public BodyLayer<Body> m_tankLayer;
-	public BodyLayer<Body> m_opponentLayer;
 	public BodyLayer<Body> m_bulletLayer;
 	public BodyLayer<Body> m_tankObstacleLayer; // trees
 	public BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings, rocks
@@ -155,10 +155,9 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public void loadResources() {
 		ResourceFactory resourceFactory = ResourceFactory.getFactory();
+		
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
-		resourceFactory.loadResources(RESOURCE_ROOT, HR_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_SCREEN, SCREEN_RESOURCES);
-
 		m_fonts.create(resourceFactory);
 	}
 
@@ -173,8 +172,6 @@ public class IronLegends extends ScrollingScreenGame {
 		m_powerUpLayer.clear();
 		m_levelProgress.reset();
 
-		// hard code map for now
-		// loadMap("maps/borders.txt");
 		loadMap("maps/mapitems.txt");
 
 		populateGameLayers();
@@ -214,35 +211,29 @@ public class IronLegends extends ScrollingScreenGame {
 				ImageBackgroundLayer.TILE_IMAGE);
 
 		// GamePlay Layers
-		m_tank = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.WHITE,
-				new Vector2D(100, 100));
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		// Main player
+		m_tank = new Tank(this, Tank.Team.WHITE, new Vector2D(100, 100));
 		m_tankLayer.add(m_tank);
 
-		m_opponentLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		while (m_opponentLayer.size() < 10) {
-			Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
-					VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
-					VISIBLE_BOUNDS.getMaxY());
-			Tank t = new Tank(m_mapCalc, m_polygonFactory, Tank.Team.RED, pos);
-			m_opponentLayer.add(t);
+		// Temporary: add random 10 AI tanks
+		while (m_tankLayer.size() < 3) {
+			addAITank();
 		}
 
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		m_tankBulletObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
+		m_tankBulletObstacleLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
+		m_powerUpLayer = new AbstractBodyLayer.NoUpdate<Body>();
 
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
 				m_playerInfo));
-		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
+		
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
+		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts));
+		
+		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
 		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
-		/*
-		 * m_screens.addScreen(new CustomizePlayerGS(CUSTOMIZEPLAYER_SCREEN,
-		 * m_playerInfo)); m_screens.addScreen(new TestUI_GS(TESTUI_SCREEN,
-		 * m_fonts));
-		 */
 
 		GameScreen gameplayScreen = m_screens.getScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(new GameInfoTextLayer(m_fonts,
@@ -334,19 +325,15 @@ public class IronLegends extends ScrollingScreenGame {
 	}
 
 	public Bullet getBullet() {
-		Bullet bullet = null;
+		// search for inactive bullet
 		for (Body b : m_bulletLayer) {
 			if (!b.isActive()) {
-				bullet = (Bullet) b;
-				break;
+				return (Bullet) b;
 			}
 		}
 
-		if (bullet == null) {
-			bullet = new Bullet();
-			m_bulletLayer.add(bullet);
-		}
-
+		Bullet bullet = new Bullet();
+		m_bulletLayer.add(bullet);
 		return bullet;
 	}
 
@@ -395,6 +382,9 @@ public class IronLegends extends ScrollingScreenGame {
 				m_physicsEngine.applyLawsOfPhysics(deltaMs);
 			}
 
+			// TODO: Temporary hack to show score
+			m_levelProgress.setScore(m_tank.getScore());
+			
 			if (m_gameProgress.getLivesRemaining() == 0) {
 				m_screens.setActiveScreen(GAMEOVER_SCREEN);
 
@@ -445,5 +435,18 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public String getMapName() {
 		return m_mapName;
+	}
+	
+	public Mouse getMouse() {
+		return mouse;
+	}
+	
+	public void addAITank() {
+		Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
+				VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
+				VISIBLE_BOUNDS.getMaxY());
+		Tank t = new Tank(this, Tank.Team.RED, pos, true);
+		t.setTarget(m_tank);
+		m_tankLayer.add(t);		
 	}
 }

@@ -17,14 +17,15 @@ import jig.ironLegends.core.ui.TextEditBox;
  * @author Travis Hall
  */
 public class SplashScreen extends GameScreen {
-	PlayerInfo m_playerInfo;
+	protected PlayerInfo m_playerInfo;
 	
-	Sprite bg;
-	Sprite header;
-	Sprite csbox;
-	RolloverButton hbutton;
-	RolloverButton mbutton;
-	RolloverButton sbutton;
+	protected Sprite bg;
+	protected Sprite header;
+	protected Sprite csbox;
+	protected Sprite banner;
+	protected RolloverButton hbutton;
+	protected RolloverButton mbutton;
+	protected RolloverButton sbutton;
 	
 	protected TextEditBox csEntryBox;
 		
@@ -41,8 +42,10 @@ public class SplashScreen extends GameScreen {
 		
 		csbox = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#csbox");
 		csbox.setPosition(new Vector2D(266, 300));
-
 		
+		banner = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#banner");
+		banner.setPosition(new Vector2D(34, 0));
+
 		sbutton = new RolloverButton(-3, 0, 447,IronLegends.SCREEN_SPRITE_SHEET + "#sp-button");
 		mbutton = new RolloverButton(-2, 0, 491,IronLegends.SCREEN_SPRITE_SHEET + "#mp-button");
 		hbutton = new RolloverButton(-1, 0, 535,IronLegends.SCREEN_SPRITE_SHEET + "#help-button");
@@ -55,6 +58,7 @@ public class SplashScreen extends GameScreen {
 	@Override
 	public void render(RenderingContext rc) {
 		bg.render(rc);
+		banner.render(rc);
 		header.render(rc);
 		csbox.render(rc);
 		
@@ -73,7 +77,7 @@ public class SplashScreen extends GameScreen {
 			return IronLegends.HELP_SCREEN;
 		mbutton.update(mouse, deltaMs);
 		if (mbutton.wasLeftClicked())
-			System.out.println("Woah woah woah, not yet implemented. Settle down!");
+			return IronLegends.SERVER_SCREEN;
 		sbutton.update(mouse, deltaMs);
 		if (sbutton.wasLeftClicked())
 			// TODO Push this to the correct "Lobby" screen
