@@ -61,7 +61,6 @@ public class IronLegends extends ScrollingScreenGame {
 	public static final String SCREEN_SPRITE_SHEET = RESOURCE_ROOT
 			+ "screens/menus-spritesheet.png";
 
-	public static final String HR_RESOURCES = "hr-resources.xml";
 	public static final String MY_RESOURCES = "ironLegends-resources.xml";
 	public static final String SCREEN_RESOURCES = "menus-resources.xml";
 
