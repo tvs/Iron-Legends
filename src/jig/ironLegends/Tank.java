@@ -234,6 +234,7 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void explode() {
+		// TODO: activate explosion animation
 		stopMoving();
 		active = false;
 		timeSinceDied = 0;

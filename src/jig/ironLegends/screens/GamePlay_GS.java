@@ -81,6 +81,9 @@ public class GamePlay_GS extends GameScreen {
 					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
 						t.causeDamage(b.getDamage());
 						bo.addPoints(b.getDamage());
+						if (t.getHealth() <= 0)
+						{
+						}
 					}
 					
 					b.setActivation(false);

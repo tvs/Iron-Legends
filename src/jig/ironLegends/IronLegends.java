@@ -31,6 +31,7 @@ import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.screens.GameInfoTextLayer;
 import jig.ironLegends.screens.GameOverTextLayer;
+import jig.ironLegends.screens.GameOver_GS;
 import jig.ironLegends.screens.GamePlayTextLayer;
 import jig.ironLegends.screens.GamePlay_GS;
 import jig.ironLegends.screens.HelpScreen;
@@ -71,7 +72,6 @@ public class IronLegends extends ScrollingScreenGame {
 	public static final int LOBBY_SCREEN = 3;
 	public static final int GAMEOVER_SCREEN = 4;
 	public static final int GAMEPLAY_SCREEN = 5;
-	public static final int GAMEWON_SCREEN = 6;
 
 	public static final int START_LIVES = 2;
 	public VanillaPhysicsEngine m_physicsEngine;
@@ -232,7 +232,6 @@ public class IronLegends extends ScrollingScreenGame {
 		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts));
 		
 		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
-		m_screens.addScreen(new GameScreen(GAMEWON_SCREEN));
 
 		GameScreen gameplayScreen = m_screens.getScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(new GameInfoTextLayer(m_fonts,
@@ -243,7 +242,7 @@ public class IronLegends extends ScrollingScreenGame {
 		// gameover screen has all the layers of gameplay except the text layer
 		// is different
 		Iterator<ViewableLayer> iter = gameplayScreen.getViewableLayers();
-		GameScreen gameOverScreen = new GameScreen(GAMEOVER_SCREEN);
+		GameScreen gameOverScreen = new GameOver_GS(GAMEOVER_SCREEN, this);
 		while (iter.hasNext()) {
 			gameOverScreen.addViewableLayer(iter.next());
 		}
@@ -283,12 +282,6 @@ public class IronLegends extends ScrollingScreenGame {
 			}
 		}
 
-		if (m_levelProgress.isExitActivated()) {
-			if (m_keyCmds.wasPressed("enter")) {
-				m_levelProgress.setExitComplete(true);
-			}
-		}
-
 		// Screen Transitions
 		ScreenTransition t = m_screens.transition(m_keyCmds);
 		if (t != null) {
@@ -308,11 +301,6 @@ public class IronLegends extends ScrollingScreenGame {
 		if (activeScreen == GAMEPLAY_SCREEN) {
 			if (m_keyCmds.wasPressed("die")) {
 				m_gameProgress.playerDied();
-				if (m_gameProgress.getLivesRemaining() < 0) {
-					m_screens.setActiveScreen(GAMEOVER_SCREEN);
-					// !m_levelProgress.isExitActivated()
-					m_gameProgress.getLevelProgress().setExit(true);
-				}
 			}
 		}
 	}
@@ -384,8 +372,10 @@ public class IronLegends extends ScrollingScreenGame {
 			// TODO: Temporary hack to show score
 			m_levelProgress.setScore(m_tank.getScore());
 			
-			if (m_gameProgress.getLivesRemaining() == 0) {
+			if (m_gameProgress.getLivesRemaining() < 0) {
 				m_screens.setActiveScreen(GAMEOVER_SCREEN);
+				// !m_levelProgress.isExitActivated()
+				m_gameProgress.getLevelProgress().setExit(true);
 
 				int totalScore = m_gameProgress.gameOver();
 				if (totalScore > m_highScore.getHighScore()) {
@@ -396,9 +386,11 @@ public class IronLegends extends ScrollingScreenGame {
 			}
 		}
 
-		// center screen on tank
-		Vector2D center = m_tank.getShapeCenter();
-		updateMapCenter(center.clamp(VISIBLE_BOUNDS));
+		// NOTE: client only center screen on tank
+		{
+			Vector2D center = m_tank.getShapeCenter();
+			updateMapCenter(center.clamp(VISIBLE_BOUNDS));
+		}
 	}
 
 	@Override
