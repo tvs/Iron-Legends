@@ -62,7 +62,6 @@ public class IronLegends extends ScrollingScreenGame {
 	public static final String SCREEN_SPRITE_SHEET = RESOURCE_ROOT
 			+ "screens/menus-spritesheet.png";
 
-	public static final String HR_RESOURCES = "hr-resources.xml";
 	public static final String MY_RESOURCES = "ironLegends-resources.xml";
 	public static final String SCREEN_RESOURCES = "menus-resources.xml";
 
@@ -196,8 +195,11 @@ public class IronLegends extends ScrollingScreenGame {
 
 		// Cheat codes
 		m_keyCmds.addCommand("splat", KeyEvent.VK_8);
-		m_keyCmds.addCommand("die", KeyEvent.VK_F);
-
+		m_keyCmds.addCommand("die", KeyEvent.VK_0);
+		m_keyCmds.addCommand("shield", KeyEvent.VK_1);
+		m_keyCmds.addCommand("upgrade", KeyEvent.VK_2);
+		m_keyCmds.addCommand("doublecannon", KeyEvent.VK_3);
+		
 		m_keyCmds.addAlphabet();
 	}
 
@@ -298,9 +300,22 @@ public class IronLegends extends ScrollingScreenGame {
 			m_paused = !m_paused;
 		}
 
-		if (activeScreen == GAMEPLAY_SCREEN) {
+		if (activeScreen == GAMEPLAY_SCREEN) {			
+			// Cheat Codes
 			if (m_keyCmds.wasPressed("die")) {
 				m_gameProgress.playerDied();
+			}
+			
+			if (m_keyCmds.wasPressed("shield")) {
+				m_tank.setShield(true);
+			}
+			
+			if (m_keyCmds.wasPressed("upgrade")) {
+				m_tank.upgrade();
+			}
+
+			if (m_keyCmds.wasPressed("doublecannon")) {
+				m_tank.setWeapon(Tank.Weapon.DOUBLECANNON);
 			}
 		}
 	}

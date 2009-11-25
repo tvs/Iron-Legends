@@ -1,8 +1,0 @@
-<resources>
-
-    <spritesheet>
-        <imagesrc>hr-spritesheet.png</imagesrc>
-        <framesrc>hr-spritesheet.xml</framesrc>
-    </spritesheet>
-
-</resources>
