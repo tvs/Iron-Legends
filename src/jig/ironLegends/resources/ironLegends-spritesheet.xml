@@ -95,6 +95,14 @@
 	
 	<!-- @group Objects -->
 	<frameset>
+		<name>crate</name>
+		<top>332</top>
+		<left>132</left>
+		<width>78</width>
+		<height>70</height>
+	</frameset>
+	
+	<frameset>
 		<name>rock1</name>
 		<top>0</top>
 		<left>420</left>

@@ -175,6 +175,10 @@ public class MapEditor_GS extends GameScreen
 		tileButtonId++;
 		m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#tree"));			
 		tileButtonId++;
+		// NOTE: just testing that crates looked correct!
+		// Should add controls for all of the objects Ð Not sure if the maploader is prepared for 
+//		m_tileToolbar.append(new TileButton("crate", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#crate"));
+//		tileButtonId++;
 		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			
 		//tileButtonId++;
 		

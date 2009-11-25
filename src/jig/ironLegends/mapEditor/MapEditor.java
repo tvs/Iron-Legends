@@ -31,7 +31,7 @@ public class MapEditor extends ScrollingScreenGame
 	{
 		super(MapEditor.SCREEN_WIDTH, MapEditor.SCREEN_HEIGHT, false);
 
-		gameframe.setTitle("Iron Legends");
+		gameframe.setTitle("Iron Legends - Map Editor");
 
 		setWorldBounds(0,0, IronLegends.WORLD_WIDTH, IronLegends.WORLD_HEIGHT);
 		m_mapCalc.setWorldBounds(0,0, IronLegends.WORLD_WIDTH, IronLegends.WORLD_HEIGHT);
