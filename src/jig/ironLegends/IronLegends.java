@@ -56,8 +56,6 @@ public class IronLegends extends ScrollingScreenGame {
 	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
 	public static final String RESOURCE_SCREEN = "jig/ironLegends/resources/screens/";
 
-	public static final String HR_SPRITE_SHEET = RESOURCE_ROOT
-			+ "hr-spritesheet.png";
 	public static final String SPRITE_SHEET = RESOURCE_ROOT
 			+ "ironLegends-spritesheet.png";
 	public static final String SCREEN_SPRITE_SHEET = RESOURCE_ROOT

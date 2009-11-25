@@ -72,8 +72,9 @@ public class MapEditor extends ScrollingScreenGame
 		
 		ResourceFactory resourceFactory = ResourceFactory.getFactory();
 
-		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.HR_RESOURCES);
+		//resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.HR_RESOURCES);
 		resourceFactory.loadResources(IronLegends.RESOURCE_ROOT, IronLegends.MY_RESOURCES);
+		resourceFactory.loadResources(IronLegends.RESOURCE_SCREEN, IronLegends.SCREEN_RESOURCES);
 
 		// FONTS
 		

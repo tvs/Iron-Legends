@@ -113,7 +113,7 @@ public class MapEditor_GS extends GameScreen
 		int btY = 10;		
 		int cmdId = -1;
 		int btIdx = 0;
-		m_saveBt = new Button(cmdId, btX, 10, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
+		m_saveBt = new Button(cmdId, btX, 10, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_saveBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_saveBt.setText("SAVE");
 		m_cmdButtons.add(m_saveBt);
@@ -124,7 +124,7 @@ public class MapEditor_GS extends GameScreen
 		btIdx++;
 		
 		
-		m_mapName = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
+		m_mapName = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_cmdButtons.add(m_mapName);
 		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
 			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
@@ -134,7 +134,7 @@ public class MapEditor_GS extends GameScreen
 		cmdId--;
 		btIdx++;
 	
-		m_loadBt = new Button(cmdId, btX, btY, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
+		m_loadBt = new Button(cmdId, btX, btY, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_loadBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_loadBt.setText("LOAD");
 		m_cmdButtons.add(m_loadBt);		
@@ -144,7 +144,7 @@ public class MapEditor_GS extends GameScreen
 		cmdId--;
 		btIdx++;
 
-		m_rotation = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.HR_SPRITE_SHEET + "#testEditBox");
+		m_rotation = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_rotation.setText("45");
 		m_rotationIncDeg = 45;
 		//m_rotation.setText(Double.toString(m_rotationIncDeg));
@@ -177,7 +177,12 @@ public class MapEditor_GS extends GameScreen
 		tileButtonId++;
 		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			
 		//tileButtonId++;
-		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.HR_SPRITE_SHEET + "#testEditBox"));
+		
+		// TODO: add more buttons here crates? bases? launch points? (launch points might not be visible in the game
+		// but could be used as spawning grounds for each team e.g. lp1-team1
+		
+		// TODO: add delete icon
+		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#mine"));
 		TileButton b = m_tileToolbar.getButton(tileButtonId);
 		b.setDelete(true);
 		tileButtonId++;
