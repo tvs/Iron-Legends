@@ -81,9 +81,10 @@ public class GamePlay_GS extends GameScreen {
 					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
 						t.causeDamage(b.getDamage());
 						bo.addPoints(b.getDamage());
-						if (t.getHealth() <= 0)
-						{
-						}
+						// TODO? if death match vs capture do different behavior
+						// in death match if only single tank remaining game over, winner is last tank
+						// in capture base mode, tank death->respawn
+						// perhaps call gameprogress.tankDied.. to dictate appropriate next behavior?
 					}
 					
 					b.setActivation(false);
