@@ -258,7 +258,8 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void explode() {
-		// TODO: activate explosion animation
+		// TODO: activate explosion animation (hmm.. maybe can just use specialEffects class 
+		// to activate a "special effect" and it will deactivate on its own time elsewhere
 		stopMoving();
 		active = false;
 		timeSinceDied = 0;

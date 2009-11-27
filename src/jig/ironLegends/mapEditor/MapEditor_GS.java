@@ -14,6 +14,7 @@ import jig.ironLegends.core.ATSprite;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
+import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.Button;
 import jig.ironLegends.core.ui.ButtonToolbar;
 import jig.ironLegends.core.ui.MouseState;
@@ -22,7 +23,7 @@ import jig.ironLegends.core.ui.TextEditBox;
 public class MapEditor_GS extends GameScreen 
 {
 
-	Vector<Button> m_cmdButtons;
+	ButtonToolbar<Button> m_cmdButtons;
 	
 	Button m_saveBt;
 	Button m_loadBt;
@@ -36,7 +37,6 @@ public class MapEditor_GS extends GameScreen
 	//TODO: add visible world borders
 	ButtonToolbar<TileButton> m_tileToolbar = new ButtonToolbar<TileButton>(0, 0);
 	
-	//Vector<TileButton> m_tileButtons;
 	Point m_curMouse = new Point(0,0);
 	int m_buttonStartX = 16*IronLegends.SCREEN_WIDTH/20;
 	TileButton m_selButton = null;
@@ -88,72 +88,43 @@ public class MapEditor_GS extends GameScreen
 	}
 	private void setLocations() 
 	{
-		// m_maxCmdWidth + m_maxSpriteWidth
-		int buttonStartX = MapEditor.SCREEN_WIDTH - m_maxCmdWidth - m_tileToolbar.getMaxWidth() - 2;
+		int buttonStartX = MapEditor.SCREEN_WIDTH - m_cmdButtons.getMaxWidth() - m_tileToolbar.getMaxWidth() - 2;
+		
 		int cmdStartX = buttonStartX + m_tileToolbar.getMaxWidth() + 1;
 		
 		m_tileToolbar.setPosition(buttonStartX, (int)m_tileToolbar.getPosition().getY());
 		
-		{
-			Iterator<Button> iter = m_cmdButtons.iterator();
-			while (iter.hasNext())
-			{
-				Button b = iter.next();
-				b.setPosition(new Vector2D(cmdStartX, b.getPosition().getY()));
-			}
-		}
+		m_cmdButtons.setPosition(cmdStartX, (int)m_cmdButtons.getPosition().getY());
 		m_buttonStartX = buttonStartX;
 	}
 	private void createCmdButtons() 
 	{
-		m_cmdButtons = new Vector<Button>();
-		
-		
 		int btX = (int)m_tileToolbar.getPosition().getX() + m_tileToolbar.getMaxWidth()+2;
-		int btY = 10;		
+		int btY = 10;
+
+		m_cmdButtons = new ButtonToolbar<Button>(btX, btY);
+	
 		int cmdId = -1;
 		int btIdx = 0;
+		
 		m_saveBt = new Button(cmdId, btX, 10, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_saveBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_saveBt.setText("SAVE");
-		m_cmdButtons.add(m_saveBt);
-		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
-			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
-		btY += m_cmdButtons.get(btIdx).getHeight();
-		cmdId--;
-		btIdx++;
-		
-		
+		m_cmdButtons.append(m_saveBt);
+				
 		m_mapName = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
-		m_cmdButtons.add(m_mapName);
-		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
-			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
-		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
-			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
-		btY += m_cmdButtons.get(btIdx).getHeight();
-		cmdId--;
-		btIdx++;
+		m_cmdButtons.append(m_mapName);
 	
 		m_loadBt = new Button(cmdId, btX, btY, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_loadBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_loadBt.setText("LOAD");
-		m_cmdButtons.add(m_loadBt);		
-		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
-			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
-		btY += m_cmdButtons.get(btIdx).getHeight();
-		cmdId--;
-		btIdx++;
+		m_cmdButtons.append(m_loadBt);
 
 		m_rotation = new TextEditBox(m_fonts.instructionalFont, cmdId, btX, btY, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_rotation.setText("45");
 		m_rotationIncDeg = 45;
 		//m_rotation.setText(Double.toString(m_rotationIncDeg));
-		m_cmdButtons.add(m_rotation);			
-		if (m_maxCmdWidth < m_cmdButtons.get(btIdx).getWidth())
-			m_maxCmdWidth = m_cmdButtons.get(btIdx).getWidth();
-		btY += m_cmdButtons.get(btIdx).getHeight();
-		cmdId--;
-		btIdx++;
+		m_cmdButtons.append(m_rotation);
 	}
 
 	/*
@@ -177,8 +148,8 @@ public class MapEditor_GS extends GameScreen
 		tileButtonId++;
 		// NOTE: just testing that crates looked correct!
 		// Should add controls for all of the objects Ð Not sure if the maploader is prepared for 
-//		m_tileToolbar.append(new TileButton("crate", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#crate"));
-//		tileButtonId++;
+		m_tileToolbar.append(new TileButton("crate", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#crate"));
+		tileButtonId++;
 		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			
 		//tileButtonId++;
 		
@@ -366,18 +337,24 @@ public class MapEditor_GS extends GameScreen
 	{
 		// map item selection items
 		m_tileToolbar.render(rc);		
-		// render cmd buttons
-		{
-			Iterator<Button> iter = m_cmdButtons.iterator();
-			while (iter.hasNext())
-			{
-				Button b = iter.next();
-				b.render(rc);
-			}
-			
-			m_mapName.render(rc);
-		}
+		m_cmdButtons.render(rc);
+		//m_mapName.render(rc);
 		
+		// render status info
+		{
+			TextWriter text = new TextWriter(rc);
+			text.setY(m_cmdButtons.getHeight()+m_cmdButtons.getPosition().y);
+			text.setLineStart(m_cmdButtons.getPosition().x);
+			
+			text.setFont(m_fonts.instructionalFont);
+			Vector2D wc = m_mapCalc.screenToWorld(m_mapCalc.getCenter());
+			text.println("Center in WC:");
+			text.println((int)wc.getX() + "," + (int)wc.getY());
+			
+			wc = m_mapCalc.screenToWorld(new Point(m_curMouse.x, m_curMouse.y));
+			text.println("Mouse in WC:");
+			text.println((int)wc.getX() + "," + (int)wc.getY());			
+		}
 		
 		// render mouse
 		if (m_curSprite != null &&

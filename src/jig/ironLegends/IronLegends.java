@@ -366,41 +366,9 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 
 		int activeScreen = m_screens.activeScreen();
-		switch (activeScreen) {
-		case SPLASH_SCREEN:
-			break;
-
-		case GAMEOVER_SCREEN:
-			// allow things to keep moving
-			m_physicsEngine.applyLawsOfPhysics(deltaMs);
-			break;
-
-		case GAMEPLAY_SCREEN:
-			if (m_levelProgress.isIntro()) {
-				m_levelProgress.update(deltaMs);
-			} else if (m_levelProgress.isExitActivated()) {
-				m_levelProgress.update(deltaMs);
-			} else {
-				m_physicsEngine.applyLawsOfPhysics(deltaMs);
-			}
-
-			// TODO: Temporary hack to show score
-			m_levelProgress.setScore(m_tank.getScore());
-			
-			if (m_gameProgress.getLivesRemaining() < 0) {
-				m_screens.setActiveScreen(GAMEOVER_SCREEN);
-				// !m_levelProgress.isExitActivated()
-				m_gameProgress.getLevelProgress().setExit(true);
-
-				int totalScore = m_gameProgress.gameOver();
-				if (totalScore > m_highScore.getHighScore()) {
-					m_highScore.setHighScore(totalScore);
-					m_highScore.setPlayer(m_playerInfo.getName());
-					m_highScorePersist.save(m_highScore);
-				}
-			}
-		}
-
+		GameScreen activeGS = m_screens.getActiveScreen();
+		activeGS.update(deltaMs);
+		
 		// NOTE: client only center screen on tank
 		{
 			Vector2D center = m_tank.getShapeCenter();

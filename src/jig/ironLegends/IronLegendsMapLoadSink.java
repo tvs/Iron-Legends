@@ -26,12 +26,19 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 		MapItemPersist mapItem = new MapItemPersist(line);
 		Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory);
 
-		if (mapItem.name().equals("wall") || mapItem.name().equals("building")) {
+		if (mapItem.name().equals("wall") 	|| 
+			mapItem.name().equals("building")||
+			mapItem.name().equals("crate") ) {
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
-		} else {
-			// "tree"
+		} else if (mapItem.name().equals("tree")  ||
+				   mapItem.name().equals("rock1") ||
+				   mapItem.name().equals("rock2")   ){
 			m_ironLegends.m_tankObstacleLayer.add(ob);
+		} else {
+			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 		}
+		
+		
 	}
 
 }

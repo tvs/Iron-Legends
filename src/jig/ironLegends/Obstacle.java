@@ -7,6 +7,7 @@ import jig.ironLegends.mapEditor.MapItemPersist;
 import jig.misc.sat.PolygonFactory;
 
 public class Obstacle extends MultiSpriteBody {
+	private static final int CRATE_MAX_HEALTH = 20;
 	private static int WALL_MAX_HEALTH = 40;
 	private String m_name;
 	private Destructible m_destructible;
@@ -66,6 +67,8 @@ public class Obstacle extends MultiSpriteBody {
 			// m_destructible = new Destructible(WALL_MAX_HEALTH);
 		} else if (m_name.equals("tree")) {
 			// m_destructible = new Destructible(WALL_MAX_HEALTH);
+		} else if (m_name.equals("crate")) {
+			m_destructible = new Destructible(CRATE_MAX_HEALTH);
 		} else if (m_name.equals("")) {
 			// m_destructible = new Destructible(WALL_MAX_HEALTH);
 		}

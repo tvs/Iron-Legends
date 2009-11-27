@@ -42,6 +42,9 @@ public class GameScreen
 	public void render(RenderingContext rc)
 	{
 	}
+	public void update(long deltaMs)
+	{
+	}
 	
 	protected LinkedList<ViewableLayer> m_viewableLayers = new LinkedList<ViewableLayer>();
 	protected int m_name;

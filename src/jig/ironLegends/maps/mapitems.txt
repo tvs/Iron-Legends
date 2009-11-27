@@ -15,3 +15,4 @@ tree:459.0:601.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#tree
 tree:210.0:147.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#tree
 rock2:491.0:292.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#rock2
 wall:613.0:412.0:-45.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
+crate:1281.0:1240.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#crate

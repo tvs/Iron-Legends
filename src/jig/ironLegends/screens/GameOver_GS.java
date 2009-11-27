@@ -13,6 +13,7 @@ public class GameOver_GS extends GameScreen {
 		super(name);
 		m_game = game;
 	}
+	
 	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs){
 	
 		if (m_game.m_levelProgress.isExitActivated()) {
@@ -23,6 +24,12 @@ public class GameOver_GS extends GameScreen {
 			}
 		}
 		return name();
+	}
+	
+	@Override
+	public void update(long deltaMs) {
+		// allow things to keep moving
+		m_game.m_physicsEngine.applyLawsOfPhysics(deltaMs);
 	}
 	
 }

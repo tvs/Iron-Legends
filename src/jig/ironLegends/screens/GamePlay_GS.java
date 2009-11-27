@@ -84,7 +84,6 @@ public class GamePlay_GS extends GameScreen {
 						// TODO? if death match vs capture do different behavior
 						// in death match if only single tank remaining game over, winner is last tank
 						// in capture base mode, tank death->respawn
-						// perhaps call gameprogress.tankDied.. to dictate appropriate next behavior?
 					}
 					
 					b.setActivation(false);
@@ -167,5 +166,35 @@ public class GamePlay_GS extends GameScreen {
 			final long deltaMs) {
 		game.m_tank.controlMovement(keyCmds, mouse);
 		return name();
+	}
+	
+	@Override
+	public void update(long deltaMs) {
+		if (game.m_levelProgress.isIntro()) {
+			game.m_levelProgress.update(deltaMs);
+		} else if (game.m_levelProgress.isExitActivated()) {
+			game.m_levelProgress.update(deltaMs);
+		} else {
+			game.m_physicsEngine.applyLawsOfPhysics(deltaMs);
+		}
+
+		// TODO: check tanks for death? then respawn (team) or adjust life (deathmatch)
+		// if deathmatch (ie single player for now?)
+		//if (game.m_tank.getHealth() < 0)
+		
+		// TODO: Temporary hack to show score
+		game.m_levelProgress.setScore(game.m_tank.getScore());
+		
+		if (game.m_gameProgress.getLivesRemaining() < 0) {
+			game.m_screens.setActiveScreen(IronLegends.GAMEOVER_SCREEN);
+			game.m_gameProgress.getLevelProgress().setExit(true);
+
+			int totalScore = game.m_gameProgress.gameOver();
+			if (totalScore > game.m_highScore.getHighScore()) {
+				game.m_highScore.setHighScore(totalScore);
+				game.m_highScore.setPlayer(game.m_playerInfo.getName());
+				game.m_highScorePersist.save(game.m_highScore);
+			}
+		}		
 	}
 }

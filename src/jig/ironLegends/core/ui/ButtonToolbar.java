@@ -43,6 +43,8 @@ public class ButtonToolbar <B extends Button>
 		m_buttons.add(b);
 		
 		b.setPosition(new Vector2D(m_sx, m_sy + m_nextsy));
+		m_totalSpriteHeight += b.getHeight();
+		
 		if (m_maxSpriteHeight < b.getHeight())
 			m_maxSpriteHeight = b.getHeight();
 		if (m_maxSpriteWidth < b.getWidth())
@@ -77,6 +79,8 @@ public class ButtonToolbar <B extends Button>
 	int m_topSpriteIdx = 0;
 	int m_maxSpriteWidth = 0;
 	int m_maxSpriteHeight = 0;
+	int m_totalSpriteHeight = 0;
+	
 	public void scrollDown(int i) 
 	{
 		if (m_topSpriteIdx < m_buttons.size()-1)
@@ -111,6 +115,10 @@ public class ButtonToolbar <B extends Button>
 	public int getMaxWidth() 
 	{
 		return m_maxSpriteWidth;
+	}
+
+	public int getHeight() {
+		return m_totalSpriteHeight;
 	}
 
 }
