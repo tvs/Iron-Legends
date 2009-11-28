@@ -46,4 +46,18 @@ public class GameProgress
 
 	public LevelProgress m_levelProgress;
 	protected String m_sMapName;
+	
+	public void tankDestroyed(Tank t) {
+		if (t == null)
+			return;
+		
+		m_levelProgress.tankDestroyed();
+	}
+	public void setMapName(String mapName) {
+		m_sMapName = mapName;
+	}
+	public String getMapName()
+	{
+		return m_sMapName;
+	}
 }

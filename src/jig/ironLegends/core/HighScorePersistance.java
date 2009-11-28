@@ -38,7 +38,6 @@ public class HighScorePersistance
 			ps.write("\n");
 			ps.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -57,7 +56,6 @@ public class HighScorePersistance
 			try 
 			{
 				String sHighScore = fis.readLine();
-				//m_sHigh = sHighScore;
 				String sPlayer = fis.readLine();
 				
 				if (sHighScore != null && sHighScore.length() > 0)

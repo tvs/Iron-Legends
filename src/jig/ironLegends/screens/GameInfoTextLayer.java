@@ -51,17 +51,18 @@ public class GameInfoTextLayer extends ScreenTextLayer {
 		text.setY(10);
 		text.setLineStart(650);
 
-		text.println("Total Score: " + m_gameProgress.getTotalScore());
-
-		// text.println("Map: " + m_gameProgress.getCurLevel());
-		text.println("Level Score: "
+		//text.println("Total Score: " + m_gameProgress.getTotalScore());
+		
+		text.println("Map: " + m_gameProgress.getMapName());
+		text.println("High Score: " + m_highScore.getHighScore());
+		text.println("Score: "
 				+ m_gameProgress.m_levelProgress.getScore());
 
 		// TODO: put mini tank icons for lives remaining (print the sprite)
-		text.println("Lives Rem: " + m_gameProgress.getLivesRemaining());
+		text.println("Lives: " + (m_gameProgress.getLivesRemaining()<0?"You're Dead!":m_gameProgress.getLivesRemaining()));
+		text.println("Enemies: " + m_gameProgress.m_levelProgress.getTanksRemaining());
 
 		text.setY(300);
-		text.println("High Score: " + m_highScore.getHighScore());
 		text = null;
 	}
 }

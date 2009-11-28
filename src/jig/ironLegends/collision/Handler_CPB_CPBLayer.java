@@ -47,9 +47,8 @@ public class Handler_CPB_CPBLayer implements CollisionHandler
 			if (vCorrection != null)
 			{
 				
-				// TODO: MJPP-bug? since hedge is modeled as individual tiles
-				// if hit the corner of a tile, minPenetration will not always
-				// reposition outside of all the tiles
+				// TODO: MJPP-bug? if hit the corner of a tile, minPenetration will not always
+				// reposition outside of all the collisions
 				/*
 				 
 				 .........

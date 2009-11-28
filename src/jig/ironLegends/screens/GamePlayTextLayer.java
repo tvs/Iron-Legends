@@ -26,13 +26,26 @@ public class GamePlayTextLayer extends ScreenTextLayer
 			text.setFont(m_fonts.instructionalFont);
 			text.setY(IronLegends.WORLD_HEIGHT/8);
 			text.setLineStart(-1);
-			
-			text.println("CUSTOMIZE THIS");
-			text.println(m_playerInfo.getName() + "!");
+			if (m_gameProgress.getLevelProgress().didWin()) 
+			{
+				text.println("Congratulations");
+				text.setFont(m_fonts.titleFont);
+				text.println(m_playerInfo.getName() + "!");
+				
+				text.setFont(m_fonts.instructionalFont);
+				text.println("YOU WON!!");
+			}
+			else
+			{
+				text.println("The enemy is too strong");
+				text.setFont(m_fonts.inYourFaceFont);
+				text.print("You LOST ");
+				text.println(m_playerInfo.getName() + "!");
+				text.setFont(m_fonts.instructionalFont);
+			}
 			
 			text.println("");
 			text.setFont(m_fonts.instructionalFont);
-			text.println("Based on how the game ended");
 			text.println("Press enter to continue");
 			text.println("Add buttons for: continue or leave enter?");
 		}

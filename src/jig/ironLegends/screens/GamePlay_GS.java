@@ -44,12 +44,36 @@ public class GamePlay_GS extends GameScreen {
 	public void populateLayers(List<ViewableLayer> gameObjectLayers) {
 		super.populateLayers(gameObjectLayers);
 
+		// part of single player "start game" - based on map and user selections
+		{
+			game.m_tank = null;
+			// Main player
+			game.m_tank = new Tank(game, Tank.Team.WHITE, new Vector2D(100, 100));
+	
+			game.m_tankLayer.clear();
+			game.m_tankLayer.add(game.m_tank);
+	
+			// Temporary: add random 10 AI tanks
+			while (game.m_tankLayer.size() < 3) {
+				game.addAITank();
+			}
+		}
+		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_tankLayer.size()-1);
+		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
+		
+		
 		game.m_physicsEngine
 				.manageViewableSet(game.m_tankLayer);
 		game.m_physicsEngine
 				.manageViewableSet(game.m_bulletLayer);
 
 		// Register Collision Handlers
+		registerCollisionHandles();
+		
+
+	}
+
+	private void registerCollisionHandles() {
 		// Tank to Tank
 		ISink_CPB_CPB htanktank = new ISink_CPB_CPB() {
 			@Override
@@ -81,6 +105,10 @@ public class GamePlay_GS extends GameScreen {
 					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
 						t.causeDamage(b.getDamage());
 						bo.addPoints(b.getDamage());
+						if (t.getHealth() <= 0)
+						{
+							game.m_gameProgress.tankDestroyed(t);
+						}		
 						// TODO? if death match vs capture do different behavior
 						// in death match if only single tank remaining game over, winner is last tank
 						// in capture base mode, tank death->respawn
@@ -158,7 +186,6 @@ public class GamePlay_GS extends GameScreen {
 						game.m_polygonFactory,
 						game.m_tankObstacleLayer,
 						game.m_bulletLayer, 4, 27, bullobstacles));
-
 	}
 
 	@Override
@@ -170,6 +197,9 @@ public class GamePlay_GS extends GameScreen {
 	
 	@Override
 	public void update(long deltaMs) {
+		Vector2D center = game.m_tank.getShapeCenter();
+		game.updateMapCenter(center.clamp(IronLegends.VISIBLE_BOUNDS));
+		
 		if (game.m_levelProgress.isIntro()) {
 			game.m_levelProgress.update(deltaMs);
 		} else if (game.m_levelProgress.isExitActivated()) {
@@ -185,7 +215,17 @@ public class GamePlay_GS extends GameScreen {
 		// TODO: Temporary hack to show score
 		game.m_levelProgress.setScore(game.m_tank.getScore());
 		
+		boolean bGameOver = false;
+		
 		if (game.m_gameProgress.getLivesRemaining() < 0) {
+			bGameOver = true;
+		}
+		else if (game.m_levelProgress.getTanksRemaining() <= 0) {
+			bGameOver = true;
+		}
+		
+		if (bGameOver)
+		{
 			game.m_screens.setActiveScreen(IronLegends.GAMEOVER_SCREEN);
 			game.m_gameProgress.getLevelProgress().setExit(true);
 
@@ -194,7 +234,7 @@ public class GamePlay_GS extends GameScreen {
 				game.m_highScore.setHighScore(totalScore);
 				game.m_highScore.setPlayer(game.m_playerInfo.getName());
 				game.m_highScorePersist.save(game.m_highScore);
-			}
-		}		
+			}		
+		}
 	}
 }

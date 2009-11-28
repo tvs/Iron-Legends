@@ -212,16 +212,6 @@ public class IronLegends extends ScrollingScreenGame {
 
 		// GamePlay Layers
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
-		// Main player
-		m_tank = new Tank(this, Tank.Team.WHITE, new Vector2D(100, 100));
-
-		m_tankLayer.add(m_tank);
-
-		// Temporary: add random 10 AI tanks
-		while (m_tankLayer.size() < 3) {
-			addAITank();
-		}
-
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankBulletObstacleLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
@@ -365,15 +355,8 @@ public class IronLegends extends ScrollingScreenGame {
 			m_bFirstLevelUpdate = true;
 		}
 
-		int activeScreen = m_screens.activeScreen();
 		GameScreen activeGS = m_screens.getActiveScreen();
-		activeGS.update(deltaMs);
-		
-		// NOTE: client only center screen on tank
-		{
-			Vector2D center = m_tank.getShapeCenter();
-			updateMapCenter(center.clamp(VISIBLE_BOUNDS));
-		}
+		activeGS.update(deltaMs);		
 	}
 
 	@Override
@@ -403,8 +386,9 @@ public class IronLegends extends ScrollingScreenGame {
 		m_mapCalc.setWorldBounds(0, 0, width, height);
 	}
 
-	public void setMapName(String m_mapName) {
-		this.m_mapName = m_mapName;
+	public void setMapName(String mapName) {
+		m_mapName = mapName;
+		m_gameProgress.setMapName(m_mapName);		
 	}
 
 	public String getMapName() {

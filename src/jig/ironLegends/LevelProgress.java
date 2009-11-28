@@ -5,6 +5,8 @@ public class LevelProgress {
 	boolean m_bExitActivated;
 	boolean m_bExitComplete;
 	protected int m_levelScore;
+	protected int m_tanksDestroyed = 0;
+	protected int m_tanksToDestroy = 0;
 
 	public LevelProgress() {
 		reset();
@@ -44,6 +46,12 @@ public class LevelProgress {
 		return m_bExitComplete;
 	}
 
+	public boolean didWin() {
+		if (getTanksRemaining() <= 0)
+			return true;
+		return false;
+	}
+	
 	public void update(double deltaMs) {
 		if (m_introRemainingMs > 0) {
 			m_introRemainingMs -= deltaMs;
@@ -55,6 +63,8 @@ public class LevelProgress {
 		m_introRemainingMs = 0;
 		m_bExitActivated = false;
 		m_bExitComplete = false;
+		m_tanksDestroyed = 0;
+		m_tanksToDestroy = 0;
 	}
 
 	public int getScore() {
@@ -64,4 +74,23 @@ public class LevelProgress {
 	public void setScore(int score) {
 		m_levelScore = score;
 	}
+
+	public int getTanksRemaining() {
+		return m_tanksToDestroy-m_tanksDestroyed;
+	}
+
+	public void tankDestroyed() {
+		m_tanksDestroyed++;
+		
+	}
+
+	public void setTanksToDestroy(int i) {
+		m_tanksToDestroy = i;
+		
+	}
+
+	public void setTanksDestroyed(int i) {
+		m_tanksDestroyed = i;		
+	}
+	
 }

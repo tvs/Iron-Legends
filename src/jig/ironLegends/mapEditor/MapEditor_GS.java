@@ -3,8 +3,6 @@ package jig.ironLegends.mapEditor;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
-import java.util.Vector;
-
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.util.Vector2D;
