@@ -1,0 +1,70 @@
+================================================================================
+CS 447/547: Computer Game Design Project 2: Iron Legends
+================================================================================
+
+Iron Legends is an unrestrictive two-dimensional shooter where players
+are placed in control of a tank and let free to cause as much havoc as
+possible. That said, depending on the mode of gameplay, single-player or
+networked multiplayer, there are certain objectives that dictate the win
+scenario.
+
+In the single-player game mode, various types of computer-controlled enemies
+will roam the battlefield trying to destroy the player. In order for the
+player to win, s/he must annihilate each of the enemies. To even the odds,
+each defeated enemy will have a chance to drop a power-up for the player's
+tank. For example, power-ups may include: increased speed, increased armor,
+or even weapons with different behaviors.
+
+In multiplayer mode, the objective is different. Players are placed on
+teams and given an unlimited number of lives. Instead of being the last tank
+standing, the teams are required to destroy an enemy base while protecting
+their own. There is one catch; when destroyed, the player will suffer some
+negative effect, either by losing points from their score or by losing their
+accumulated power-ups.
+
+================================================================================
+Alpha Version
+================================================================================
+
+Task accomplished and included in the Alpha version:
+  * Graphics (Logo, Splash, background, sprites)
+  * GUI Utilities (Button, Toolbar, Textbox)
+  * Game configuration/setup screens
+  * Map editor (ongoing)
+  * Loading maps (ongoing)
+  * Collision detection between entities
+  * Tank Health, destroyable obstacles, non destroyable obstacles, bullets
+  * Various types of Tanks, Upgrades (Shields, Cannons, Armor)
+  * Tank movement using keyboard and mouse
+  * Random movement for computer controlled Tank
+
+Plan for achieving the goals:
+ (1) Creating a fun game
+
+
+ (2) Completing Technical Showpieces
+
+
+ (3) Achieving low bar goals
+
+
+================================================================================
+Cheat Codes
+================================================================================
+
+There are following cheat codes left intentional in the game for reviewer.
+Press the key described in Key column below to achieve the effect.
+
+Key     Description
+----------------------------------
+0       Die
+1       Execute power - shield
+2       Execute power - upgrade
+3       Execute power - get double cannon
+
+================================================================================
+License
+================================================================================
+
+Please see included LICENSE file for terms of use for the game and additional 
+attribution.

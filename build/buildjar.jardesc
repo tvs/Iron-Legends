@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="/Data/WSU/GameDesign/jig-1.7.5-8/IronLegends.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/Iron-Legends/build/buildjar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/Iron-Legends/src/META-INF/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <folder path="/Iron-Legends/doc"/>
+        <javaElement handleIdentifier="=Iron-Legends/src"/>
+        <folder path="/Iron-Legends/fonts"/>
+    </selectedElements>
+</jardesc>

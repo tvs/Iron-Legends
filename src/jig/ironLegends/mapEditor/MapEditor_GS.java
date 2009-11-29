@@ -49,8 +49,6 @@ public class MapEditor_GS extends GameScreen
 	Fonts m_fonts;
 	
 	MapEditor m_mapEditor;
-	private int m_maxCmdWidth = 0;
-	
 	int m_mapWidth;
 	int m_mapHeight;
 	public Rectangle VISIBLE_BOUNDS = new Rectangle();
@@ -103,8 +101,6 @@ public class MapEditor_GS extends GameScreen
 		m_cmdButtons = new ButtonToolbar<Button>(btX, btY);
 	
 		int cmdId = -1;
-		int btIdx = 0;
-		
 		m_saveBt = new Button(cmdId, btX, 10, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		m_saveBt.initText(-1,-1, m_fonts.instructionalFont);
 		m_saveBt.setText("SAVE");
@@ -145,7 +141,7 @@ public class MapEditor_GS extends GameScreen
 		m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#tree"));			
 		tileButtonId++;
 		// NOTE: just testing that crates looked correct!
-		// Should add controls for all of the objects Ð Not sure if the maploader is prepared for 
+		// Should add controls for all of the objects ï¿½ Not sure if the maploader is prepared for 
 		m_tileToolbar.append(new TileButton("crate", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#crate"));
 		tileButtonId++;
 		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			

@@ -48,7 +48,7 @@ public class GamePlay_GS extends GameScreen {
 		{
 			game.m_tank = null;
 			// Main player
-			game.m_tank = new Tank(game, Tank.Team.WHITE, new Vector2D(100, 100));
+			game.m_tank = new Tank(game, Tank.Team.WHITE, new Vector2D(100, 250));
 	
 			game.m_tankLayer.clear();
 			game.m_tankLayer.add(game.m_tank);
