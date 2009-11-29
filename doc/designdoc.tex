@@ -1,0 +1,276 @@
+\documentclass[letterpaper,11pt,twoside]{article}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{fancyhdr, lastpage}
+\usepackage[pdftex]{graphicx}
+\pdfinfo{
+   /Author (Travis Hall, Bhadresh Patel and Michael Persons) 
+   /Title (Iron Legends - Design Document)
+}
+
+\setlength{\parskip}{0.5ex}
+\pagestyle{fancy}
+\setlength{\headheight}{14.0pt}
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[RO,RE] {Design Document: \emph{Iron Legends}}
+\fancyfoot[CO,CE] {CS 447/547: Game Design Project 2}
+\fancyfoot[RO,RE] {Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+\begin{document}
+
+%%%%%%%%%% Title Page %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+   \begin{center}
+       {\large \textbf{CS 447/547: Game Design Project 2}}\\[0.5cm]
+       {\large \textbf{Design Document}}\\[3.0cm]
+
+       {\rule{\linewidth}{0.5mm}} \\[0.5cm]
+       {\Huge \textbf{Iron Legends}}\\[0.4cm] 
+       {\rule{\linewidth}{0.5mm}} \\[2.0cm]
+
+       \textbf{Travis Hall}\\
+       \texttt{travis.hall@email.wsu.edu}\\[0.5cm]
+       \textbf{Bhadresh Patel}\\
+       \texttt{bhadresh.patel@email.wsu.edu}\\[0.5cm]
+       \textbf{Michael Persons}\\
+       \texttt{michael.persons@email.wsu.edu}\\[0.5cm]
+
+       \vfill
+       Washington State University Vancouver\\
+       November 04, 2009
+   \end{center}
+\end{titlepage}
+
+%%%%%%%%%% Abstract %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+\emph{Iron Legends} is a top-down arcade-style tank combat game. The goal is simple: total domination! Players will strap themselves into the cockpit of a tank and blast, smash, and detonate anyone and everyone who dares to stand in their way. With two different modes of gameplay–--single-player and networked multiplayer--–combatants can pit their wits and their bravery against legions of computer-controlled tanks or test their mettle against friend and foe alike. Let the mayhem begin!
+\end{abstract}
+
+%%%%%%%%%% Game Overview %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Game Overview}
+
+\emph{Iron Legends} is an unrestrictive two-dimensional shooter where players are placed in control of a tank and let free to cause as much havoc as possible. That said, depending on the mode of gameplay---single-player or networked multiplayer---there are certain objectives that dictate the win scenario.
+
+In the single-player game mode, various types of computer-controlled enemies will roam the battlefield trying to destroy the player. In order for the player to win, s/he must annihilate each of the enemies. To even the odds, each defeated enemy will have a chance to drop a power-up for the player's tank. For example, power-ups may include: increased speed, increased armor, or even weapons with different behaviors.
+
+In multiplayer mode, the objective is different. Players are placed on teams and given an unlimited number of lives. Instead of being the last tank standing, the teams are required to destroy an enemy base while protecting their own. There is one catch; when destroyed, the player will suffer some negative effect, either by losing points from their score or by losing their accumulated power-ups.
+
+In order to provide a fun game environment where players are not swallowed up in an incomprehensible chaos, while keeping the game hectic enough to be exciting, the game maps must be relatively large. In order to accomplish this, the game uses a scrolling screen to only view certain areas of the world at any given time, and care must be taken to prevent the combatants from getting lost.
+
+\begin{figure}[htb]
+ \centering
+ \includegraphics[scale=1.66]{mockup.jpg}
+ \label{fig:mockup}
+ \caption{Initial Mockup---\emph{Iron Legends}}
+\end{figure}
+
+\subsection{Game Play}
+
+The main features of game-play are summarized below:
+
+\subsubsection{Common Features}
+\begin{itemize}
+ \item Scrolling screen that only reveals part of the battlefield at any given time.
+ \item Items on the map that release power-ups when destroyed.
+ \item Both single- and multiplayer modes, with distinct gameplay elements.
+\end{itemize}
+
+\subsubsection{Single Player Features}
+\begin{itemize}
+ \item \underline{Objective:} The player must annihilate all enemy tanks on the battlefield.
+ \item Each time the player is shot, their total health is decremented.
+ \item The player has three lives and each time the player's health is depleted, one life is lost.
+ \item Enemy tanks are controlled by the computer artificial intelligence (AI).
+ \item When enemies are destroyed they have a chance of dropping power-ups that the player may then collect.
+ \item Each power-up changes the player's tank in some manner. \emph{e.g.} speed boosts, armor boosts, repairs, new weapons, etc.
+\end{itemize}
+
+\subsubsection{Multiplayer Features}
+\begin{itemize}
+ \item \underline{Objective:} Destroy the enemy team's base while preventing them from destroying yours.
+ \item A team loses if their base is destroyed.
+ \item A team is declared the winner if their base is the last one remaining.
+\end{itemize}
+
+\subsection{Possible Interactions}
+
+\subsubsection{Player Interaction}
+\begin{itemize}
+ \item Select game mode (single or multiplayer)
+	\begin{itemize}
+		\item If the game is multiplayer: create a lobby or join an existing game.
+	\end{itemize}
+ \item Controlling the tank: movement and shooting.
+ \item Weapon selection.
+\end{itemize}
+
+\subsubsection{Entity Interaction}
+\begin{itemize}
+ \item Tank and obstacle collision.
+ \item Tank and power-up collision.
+ \item Weapon and Tank collision.
+ \item Weapon and obstacle collision.
+ \item Weapon and Base collision.
+\end{itemize}
+
+\subsection{Entities}
+\begin{description}
+ \item[Player Base] The main hub for a team, surrounded by simple obstacles and vulnerable to enemy attack.
+ \item[Wall] The most common obstacle. It can be destroyed.
+ \item[Trees] Object that stops tanks but not weapon-fire.
+ \item[Rocks] Cannot be destroyed and blocks all objects.
+ \item[Power-ups] Objects that have differing effects on player tanks.
+ \item[Tanks] The main entities for all players and enemies (see Tank section for more details).
+\end{description}
+
+\subsubsection{Tanks}
+\begin{description}
+ \item[Player Tank] The player begins with a Basic Tank and can collect power-ups through the duration of the game.
+ 
+ \item[Basic Tank] The most simple form of the tank. Moderately fast, moderately armored, and moderately armed.
+
+ \item[Fast Tank] A faster version of the Basic Tank. Because of its speed, it often poses a considerable threat to the bases and can be used for hit-and-run operations.
+
+ \item[Armor Tank] A slower, more heavily-armored version of the Basic Tank. It has greater health than the basic tank and can be used effectively as both a guard and attacker.
+
+ \item[Jeep] An extremely fast vehicle. As a trade-off for the speed, the Jeep loses its direct fire weaponry instead laying mines that explode in proximity to enemy tanks. Though the Jeep is the least directly-threatening "tank," skilled players will be able to use the Jeep to lay traps and use guerilla tactics to defeat their opponents.
+\end{description}
+
+\begin{figure}[htb]
+ \centering
+ \includegraphics[scale=0.5]{sherman.png}
+ \label{fig:basictank}
+ \caption{High Res Mockup---\emph{Basic Tank}}
+\end{figure}
+
+\subsubsection{Power-ups}
+
+As enemy tanks are destroyed, they have a chance of dropping power-ups. The power-up will disappear after a time if not collected, but upon collection, the player's tank will gain certain benefits. The following list depicts some of the possible power-ups that will be included in the game:
+
+\begin{description}
+ \item[Upgrade] This upgrades the player's tank and its effects remain until the player dies. The upgrades can be in the form of additional weapons or different types of tanks (see the previous Tank section).
+ \item[Repair] Increases the player's health by a certain percentage.
+ \item[Shield] Provides a temporary shield to the player's tank, making it immune to all enemy attacks for the duration of its effects.
+ \item[Extra Life] Provides an extra life to the player.
+ \item[Double Cannon] Provides the ability to fire two shots at the same time with faster speed.
+\end{description}
+
+\subsubsection{Minimap or Radar}
+
+A small portion of the screen will be devoted to some means of providing the player with a means of navigation. Because the screen contains only a certain area of the map, without this means of orienting and locating relative positions, players could easily get lost. This may either be implemented in the form of a radar or a minimap.
+
+\subsection{Why this is fun:}
+
+Players are placed into a competitive environment where they are forced to make rapid decisions that can result in either glory or despair. By including power-ups, the player is given a greater incentive to avoid damage, and there is a greater degree of intensity to the gameplay as a result.
+
+To prevent players from getting bored, additional maps are provided and their varying layouts can result in vastly different gameplay experiences. In addition, the multiplayer mode allows friends to play together, bringing a certain social element to the game. Of course, being able to lord your victory over the others doesn't hurt.
+
+%%%%%%%%%% Development Strategy %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Development Strategy}
+
+\subsection{Code Reuse}
+
+Several snippets of existing code and concepts will be integrated into this project. The goal is to reuse as much of the code as possible without creating any integration issues. The following list depicts some of the possible areas for code reuse:
+
+\begin{description}
+ \item[HedgeRunner] Collision detection using the Separating Axis Theorem (SAT), screen-to-screen navigation, and text-input UI elements.
+
+ \item[Tank Battle] A rough base from which the gameplay has evolved and a good baseline from which the entities can be extended.
+
+ \item[Timbre] The concept of a scrolling screen game as well as composite graphics and the ability to generate graphics computationally.
+\end{description}
+
+\subsection{Unknowns}
+
+This project will require several features for which the implementation is unknown to the authors at the time of this proposal. These unknowns can prove to be challenging and will thus be areas that will need to be identified early into the project's timeline. The list below describes some of those areas:
+
+\begin{description}
+ \item[Networking] The proper implementation to provide seamless multiplayer gameplay. This includes network optimizations.
+ \item[Artificial Intelligence] The algorithms for enemy Tanks that will provide fun gameplay. For example, a full and correct implementation of the traditional A* algorithm will create enemy tanks that are too strong. Certain refinements will need to be made such that players are not overwhelmed.
+ \item[Command Separation] Separating control-input from command execution (local, remote, AI, etc.)
+ \item[Performance] Networking and AI performance must be fast enough so that there is no adverse effects on the player's experience.
+ \item[Architecture] Separating the architecture so that the game can support single player and multiplayer seamlessly and without requiring duplicated or separate code-bases.
+ \item[Controls] Effectively use keyboard and/or mouse controls for easy tank navigation.
+\end{description}
+
+\subsection{Roles}
+
+Each of the team members will be involved in the various design decisions as well as major implementation areas. Though each member will have a main focus, it is not expected that they will devote themselves exclusively to those areas. The lists below show some of the group decisions as well as individual focuses:
+
+\begin{itemize}
+ \item Networking utility/wrapper for client/server.
+ \item The core of the AI.
+ \item Render/Update logic vs. Control Logic.
+ \item Configuration and navigation screens.
+ \item General gameplay and UI layout.
+ \item Integrating map and game information with the AI.
+ \item Fleshing out various interactions and gameplay elements as they crop up.
+\end{itemize}
+
+\begin{description}
+ \item[Travis Hall] Graphics/sprites, networking client/server wrapper for multiplayer mode
+ \item[Bhadresh Patel] AI Tanks, rendering/update logic for local and remote entities, player controls
+ \item[Michael Persons] Screen configuration/navigation, game setup/customization, collision detection and handling, networking message communication
+\end{description}
+
+\subsection{Milestones}
+
+\subsubsection{M1}
+\begin{itemize}
+ \item Scrolling screen gameplay
+ \item Screen navigation (Help, some customization screens, etc)
+ \item Simple map loading
+ \item Controlling a single tank
+\end{itemize}
+
+\subsubsection{M2}
+\begin{itemize}
+ \item Simple networked framework working
+ \item Configuration screens for network setup
+ \item Basic animations
+\end{itemize}
+
+\subsubsection{Alpha}
+\begin{itemize}
+ \item Single player gameplay (computer opponents with limited AI)
+ \item Separation between issuing commands and executing commands (to enable various types of input for AI, remote player, local player, etc.)
+ \item Basic status information
+ \item Tentative screen layouts
+\end{itemize}
+
+\subsubsection{Release}
+\begin{itemize}
+ \item Networked and single player gameplay available
+ \item Sound effects
+ \item Finalized screen layouts, graphics, etc.
+\end{itemize}
+
+%%%%%%%%%% Technical Showpieces %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Technical Showpieces}
+
+\subsection{Artificial Intelligence}
+
+Certain AI techniques will be harnessed for dictating the computer-controlled behavior. This includes searching (such as a modified version of the A* algorithm), and using those results to create different styles of opponents who attack using different strategies.
+
+\subsection{Multiplayer via Networking}
+
+Multiplayer mode is a challenge in that it not only requires that the game have a method of networked communication, but a method must be established that ensures a consistent experience across all players. With a poor implementation, players could potentially see enemies jumping around the screen due to the network latency. This is not desirable and so care has to be taken to avoid such situations.
+
+Due to the myriad patterns available for doing such networking, there is always the risk that a chosen technique is inviable for unforeseen aspects.
+
+%%%%%%%%%% High Bar %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{High Bar}
+
+\begin{itemize}
+ \item Flying opponents like helicopter or bomber aircraft.
+ \item Ability to collect and use rockets (for shooting helicopters).
+ \item Advanced weapons: mines, laser or guided missile.
+ \item Players can customize their tanks (perhaps color, varying tank abilities \emph{e.g.} slow but strong, quick but weak, various types of ammunition, etc.).
+ \item Movable turret (\emph{i.e.} players could move the turret without moving the tank).
+ \item Collectible ammunition (\emph{i.e.} upon destroying enemies they will leave behind ammunition that a player can collect to score more points and increase the power).
+\end{itemize}
+
+\end{document}
