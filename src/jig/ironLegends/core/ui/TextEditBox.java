@@ -49,13 +49,6 @@ public class TextEditBox extends Button
 				FinalPair<String,KeyState> k = iter.next();
 				if (k.m_o1.equals("enter"))
 				{
-					/*
-					if (m_sCollectedText.length() > 0)
-					{
-						m_sPlayer = m_sCollectedText;
-						m_playerInfo.setName(m_sPlayer);
-					}
-					*/
 					break;
 				}
 				
@@ -74,7 +67,6 @@ public class TextEditBox extends Button
 				{
 					m_sCollectedText += k.m_o1;
 					super.setText(m_sCollectedText);
-					//System.out.print(k.m_o1);
 				}
 				else if (k.m_o1.equals("space"))
 				{
@@ -82,7 +74,6 @@ public class TextEditBox extends Button
 					super.setText(m_sCollectedText);					
 				}
 			}
-			//System.out.println("");
 		}
 	}
 }

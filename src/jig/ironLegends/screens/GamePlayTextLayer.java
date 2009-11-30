@@ -60,7 +60,10 @@ public class GamePlayTextLayer extends ScreenTextLayer
 			Integer ii = i+1;
 			
 			text.println(ii.toString());
+			
 			// TODO: load intro text from map?
+			
+			
 		}
 	}
 	protected GameProgress m_gameProgress;
