@@ -1,4 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: jig.ironLegends.IronLegends
-Class-Path: . jig-1.7.5.jar sat-1.7.5-13-109.jar   
-
+Class-Path: . lib/jig-1.7.5.jar lib/sat-1.7.5-13-109.jar

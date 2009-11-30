@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 
 import jig.engine.FontResource;
 import jig.engine.ResourceFactory;
@@ -40,11 +41,12 @@ public class Fonts
 		
 		
 		try {
-			InputStream is = new BufferedInputStream(new FileInputStream("fonts/FFFATLAN.TTF"));
+			URL url = this.getClass().getResource("/fonts/FFFATLAN.TTF");			
+			InputStream is = (url == null ? new BufferedInputStream(new FileInputStream("fonts/FFFATLAN.TTF")) : url.openStream());
 			Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 8f);
 			textFont = resourceFactory.getFontResource(font, Color.WHITE, null);
 		} catch (Exception e) {
-			System.err.println("Font resource error on FFFATLAN.TTF\nLoading stock font");
+			System.err.println("Error: Loading stock font FFFATLAN.TTF");
 			textFont = resourceFactory.getFontResource(new Font("Sans Serif", Font.PLAIN, 12), Color.WHITE, null);
 		}
 	}

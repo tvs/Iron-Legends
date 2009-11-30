@@ -104,10 +104,7 @@ public class ResourceIO
 			{
 				m_fis = new FileInputStream(sFile);
 				m_br = new BufferedReader(new InputStreamReader(m_fis));
-			} catch (FileNotFoundException ex)
-			{
-				System.out.println(ex);					
-			}
+			} catch (FileNotFoundException ex) {}
 		}
 		if (m_br == null)
 		{
@@ -163,10 +160,7 @@ public class ResourceIO
 			{
 				m_fos = new FileOutputStream(sFile);
 				m_bw = new BufferedWriter(new OutputStreamWriter(m_fos));
-			} catch (FileNotFoundException ex)
-			{
-				System.out.println(ex);					
-			}
+			} catch (FileNotFoundException ex) {}
 		}
 		if (m_bw == null)
 		{
