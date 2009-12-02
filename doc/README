@@ -34,19 +34,34 @@ Task accomplished and included in the Alpha version:
   * Loading maps (ongoing)
   * Collision detection between entities
   * Tank Health, destroyable obstacles, non destroyable obstacles, bullets
-  * Various types of Tanks, Upgrades (Shields, Cannons, Armor)
+  * Various types of Tanks, 
+  * Tank powers/Upgrades (Shields, Cannons, Armor)
   * Tank movement using keyboard and mouse
   * Random movement for computer controlled Tank
 
 Plan for achieving the goals:
  (1) Creating a fun game
-
-
+     * Game will be played in two modes: single player and multi player
+     * Multiple maps with varying layouts     
+     * Powerups - ability to get more power that can cause greater damage to opponents
+     
  (2) Completing Technical Showpieces
+     * Single and Multi player mode 
+       * Major part of the base framework has been completed that will support both mode.
+     * Networking
+       * Research
+       * Made simple client/server Java application (though it is not included in the game)
+     * AI
+       * Research
+       * In this version only one behavior of the AI tank is completed, that is
+         ability to chase the target once the target is within certain range.    
 
-
- (3) Achieving low bar goals
-
+ (3) Meeting low bar goals
+     Following features are still in development that was proposed as low bar goals:
+       * Multiple map
+       * Radar/mini map
+       * Networking - multi player mode
+       * AI Tanks     
 
 ================================================================================
 Cheat Codes
