@@ -26,7 +26,7 @@ accumulated power-ups.
 Alpha Version
 ================================================================================
 
-Task accomplished and included in the Alpha version:
+Tasks accomplished and included in the Alpha version:
   * Graphics (Logo, Splash, background, sprites)
   * GUI Utilities (Button, Toolbar, Textbox)
   * Game configuration/setup screens
@@ -34,7 +34,7 @@ Task accomplished and included in the Alpha version:
   * Loading maps (ongoing)
   * Collision detection between entities
   * Tank Health, destroyable obstacles, non destroyable obstacles, bullets
-  * Various types of Tanks, 
+  * Various types of Tanks
   * Tank powers/Upgrades (Shields, Cannons, Armor)
   * Tank movement using keyboard and mouse
   * Random movement for computer controlled Tank
@@ -72,7 +72,7 @@ Press the key described in Key column below to achieve the effect.
 
 Key     Description
 ----------------------------------
-0       Die
+0       God Mode - Player tank is indestructible
 1       Execute power - shield
 2       Execute power - upgrade
 3       Execute power - get double cannon

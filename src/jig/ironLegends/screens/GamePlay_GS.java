@@ -52,7 +52,8 @@ public class GamePlay_GS extends GameScreen {
 	
 			game.m_tankLayer.clear();
 			game.m_tankLayer.add(game.m_tank);
-	
+			game.m_entityLayer.add(game.m_tank);
+			
 			// Temporary: add random 10 AI tanks
 			while (game.m_tankLayer.size() < 3) {
 				game.addAITank();
@@ -103,7 +104,10 @@ public class GamePlay_GS extends GameScreen {
 				Tank bo = (Tank) b.getOwner();
 				if (!t.equals(bo)) { // not killing self
 					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
-						t.causeDamage(b.getDamage());
+						if (!(game.m_godmode && t.isPlayerControlled())) {
+							t.causeDamage(b.getDamage());
+						}
+						
 						bo.addPoints(b.getDamage());
 						if (t.getHealth() <= 0)
 						{
