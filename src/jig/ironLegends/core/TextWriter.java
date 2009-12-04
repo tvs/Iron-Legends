@@ -63,6 +63,13 @@ public class TextWriter
 	public int getX(){return m_x;}
 	public int getY(){return m_y;}
 
+	public void println(Sprite s)
+	{
+		print(s);
+		m_y += s.getHeight();
+		m_x = m_lineStart;		
+	}
+	
 	public void print(Sprite s)
 	{
 		int w = s.getWidth();

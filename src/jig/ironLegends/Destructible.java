@@ -49,4 +49,8 @@ public class Destructible {
 	public int getHealth() {
 		return m_health;
 	}
+
+	public int getMaxHealth() {
+		return m_maxHealth;
+	}
 }

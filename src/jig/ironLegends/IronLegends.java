@@ -234,11 +234,13 @@ public class IronLegends extends ScrollingScreenGame {
 			m_hudLayer = new StaticBodyLayer.NoUpdate<Body>();
 			
 			// creates image... not actually renderable, is just a sprite
-			PaintableCanvas.loadDefaultFrames("radarhud_opponentbase", 4,4,2, JIGSHAPE.RECTANGLE, new Color(255,0,0));
-			PaintableCanvas.loadDefaultFrames("radarhud_teambase", 4,4,2, JIGSHAPE.RECTANGLE, new Color(255,255,255));
-			PaintableCanvas.loadDefaultFrames("radarhud_self", 4,4,2, JIGSHAPE.CIRCLE, new Color(255,255,255));
-			PaintableCanvas.loadDefaultFrames("radarhud_teammate", 4,4,2, JIGSHAPE.CIRCLE, new Color(0,0,255));
-			PaintableCanvas.loadDefaultFrames("radarhud_opponent", 4,4,2, JIGSHAPE.CIRCLE, new Color(255,0,0));
+			PaintableCanvas.loadDefaultFrames("radarhud_opponentbase", 4,4,1, JIGSHAPE.RECTANGLE, new Color(255,0,0));
+			PaintableCanvas.loadDefaultFrames("radarhud_teambase", 4,4,1, JIGSHAPE.RECTANGLE, new Color(255,255,255));
+			PaintableCanvas.loadDefaultFrames("radarhud_self", 4,4,1, JIGSHAPE.CIRCLE, new Color(255,255,255));
+			PaintableCanvas.loadDefaultFrames("radarhud_teammate", 4,4,1, JIGSHAPE.CIRCLE, new Color(0,0,255));
+			PaintableCanvas.loadDefaultFrames("radarhud_opponent", 4,4,1, JIGSHAPE.CIRCLE, new Color(255,0,0));
+			PaintableCanvas.loadDefaultFrames("health_total", 4,4,1, JIGSHAPE.RECTANGLE, new Color(255,0,0));
+			PaintableCanvas.loadDefaultFrames("health_remaining", 4,4,1, JIGSHAPE.RECTANGLE, new Color(0,255,0));
 				
 			m_radarHUD = new RadarHUD(0,0, 64, 1000, this);
 			m_radarHUD.setWorldDim(2000,2000);

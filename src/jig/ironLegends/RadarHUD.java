@@ -72,6 +72,8 @@ public class RadarHUD extends Body
 		while (iter.hasNext())
 		{
 			Tank t = (Tank)iter.next();
+			if (!t.isActive())
+				continue;
 			Sprite s = null;
 			if (t == m_game.m_tank)
 			{
@@ -123,6 +125,8 @@ public class RadarHUD extends Body
 		while (iter.hasNext())
 		{
 			Tank t = (Tank)iter.next();
+			if (!t.isActive())
+				continue;
 			Sprite s = null;
 			if (t == m_game.m_tank)
 			{

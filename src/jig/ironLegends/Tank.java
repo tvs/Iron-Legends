@@ -56,6 +56,7 @@ public class Tank extends MultiSpriteBody {
 	private long timeSinceShield = 0;
 	private int score = 0;
 	private IronLegends game = null;
+	private HealthBar m_healthBar = null;
 
 	public Tank(IronLegends game, Team team, Vector2D pos, Type type) {
 		super(game.m_polygonFactory.createRectangle(pos, 85, 101),
@@ -81,6 +82,7 @@ public class Tank extends MultiSpriteBody {
 		sTurret.setRotationOffset(new Vector2D(0, 22));
 		sTurret.setAbsRotation(true);
 
+		m_healthBar = new HealthBar();
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;
 		setTeam(team);
@@ -296,6 +298,7 @@ public class Tank extends MultiSpriteBody {
 		}
 
 		super.render(rc);
+		m_healthBar.render(rc, getPosition(), getHealth(), getMaxHealth(), getMaxHealth()/10, true);
 	}
 
 	public double getTurretRotation() {
