@@ -240,7 +240,7 @@ public class IronLegends extends ScrollingScreenGame {
 			PaintableCanvas.loadDefaultFrames("radarhud_teammate", 4,4,2, JIGSHAPE.CIRCLE, new Color(0,0,255));
 			PaintableCanvas.loadDefaultFrames("radarhud_opponent", 4,4,2, JIGSHAPE.CIRCLE, new Color(255,0,0));
 				
-			m_radarHUD = new RadarHUD(0,0, 64, this);
+			m_radarHUD = new RadarHUD(0,0, 64, 1000, this);
 			m_radarHUD.setWorldDim(2000,2000);
 		}
 		// SCREENS

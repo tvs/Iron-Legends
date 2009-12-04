@@ -30,7 +30,7 @@ public class GamePlayTextLayer extends ScreenTextLayer
 			{
 				text.println("Congratulations");
 				text.setFont(m_fonts.titleFont);
-				text.println(m_playerInfo.getName() + "!");
+				text.println(m_playerInfo.getName().toUpperCase() + "!");
 				
 				text.setFont(m_fonts.instructionalFont);
 				text.println("YOU WON!!");

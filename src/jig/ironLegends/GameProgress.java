@@ -53,9 +53,13 @@ public class GameProgress
 			return;
 		// only valid for single player
 		if (t == m_self)
-			return;
-		
-		m_levelProgress.tankDestroyed();
+		{
+			playerDied();
+		}
+		else
+		{
+			m_levelProgress.tankDestroyed();
+		}
 	}
 	public void setMapName(String mapName) {
 		m_sMapName = mapName;

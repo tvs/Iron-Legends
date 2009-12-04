@@ -52,7 +52,7 @@ public class SplashScreen extends GameScreen {
 		
 		csEntryBox = new TextEditBox(fonts.textFont, -2, 292, 360, 
 				IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
-		csEntryBox.setText(playerInfo.getName());
+		csEntryBox.setText(playerInfo.getName().toUpperCase());
 	}
 	
 	@Override
@@ -87,7 +87,7 @@ public class SplashScreen extends GameScreen {
 		if (csEntryBox.isActive())
 		{
 			csEntryBox.processInput(keyCmds);
-			m_playerInfo.setName(csEntryBox.getText());
+			m_playerInfo.setName(csEntryBox.getText().toUpperCase());
 		}
 		
 		return name();		
