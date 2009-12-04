@@ -144,14 +144,24 @@ public class MapEditor_GS extends GameScreen
 		// Should add controls for all of the objects � Not sure if the maploader is prepared for 
 		m_tileToolbar.append(new TileButton("crate", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#crate"));
 		tileButtonId++;
-		//m_tileToolbar.append(new TileButton("tree", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			
-		//tileButtonId++;
 		
-		// TODO: add more buttons here crates? bases? launch points? (launch points might not be visible in the game
+		m_tileToolbar.append(new TileButton("redbase", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#red-base"));			
+		tileButtonId++;
+
+		m_tileToolbar.append(new TileButton("bluebase", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#blue-base"));			
+		tileButtonId++;
+		
+		m_tileToolbar.append(new TileButton("redspawn", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#speed"));			
+		tileButtonId++;
+
+		m_tileToolbar.append(new TileButton("bluespawn", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#armor"));			
+		tileButtonId++;
+		
+		// TODO: add more buttons here launch points? (launch points might not be visible in the game
 		// but could be used as spawning grounds for each team e.g. lp1-team1
 		
 		// TODO: add delete icon
-		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#mine"));
+		m_tileToolbar.append(new TileButton("del", tileButtonId, sx, sy, IronLegends.SPRITE_SHEET + "#explosion"));
 		TileButton b = m_tileToolbar.getButton(tileButtonId);
 		b.setDelete(true);
 		tileButtonId++;
@@ -277,6 +287,12 @@ public class MapEditor_GS extends GameScreen
 		}
 	
 		// update each button
+		/*
+		TileButton b = m_tileToolbar.update(mouse, deltaMs);
+		if (b != null)
+			setActiveButton(b);
+		 */
+	
 		Iterator<TileButton> btIter = m_tileToolbar.iterator();
 		while (btIter.hasNext())
 		{
@@ -293,10 +309,14 @@ public class MapEditor_GS extends GameScreen
 			if (keyCmds.wasPressed("rotateCW"))
 			{
 				m_curRotationDeg += m_rotationIncDeg;
+				if (m_curRotationDeg >= 360)
+					m_curRotationDeg -= 360;
 			}
 			else if (keyCmds.wasPressed("rotateCCW"))
 			{
 				m_curRotationDeg -= m_rotationIncDeg;
+				if (m_curRotationDeg <= -360)
+					m_curRotationDeg += 360;
 			}
 			
 			if (m_mouseState.wasLeftClicked())
@@ -347,7 +367,14 @@ public class MapEditor_GS extends GameScreen
 			
 			wc = m_mapCalc.screenToWorld(new Point(m_curMouse.x, m_curMouse.y));
 			text.println("Mouse in WC:");
-			text.println((int)wc.getX() + "," + (int)wc.getY());			
+			text.println((int)wc.getX() + "," + (int)wc.getY());
+			
+			if (m_curSprite != null)
+			{
+				text.println("Rot: ");
+				
+				text.println("" + m_curRotationDeg);
+			}
 		}
 		
 		// render mouse

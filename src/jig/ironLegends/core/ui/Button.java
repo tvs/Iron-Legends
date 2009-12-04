@@ -147,7 +147,7 @@ public class Button extends Sprite
 	 */
 	protected void mouseLeft() {}
 	
-	public void update(Mouse mouse, final long deltaMs)
+	public void update(Mouse mouse, final long deltaMs, Point mouseOffset)
 	{
 		Point mousePt = mouse.getLocation();
 		
@@ -195,5 +195,10 @@ public class Button extends Sprite
 					m_sink.onLeave(m_id, mousePt);
 			}
 		}			
+	}
+	
+	public void update(Mouse mouse, final long deltaMs)
+	{
+		update(mouse, deltaMs, null);
 	}
 }

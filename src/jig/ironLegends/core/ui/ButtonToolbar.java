@@ -4,8 +4,10 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.Vector;
 
+import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.mapEditor.TileButton;
 
 public class ButtonToolbar <B extends Button>
 {
@@ -18,18 +20,23 @@ public class ButtonToolbar <B extends Button>
 		
 		m_buttons = new Vector<B>();
 	}
-	
+
 	public void setPosition(int sx, int sy)
 	{
+		int prevX = m_sx;
+		int prevY = m_sy;
+		
 		m_sx = sx;
 		m_sy = sy;
+		// adjust button positions based on top button idx (m_scrolledOffsetY)
 		
 		{
 			Iterator<B> iter = m_buttons.iterator();
 			while (iter.hasNext())
 			{
 				Button b = iter.next();
-				b.setPosition(new Vector2D(m_sx, m_sy + b.getPosition().getY()));
+				//b.setPosition(new Vector2D(m_sx, m_sy + b.getPosition().getY()+m_scrolledOffsetY));
+				b.setPosition(new Vector2D(b.getPosition().getX()-prevX+m_sx, b.getPosition().getY()-prevY+m_sy));
 			}
 		}
 	}
@@ -84,27 +91,40 @@ public class ButtonToolbar <B extends Button>
 	public void scrollDown(int i) 
 	{
 		if (m_topSpriteIdx < m_buttons.size()-1)
-			m_topSpriteIdx++;		
+		{
+			B b = m_buttons.get(m_topSpriteIdx);
+			int h = b.getHeight();
+			
+			setPosition(m_sx, m_sy-h);
+			m_topSpriteIdx++;
+		}
+		
 	}
 
 	public void scrollUp(int i) 
 	{
 		if (m_topSpriteIdx > 0)
+		{
 			m_topSpriteIdx--;
+			B b = m_buttons.get(m_topSpriteIdx);
+			int h = b.getHeight();
+			setPosition(m_sx, m_sy+h);
+		}
 	}
 
 	public void render(RenderingContext rc) 
 	{
-		double y = -m_buttons.get(m_topSpriteIdx).getPosition().getY();
+		//double y = -m_buttons.get(m_topSpriteIdx).getPosition().getY();
+		double y = 0;
 		
 		Iterator<B> btIter = m_buttons.iterator();
 		while (btIter.hasNext())
 		{
 			Button b = btIter.next();
 			Vector2D vOrig = b.getPosition();
-			b.setPosition(new Vector2D(vOrig.getX(), vOrig.getY() + y));
+			//b.setPosition(new Vector2D(vOrig.getX(), vOrig.getY() + y));
 			b.render(rc);
-			b.setPosition(vOrig);
+			//b.setPosition(vOrig);
 		}
 	}
 
@@ -119,6 +139,11 @@ public class ButtonToolbar <B extends Button>
 
 	public int getHeight() {
 		return m_totalSpriteHeight;
+	}
+
+	public TileButton update(Mouse mouse, long deltaMs) {
+		
+		return null;
 	}
 
 }

@@ -8,6 +8,7 @@ import jig.engine.ViewableLayer;
 import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.Bullet;
+import jig.ironLegends.Destructible;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.Obstacle;
 import jig.ironLegends.Tank;
@@ -155,10 +156,14 @@ public class GamePlay_GS extends GameScreen {
 				Obstacle o = (Obstacle) main;
 				Bullet b = (Bullet) other;
 
-				if (o.getDestructible().causeDamage(b.getDamage())) {
-					o.setActivation(false);
+				Destructible d = o.getDestructible();
+				if (d != null)
+				{
+					if (d.causeDamage(b.getDamage())) {
+						o.setActivation(false);
+					}
 				}
-
+				
 				Tank bo = (Tank) b.getOwner();
 				bo.addPoints(b.getDamage());
 				b.setActivation(false);
