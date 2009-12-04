@@ -41,6 +41,9 @@ public class MapCalc
 		screenToWorldTransform.transform(p,p);
 		return new Vector2D(p.getX(), p.getY());
 	}
+	public Vector2D screenToWorld(int i, int j) {
+		return screenToWorld(new Vector2D(i,j));		
+	}
 	
 	/**
 	 * Computes a screen coordinate from a world coordinate.
@@ -195,5 +198,6 @@ public class MapCalc
 	{
 		return worldToScreenTransform;
 	}
+
 
 }

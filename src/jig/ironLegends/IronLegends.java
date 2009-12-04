@@ -1,5 +1,6 @@
 package jig.ironLegends;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
@@ -8,9 +9,11 @@ import javax.imageio.spi.ServiceRegistry;
 
 import jig.engine.ImageResource;
 import jig.engine.Mouse;
+import jig.engine.PaintableCanvas;
 import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
 import jig.engine.ViewableLayer;
+import jig.engine.PaintableCanvas.JIGSHAPE;
 import jig.engine.hli.ImageBackgroundLayer;
 import jig.engine.hli.ScrollingScreenGame;
 import jig.engine.physics.AbstractBodyLayer;
@@ -27,6 +30,7 @@ import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.SoundFx;
+import jig.ironLegends.core.StaticBodyLayer;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.screens.GameInfoTextLayer;
@@ -86,6 +90,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public HighScorePersistance m_highScorePersist;
 	public MapCalc m_mapCalc;
 
+	public RadarHUD m_radarHUD;
 	public String m_mapName;
 	public PlayerInfo m_playerInfo;
 	public Tank m_tank;
@@ -96,6 +101,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public BodyLayer<Body> m_tankObstacleLayer; // trees
 	public BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings, rocks
 	public BodyLayer<Body> m_powerUpLayer;
+	public StaticBodyLayer<Body> m_hudLayer;
 
 	public boolean m_bGameOver = false;
 	public boolean m_bFirstLevelUpdate = false;
@@ -222,7 +228,22 @@ public class IronLegends extends ScrollingScreenGame {
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankBulletObstacleLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_powerUpLayer = new AbstractBodyLayer.NoUpdate<Body>();
-
+		
+		{
+			//m_hudLayer = new AbstractBodyLayer.NoUpdate<Body>();
+			m_hudLayer = new StaticBodyLayer.NoUpdate<Body>();
+			
+			// creates image... not actually renderable, is just a sprite
+			PaintableCanvas.loadDefaultFrames("radarhud_opponentbase", 4,4,2, JIGSHAPE.RECTANGLE, new Color(255,0,0));
+			PaintableCanvas.loadDefaultFrames("radarhud_teambase", 4,4,2, JIGSHAPE.RECTANGLE, new Color(255,255,255));
+			PaintableCanvas.loadDefaultFrames("radarhud_self", 4,4,2, JIGSHAPE.CIRCLE, new Color(255,255,255));
+			PaintableCanvas.loadDefaultFrames("radarhud_teammate", 4,4,2, JIGSHAPE.CIRCLE, new Color(0,0,255));
+			PaintableCanvas.loadDefaultFrames("radarhud_opponent", 4,4,2, JIGSHAPE.CIRCLE, new Color(255,0,0));
+				
+			m_radarHUD = new RadarHUD(0,0, 64, this);
+			m_radarHUD.setWorldDim(2000,2000);
+		}
+		// SCREENS
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
 				m_playerInfo));
 		
@@ -275,7 +296,7 @@ public class IronLegends extends ScrollingScreenGame {
 				m_screens.setActiveScreen(iNewScreen);
 				GameScreen newScreen = m_screens.getActiveScreen();
 				curScreen.deactivate();
-				populateGameLayers();
+				//populateGameLayers();
 				newScreen.activate(iCurScreen);
 			}
 		}
@@ -390,6 +411,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public void setWorldDim(int width, int height) {
 		setWorldBounds(0, 0, width, height);
 		m_mapCalc.setWorldBounds(0, 0, width, height);
+		if (m_radarHUD != null)
+			m_radarHUD.setWorldDim(width, height);
 	}
 
 	public void setMapName(String mapName) {

@@ -3,6 +3,7 @@ package jig.ironLegends.screens;
 import java.util.List;
 
 import jig.engine.Mouse;
+import jig.engine.RenderingContext;
 import jig.engine.ViewableLayer;
 import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
@@ -33,6 +34,7 @@ public class GamePlay_GS extends GameScreen {
 		addViewableLayer(game.m_powerUpLayer);
 		addViewableLayer(game.m_tankLayer);
 		addViewableLayer(game.m_bulletLayer);
+		addViewableLayer(game.m_hudLayer);
 	}
 
 	@Override
@@ -49,7 +51,8 @@ public class GamePlay_GS extends GameScreen {
 			game.m_tank = null;
 			// Main player
 			game.m_tank = new Tank(game, Tank.Team.WHITE, new Vector2D(100, 250));
-	
+
+			game.m_gameProgress.setSelf(game.m_tank);
 			game.m_tankLayer.clear();
 			game.m_tankLayer.add(game.m_tank);
 			game.m_entityLayer.add(game.m_tank);
@@ -58,6 +61,11 @@ public class GamePlay_GS extends GameScreen {
 			while (game.m_tankLayer.size() < 3) {
 				game.addAITank();
 			}
+		}
+		// objects for both single and multiplayer game
+		{
+			game.m_hudLayer.clear();
+			game.m_hudLayer.add(game.m_radarHUD);
 		}
 		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_tankLayer.size()-1);
 		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
@@ -240,5 +248,14 @@ public class GamePlay_GS extends GameScreen {
 				game.m_highScorePersist.save(game.m_highScore);
 			}		
 		}
+	}
+	
+	@Override
+	public void render(RenderingContext rc)
+	{
+		super.render(rc);
+		//render hud
+		//game.m_radarHUD.render(rc);
+		
 	}
 }

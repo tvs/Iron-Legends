@@ -46,9 +46,13 @@ public class GameProgress
 
 	public LevelProgress m_levelProgress;
 	protected String m_sMapName;
+	private Tank m_self;
 	
 	public void tankDestroyed(Tank t) {
 		if (t == null)
+			return;
+		// only valid for single player
+		if (t == m_self)
 			return;
 		
 		m_levelProgress.tankDestroyed();
@@ -59,5 +63,8 @@ public class GameProgress
 	public String getMapName()
 	{
 		return m_sMapName;
+	}
+	public void setSelf(Tank tank) {
+		m_self = tank;
 	}
 }
