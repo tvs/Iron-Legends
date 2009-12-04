@@ -90,6 +90,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public PlayerInfo m_playerInfo;
 	public Tank m_tank;
 	public ViewableLayer m_bgLayer;
+	public BodyLayer<Body> m_entityLayer; // All entities in the game
 	public BodyLayer<Body> m_tankLayer;
 	public BodyLayer<Body> m_bulletLayer;
 	public BodyLayer<Body> m_tankObstacleLayer; // trees
@@ -99,6 +100,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public boolean m_bGameOver = false;
 	public boolean m_bFirstLevelUpdate = false;
 	public boolean m_paused = false;
+	public boolean m_godmode = false;
 	public String m_sError;
 	public String m_sInstallDir;
 
@@ -158,17 +160,20 @@ public class IronLegends extends ScrollingScreenGame {
 		m_fonts.create(resourceFactory);
 	}
 
-	public void loadMap(String sMapFile) {
+	public void loadMap(String sMapFile) {		
+		m_levelProgress.reset();
+		m_entityLayer.clear();
+		m_tankLayer.clear();
+		m_bulletLayer.clear();
 		m_tankObstacleLayer.clear();
 		m_tankBulletObstacleLayer.clear();
+		m_powerUpLayer.clear();
+		
 		IronLegendsMapLoadSink sink = new IronLegendsMapLoadSink(this);
 		MapLoader.loadLayer(sink, sMapFile, m_rr);
 	}
 
 	public void loadLevel() {
-		m_powerUpLayer.clear();
-		m_levelProgress.reset();
-
 		loadMap("maps/mapitems.txt");
 
 		populateGameLayers();
@@ -195,7 +200,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 		// Cheat codes
 		m_keyCmds.addCommand("splat", KeyEvent.VK_8);
-		m_keyCmds.addCommand("die", KeyEvent.VK_0);
+		m_keyCmds.addCommand("godmode", KeyEvent.VK_0);
 		m_keyCmds.addCommand("shield", KeyEvent.VK_1);
 		m_keyCmds.addCommand("upgrade", KeyEvent.VK_2);
 		m_keyCmds.addCommand("doublecannon", KeyEvent.VK_3);
@@ -211,6 +216,7 @@ public class IronLegends extends ScrollingScreenGame {
 				ImageBackgroundLayer.TILE_IMAGE);
 
 		// GamePlay Layers
+		m_entityLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
@@ -292,8 +298,8 @@ public class IronLegends extends ScrollingScreenGame {
 
 		if (activeScreen == GAMEPLAY_SCREEN) {			
 			// Cheat Codes
-			if (m_keyCmds.wasPressed("die")) {
-				m_gameProgress.playerDied();
+			if (m_keyCmds.wasPressed("godmode")) {
+				m_godmode = !m_godmode;
 			}
 			
 			if (m_keyCmds.wasPressed("shield")) {
@@ -405,6 +411,7 @@ public class IronLegends extends ScrollingScreenGame {
 				VISIBLE_BOUNDS.getMaxY());
 		Tank t = new Tank(this, Tank.Team.RED, pos, true);
 		t.setTarget(m_tank);
-		m_tankLayer.add(t);		
+		m_tankLayer.add(t);
+		m_entityLayer.add(t);
 	}
 }

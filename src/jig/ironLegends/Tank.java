@@ -243,10 +243,6 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void causeDamage(int damage) {
-		if (playerControlled) {
-			return; // TODO: hack
-		}
-		
 		if (shield) {
 			return;
 		}
