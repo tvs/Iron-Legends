@@ -8,6 +8,7 @@ import jig.misc.sat.PolygonFactory;
 
 public class Obstacle extends MultiSpriteBody {
 	private static final int CRATE_MAX_HEALTH = 20;
+	private static final int BASE_MAX_HEALTH = 200;
 	private static int WALL_MAX_HEALTH = 40;
 	private String m_name;
 	private Destructible m_destructible;
@@ -69,8 +70,10 @@ public class Obstacle extends MultiSpriteBody {
 			// m_destructible = new Destructible(WALL_MAX_HEALTH);
 		} else if (m_name.equals("crate")) {
 			m_destructible = new Destructible(CRATE_MAX_HEALTH);
-		} else if (m_name.equals("")) {
-			// m_destructible = new Destructible(WALL_MAX_HEALTH);
+		} else if (m_name.equals("bluebase")) {
+			m_destructible = new Destructible(BASE_MAX_HEALTH);
+		} else if (m_name.equals("redbase")) {
+			m_destructible = new Destructible(BASE_MAX_HEALTH);
 		}
 	}
 	
