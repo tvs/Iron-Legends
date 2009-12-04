@@ -298,7 +298,7 @@ public class Tank extends MultiSpriteBody {
 		}
 
 		super.render(rc);
-		m_healthBar.render(rc, getPosition(), getHealth(), getMaxHealth(), getMaxHealth()/10, true);
+		m_healthBar.render(rc, getPosition(), getHealth(), getMaxHealth(), 10, true);
 	}
 
 	public double getTurretRotation() {

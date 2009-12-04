@@ -1,5 +1,6 @@
 package jig.ironLegends;
 
+import jig.engine.RenderingContext;
 import jig.engine.Sprite;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
@@ -8,11 +9,12 @@ import jig.misc.sat.PolygonFactory;
 
 public class Obstacle extends MultiSpriteBody {
 	private static final int CRATE_MAX_HEALTH = 20;
-	private static final int BASE_MAX_HEALTH = 200;
+	private static final int BASE_MAX_HEALTH = 2000;
 	private static int WALL_MAX_HEALTH = 40;
 	private String m_name;
 	private Destructible m_destructible;
-
+	private HealthBar m_healthBar=null;
+	
 	public String name() {
 		return m_name;
 	}
@@ -34,7 +36,7 @@ public class Obstacle extends MultiSpriteBody {
 		super.setCenterPosition(pos);
 
 		// set destructible data
-		setDestructibleData();
+		setItemSpecificData();
 	}
 
 	@Override
@@ -55,9 +57,21 @@ public class Obstacle extends MultiSpriteBody {
 		return m_destructible;
 	}
 
+	@Override
+	public void render(RenderingContext rc)
+	{
+		if (!isActive())
+			return;
+		
+		super.render(rc);
+		if (m_healthBar != null && m_destructible != null)
+		{
+			m_healthBar.render(rc, m_destructible.getHealth());
+		}
+	}
 	// TODO: override render and set frame based on health?
 	// TODO: on collision, get destructible and assign damage
-	private void setDestructibleData() {
+	private void setItemSpecificData() {
 		// TODO: lookup from table?
 
 		if (m_name.equals("wall")) {
@@ -72,8 +86,10 @@ public class Obstacle extends MultiSpriteBody {
 			m_destructible = new Destructible(CRATE_MAX_HEALTH);
 		} else if (m_name.equals("bluebase")) {
 			m_destructible = new Destructible(BASE_MAX_HEALTH);
+			m_healthBar = new HealthBar(getPosition(), m_destructible.getMaxHealth(), 20, true);
 		} else if (m_name.equals("redbase")) {
-			m_destructible = new Destructible(BASE_MAX_HEALTH);
+			m_destructible 	= new Destructible(BASE_MAX_HEALTH);
+			m_healthBar 	= new HealthBar(getPosition(), m_destructible.getMaxHealth(), 20, true);
 		}
 	}
 	
