@@ -1,0 +1,85 @@
+================================================================================
+CS 447/547: Computer Game Design Project 2: Iron Legends 
+================================================================================
+
+Iron Legends is an unrestrictive two-dimensional shooter where players
+are placed in control of a tank and let free to cause as much havoc as
+possible. That said, depending on the mode of gameplay, single-player or
+networked multiplayer, there are certain objectives that dictate the win
+scenario.
+
+In the single-player game mode, various types of computer-controlled enemies
+will roam the battlefield trying to destroy the player. In order for the
+player to win, s/he must annihilate each of the enemies. To even the odds,
+each defeated enemy will have a chance to drop a power-up for the player's
+tank. For example, power-ups may include: increased speed, increased armor,
+or even weapons with different behaviors.
+
+In multiplayer mode, the objective is different. Players are placed on
+teams and given an unlimited number of lives. Instead of being the last tank
+standing, the teams are required to destroy an enemy base while protecting
+their own. There is one catch; when destroyed, the player will suffer some
+negative effect, either by losing points from their score or by losing their
+accumulated power-ups.
+
+================================================================================
+Alpha Version
+================================================================================
+
+Tasks accomplished and included in the Alpha version:
+  * Graphics (Logo, Splash, background, sprites)
+  * GUI Utilities (Button, Toolbar, Textbox)
+  * Game configuration/setup screens
+  * Map editor (ongoing)
+  * Loading maps (ongoing)
+  * Collision detection between entities
+  * Tank Health, destroyable obstacles, non destroyable obstacles, bullets
+  * Various types of Tanks
+  * Tank powers/Upgrades (Shields, Cannons, Armor)
+  * Tank movement using keyboard and mouse
+  * Random movement for computer controlled Tank
+
+Plan for achieving the goals:
+ (1) Creating a fun game
+     * Game will be played in two modes: single player and multi player
+     * Multiple maps with varying layouts     
+     * Powerups - ability to get more power that can cause greater damage to opponents
+     
+ (2) Completing Technical Showpieces
+     * Single and Multi player mode 
+       * Major part of the base framework has been completed that will support both mode.
+     * Networking
+       * Research
+       * Made simple client/server Java application (though it is not included in the game)
+     * AI
+       * Research
+       * In this version only one behavior of the AI tank is completed, that is
+         ability to chase the target once the target is within certain range.    
+
+ (3) Meeting low bar goals
+     Following features are still in development that was proposed as low bar goals:
+       * Multiple map
+       * Radar/mini map
+       * Networking - multi player mode
+       * AI Tanks     
+
+================================================================================
+Cheat Codes
+================================================================================
+
+There are following cheat codes left intentional in the game for reviewer.
+Press the key described in Key column below to achieve the effect.
+
+Key     Description
+----------------------------------
+0       God Mode - Player tank is indestructible
+1       Execute power - shield
+2       Execute power - upgrade
+3       Execute power - get double cannon
+
+================================================================================
+License
+================================================================================
+
+Please see included LICENSE file for terms of use for the game and additional 
+attribution.
