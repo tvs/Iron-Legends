@@ -282,6 +282,7 @@ public class GamePlay_GS extends GameScreen {
 			
 			game.screenTransition(name(), IronLegends.GAMEOVER_SCREEN);
 		}
+		game.m_radarHUD.update(deltaMs);
 	}
 	
 	@Override

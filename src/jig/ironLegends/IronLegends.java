@@ -406,8 +406,8 @@ public class IronLegends extends ScrollingScreenGame {
 			{
 				Message msg = m_clientMsgTransport.nextRxMsg();
 				SPStartGame startGame = (SPStartGame)msg;
+				// TODO: supply startGame parameters to gameplay screen 
 				// set active screen
-				int as = m_screens.activeScreen();
 				screenTransition(m_screens.activeScreen(), GAMEPLAY_SCREEN);				
 			}
 		}

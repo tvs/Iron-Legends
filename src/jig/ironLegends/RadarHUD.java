@@ -8,8 +8,9 @@ import jig.engine.RenderingContext;
 import jig.engine.Sprite;
 import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
+import jig.ironLegends.core.MultiSpriteBody;
 
-public class RadarHUD extends Body 
+public class RadarHUD extends MultiSpriteBody 
 {
 	private int m_worldWidth;
 	private int m_worldHeight;
@@ -22,12 +23,15 @@ public class RadarHUD extends Body
 	Sprite m_teammate;
 	Sprite m_self;
 	private double m_radarRange2;
+	private long m_elapsedMs;
 
 	public RadarHUD(int sx, int sy, int radiusScreen, int radarRange, IronLegends game)
 	{
-		super("radarhud_opponentbase");
-		setPosition(new Vector2D(sx,sy)); // will override position to mean screen position
-		
+		super(game.m_polygonFactory.createNGon(new Vector2D(0,0), radiusScreen, 20));
+		super.addSprite(IronLegends.SPRITE_SHEET + "#radar");
+		super.setCenterPosition(new Vector2D(sx+radiusScreen,sy+radiusScreen)); // position is treated as screen position since in a static screen layer
+		//super.setRotation(0);
+					
 		m_radiusScreen = radiusScreen;
 		m_radarRange = radarRange;
 		m_radarRange2 = m_radarRange*m_radarRange;
@@ -43,6 +47,7 @@ public class RadarHUD extends Body
 	@Override
 	public void render(RenderingContext rc) 
 	{
+		super.render(rc);
 		//miniMapRender(rc);
 		radarRender(rc);
 	}
@@ -151,6 +156,12 @@ public class RadarHUD extends Body
 
 	@Override
 	public void update(long deltaMs) {
+		m_elapsedMs += deltaMs;
+		// 360 degrees in 10 seconds
+		double deltaDeg = 360.0/(10.0*1000.0);
+		if (m_elapsedMs > 10000)
+			m_elapsedMs = 0;
+		setRotation(Math.toRadians(deltaDeg*m_elapsedMs));
 	}
 
 	public void setWorldDim(int width, int height) {
