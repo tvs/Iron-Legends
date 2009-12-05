@@ -2,7 +2,7 @@
 	<author>Travis Hall</author>
 	<name>Iron Legends Sprites</name>
 	<type>image/png</type>
-	<width>718</width>
+	<width>835</width>
 	<height>402</height>
 	
 	<!-- @group Upgrades -->
@@ -177,6 +177,14 @@
 	</frameset>
 	
 	<frameset>
+		<name>radar-sweep</name>
+		<top>287</top>
+		<left>720</left>
+		<width>115</width>
+		<height>115</height>
+	</frameset>
+	
+	<frameset>
 		<name>powerup-shader</name>
 		<top>105</top>
 		<left>330</left>
@@ -195,7 +203,7 @@
 	<frameset>
 		<name>hud-tank</name>
 		<top>64</top>
-		<left>481</left>
+		<left>480</left>
 		<width>48</width>
 		<height>74</height>
 	</frameset>
