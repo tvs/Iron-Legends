@@ -167,6 +167,89 @@
 	</frameset>
 	<!-- @end Bases -->
 	
+	<!-- @group HUD -->
+	<frameset>
+		<name>radar</name>
+		<top>287</top>
+		<left>210</left>
+		<width>115</width>
+		<height>115</height>
+	</frameset>
+	
+	<frameset>
+		<name>powerup-shader</name>
+		<top>105</top>
+		<left>330</left>
+		<width>151</width>
+		<height>31</height>
+	</frameset>
+	
+	<frameset>
+		<name>tank-shader</name>
+		<top>0</top>
+		<left>624</left>
+		<width>64</width>
+		<height>80</height>
+	</frameset>
+	
+	<frameset>
+		<name>hud-tank</name>
+		<top>64</top>
+		<left>481</left>
+		<width>48</width>
+		<height>74</height>
+	</frameset>
+		
+		<!-- @group Indicator Lights -->
+		<frameset>
+			<name>shield-indicator</name>
+			<top>113</top>
+			<left>529</left>
+			<width>23</width>
+			<height>25</height>
+			<columns>2</columns>
+		</frameset>
+		
+		<frameset>
+			<name>armor-indicator</name>
+			<top>107</top>
+			<left>576</left>
+			<width>14</width>
+			<height>31</height>
+			<columns>2</columns>
+		</frameset>
+		
+		<frameset>
+			<name>mine-indicator</name>
+			<top>113</top>
+			<left>604</left>
+			<width>25</width>
+			<height>25</height>
+			<columns>2</columns>
+		</frameset>
+		
+		<frameset>
+			<name>speed-indicator</name>
+			<top>80</top>
+			<left>624</left>
+			<width>30</width>
+			<height>14</height>
+			<columns>2</columns>
+		</frameset>
+		
+		<frameset>
+			<name>damage-indicator</name>
+			<top>94</top>
+			<left>624</left>
+			<width>29</width>
+			<height>15</height>
+			<columns>2</columns>
+		</frameset>
+		<!-- @end Indicator Lights -->
+	
+	
+	<!-- @end HUD -->
+	
 	<frameset>
 		<name>explosion</name>
 		<top>322</top>
