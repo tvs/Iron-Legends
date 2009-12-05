@@ -1,5 +1,6 @@
 package jig.ironLegends.screens;
 
+import java.util.Iterator;
 import java.util.List;
 
 import jig.engine.Mouse;
@@ -11,6 +12,7 @@ import jig.ironLegends.Bullet;
 import jig.ironLegends.Destructible;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.Obstacle;
+import jig.ironLegends.SpawnInfo;
 import jig.ironLegends.Tank;
 import jig.ironLegends.collision.Handler_CPBLayer_BodyLayer;
 import jig.ironLegends.collision.Handler_CPBLayer_CPBLayer;
@@ -43,6 +45,7 @@ public class GamePlay_GS extends GameScreen {
 		game.newGame();
 	}
 
+	
 	@Override
 	public void populateLayers(List<ViewableLayer> gameObjectLayers) {
 		super.populateLayers(gameObjectLayers);
@@ -52,6 +55,9 @@ public class GamePlay_GS extends GameScreen {
 			game.m_tank = null;
 			// Main player
 			game.m_tank = new Tank(game, Tank.Team.WHITE, new Vector2D(100, 250));
+			
+			// set position of tank to one of "bluespawn" locations/orientations
+			game.setSpawn(game.m_tank, "bluespawn");
 
 			game.m_gameProgress.setSelf(game.m_tank);
 			game.m_tankLayer.clear();
@@ -63,6 +69,7 @@ public class GamePlay_GS extends GameScreen {
 				game.addAITank();
 			}
 		}
+		
 		// objects for both single and multiplayer game
 		{
 			game.m_hudLayer.clear();
@@ -82,6 +89,7 @@ public class GamePlay_GS extends GameScreen {
 		
 
 	}
+
 
 	private void registerCollisionHandles() {
 		// Tank to Tank

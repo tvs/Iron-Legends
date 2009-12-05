@@ -21,5 +21,10 @@ public class PersonsFactory implements PolygonFactory {
 	public ConvexPolygon createNGon(Vector2D origin, double radius, int n) {
 		return new PersonsConvexPolygon(origin, radius, n);
 	}
+	
+	public ConvexPolygon createIrregularConvexNGon(Vector2D centerPosition, Vector2D vertices[])
+	{
+		return new PersonsConvexPolygon(centerPosition, vertices);
+	}
 
 }

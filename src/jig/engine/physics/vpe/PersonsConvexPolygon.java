@@ -26,6 +26,130 @@ public class PersonsConvexPolygon extends ConvexPolygon
 	public PersonsConvexPolygon(Vector2D origin, double r, int n) {
 		super(origin, r, n);
 	}
+	private static Vector2D[] boundingBox(Vector2D polygon[])
+	{
+		Vector2D bb[] = new Vector2D[4];
+		
+		double minX;
+		double maxX;
+		double minY;
+		double maxY;
+		int dim = polygon.length;
+		
+		if (dim < 3)
+			return null;
+		
+		minX = polygon[0].getX();
+		maxX = minX;
+		minY = polygon[0].getY();
+		maxY = minY;
+
+		for (int i = 1; i < dim; ++i)
+		{
+			double x = polygon[i].getX();
+			double y = polygon[i].getY();
+			if (x < minX)
+				minX = x;
+			if (x > maxX)
+				maxX = x;
+			if (y < minY)
+				minY = y;
+			if (y > maxY)
+				maxY = y;
+		}
+		
+		bb[0] = new Vector2D(minX, minY);
+		bb[1] = new Vector2D(maxX, minY);
+		bb[2] = new Vector2D(maxX, maxY);
+		bb[3] = new Vector2D(minX, maxY);
+		
+		return bb;	
+	}
+	
+	private class BoundingBox
+	{
+		private static final int TOP_LEFT = 0;
+		private static final int TOP_RIGHT = 1;
+		private static final int BOT_RIGHT = 2;
+		private static final int BOT_LEFT = 3;
+		
+		private Vector2D m_vertices[];
+		private double m_width;
+		private double m_height;
+		
+		public BoundingBox(Vector2D polygon[])
+		{
+			m_vertices = boundingBox(polygon);
+			
+			m_width = m_vertices[TOP_RIGHT].getX() - m_vertices[TOP_LEFT].getX();
+			m_height = m_vertices[BOT_LEFT].getY() - m_vertices[TOP_LEFT].getY();			
+		}
+		double getHeight()
+		{
+			return m_height;
+		}
+		double getWidth()
+		{
+			return m_width;
+		}
+		Vector2D computeCenter()
+		{
+			return computeBBCenter(m_vertices);
+		}
+		public double maxY(Vector2D centerPosition) {
+			// find max y from this position to bounding box edge (top or bottom)
+			double dToTop = centerPosition.getY() - m_vertices[TOP_LEFT].getY();
+			double dToBot = m_vertices[BOT_LEFT].getY() - centerPosition.getY();
+			if (dToBot > dToTop)
+				return dToBot;
+			return dToTop;
+		}
+		public double maxX(Vector2D centerPosition) {
+			// find max x from this position to bounding box edge (left or right)
+			double dToLeft = centerPosition.getX() - m_vertices[TOP_LEFT].getX();
+			double dToRight = m_vertices[TOP_RIGHT].getX() - centerPosition.getX();
+			if (dToLeft > dToRight)
+				return dToLeft;
+			return dToRight;
+		}
+	}
+	
+	private static Vector2D computeBBCenter(Vector2D rect[])
+	{
+		if (rect.length != 4)
+			return null;
+		
+		return new Vector2D(
+				  (rect[0].getX() + rect[1].getX())/2.0
+				, (rect[0].getY() + rect[3].getY())/2.0);
+	}
+	public PersonsConvexPolygon(Vector2D centerPosition, Vector2D vertices[])
+	{
+		super(vertices.length); // allocate unrotated vertices
+		
+		// now comes the "fun" part
+		for (int i = 0; i < vertices.length; ++i)
+		{
+			unrotatedVertexCoordinates[i] = vertices[i];
+		}
+		// get "bounding box", then circumscribe, then bound. position will be top left of ....
+		BoundingBox bb = new BoundingBox(vertices);
+		double w = bb.getWidth();
+		double h = bb.getHeight();
+		double maxY = bb.maxY(centerPosition);
+		double maxX = bb.maxX(centerPosition);
+		
+		// use maxX, maxY as rectangle to circumscribe
+		//radius = Math.sqrt(maxX*maxX + maxY*maxY)/2.0;
+		//radius = Math.sqrt(maxX*maxX + maxY*maxY);
+		radius = Math.sqrt(w*w + h*h)/2.0;
+		rotation = 0;
+		offsetToRotation = new Vector2D(radius, radius);
+		setPosition(centerPosition.difference(offsetToRotation));
+		// TODO: test angle for each segment to next, if > 180, throw exception..
+		
+		// TODO collision can't take a short cut if irregular shaped
+	}
 	
 	// returns > 0 if directional ab to pt is a "clockwise" (right) turn
 	// return 0 if pt is on line
@@ -220,8 +344,8 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		// at least for even # vertices
 		// get normals, return normals for all polygons?		
 		int maxNormals = polygon.nCorners; 
-		if ((maxNormals & 0x00000001) == 0x00000000)
-			maxNormals >>= 1;
+		//if ((maxNormals & 0x00000001) == 0x00000000)
+		//	maxNormals >>= 1;
 		
 		normals = polygon.computeLeftHandEdgeNormals(maxNormals);
 		return normals;
@@ -537,8 +661,11 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		double dist2 = other.getPosition().translate(other.offsetToRotation).difference(getPosition().translate(offsetToRotation)).magnitude2();
 		// square of the (sum of each radius) 
 		double r2 = (other.radius + radius)*(other.radius + radius);
-		if (r2 < dist2)
-			return null;
+		if (other.nCorners !=12)
+		{
+			if (r2 < dist2)
+				return null;
+		}
 		
 		List<Vector2D> axes = getPotentialSeparatingAxes(other);
 		if (axes == null || axes.size() == 0)

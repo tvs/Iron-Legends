@@ -49,6 +49,9 @@ public class HealthBar {
 		int tickSize = maxHealth/ticks;
 		int bgTicks = maxHealth/tickSize;
 		int fgTicks = health/tickSize;
+		// always show at least one green tick?
+		//if (fgTicks == 0 && health > 0)
+		//	fgTicks++;
 		if (bHorizontal)
 		{
 			for (int i = 0; i < fgTicks; ++i)

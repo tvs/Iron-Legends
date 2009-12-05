@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.imageio.spi.ServiceRegistry;
 
@@ -102,6 +103,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public BodyLayer<Body> m_tankBulletObstacleLayer; // walls, buildings, rocks
 	public BodyLayer<Body> m_powerUpLayer;
 	public StaticBodyLayer<Body> m_hudLayer;
+	public Vector<SpawnInfo> m_spawnInfo;
 
 	public boolean m_bGameOver = false;
 	public boolean m_bFirstLevelUpdate = false;
@@ -244,6 +246,7 @@ public class IronLegends extends ScrollingScreenGame {
 				
 			m_radarHUD = new RadarHUD(0,0, 64, 1000, this);
 			m_radarHUD.setWorldDim(2000,2000);
+			m_spawnInfo = new Vector<SpawnInfo>();
 		}
 		// SCREENS
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
@@ -430,12 +433,29 @@ public class IronLegends extends ScrollingScreenGame {
 		return mouse;
 	}
 	
+	public void setSpawn(Tank tank, String spawnColor) {
+		// find "free" spawn locations
+		Iterator<SpawnInfo> iter = m_spawnInfo.iterator();
+		while (iter.hasNext())
+		{
+			SpawnInfo s = iter.next();
+			if (!s.isOccupied() && s.name().equals(spawnColor))
+			{
+				tank.setSpawn(s);
+				s.setOccupied(true);
+				break;
+			}				
+		}
+	}
+	
 	public void addAITank() {
 		Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
 				VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
 				VISIBLE_BOUNDS.getMaxY());
 		Tank t = new Tank(this, Tank.Team.RED, pos, true);
 		t.setTarget(m_tank);
+		setSpawn(t, "redspawn");
+		
 		m_tankLayer.add(t);
 		m_entityLayer.add(t);
 	}

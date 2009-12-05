@@ -57,6 +57,7 @@ public class Tank extends MultiSpriteBody {
 	private int score = 0;
 	private IronLegends game = null;
 	private HealthBar m_healthBar = null;
+	private double initialRotDeg = 0;
 
 	public Tank(IronLegends game, Team team, Vector2D pos, Type type) {
 		super(game.m_polygonFactory.createRectangle(pos, 85, 101),
@@ -220,9 +221,12 @@ public class Tank extends MultiSpriteBody {
 	public void respawn() {
 		stopMoving();
 		stopTurning();
-		setPosition(initialPosition);
-		setRotation(Math.toRadians(90));
-		setTurretRotation(Math.toRadians(90));
+		setCenterPosition(initialPosition);
+		//double rotRad =Math.toRadians(90);
+		double rotRad = initialRotDeg;
+		
+		setRotation(rotRad);
+		setTurretRotation(rotRad);
 		setHealth(MAX_HEALTH);
 		setWeapon(Weapon.CANNON);
 		setActivation(true);
@@ -431,5 +435,16 @@ public class Tank extends MultiSpriteBody {
 
 	public IronLegends getGame() {
 		return game;
+	}
+
+	public void setSpawn(SpawnInfo s) {
+		initialPosition = s.centerPosition();
+		initialRotDeg  = s.rotDeg();
+		/*
+		initialRotDeg  = s.rotDeg()+90;
+		if (initialRotDeg >= 360)
+			initialRotDeg -= 360;
+		*/		
+		respawn();
 	}
 }
