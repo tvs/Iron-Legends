@@ -121,11 +121,11 @@
 	<!-- Frames: Undamaged, Damaged -->
 	<frameset>
 		<name>wall</name>
-		<top>0</top>
-		<left>624</left>
+		<top>138</top>
+		<left>671</left>
 		<width>47</width>
 		<height>132</height>
-		<columns>2</columns>
+		<rows>2</rows>
 	</frameset>
 	
 	<frameset>
