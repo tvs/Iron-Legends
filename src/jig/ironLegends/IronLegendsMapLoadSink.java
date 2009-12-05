@@ -25,12 +25,15 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 		m_redspawnSeq = 0;
 		m_bluespawnSeq = 0;
 		m_ironLegends.m_spawnInfo.clear();
+		m_ironLegends.m_redBase = null;
+		m_ironLegends.m_blueBase = null;
 	}
 
 	@Override
 	public void onLine(String line) {
 		MapItemPersist mapItem = new MapItemPersist(line);
 
+		
 		if (mapItem.name().equals("redspawn"))
 		{
 			SpawnInfo s = new SpawnInfo(mapItem.name(), m_redspawnSeq);
@@ -48,6 +51,18 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 			s.setCenterPosition(mapItem.centerPosition());
 			s.setRotationDeg(mapItem.rotDeg());
 			m_ironLegends.m_spawnInfo.add(s);
+		}
+		else if (mapItem.name().equals("redbase"))
+		{
+			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory);
+			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
+			m_ironLegends.m_redBase = ob;
+		}
+		else if (mapItem.name().equals("bluebase"))
+		{
+			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory);
+			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
+			m_ironLegends.m_blueBase = ob;
 		}
 		else if (mapItem.name().equals("wall") 	|| 
 			mapItem.name().equals("building")||

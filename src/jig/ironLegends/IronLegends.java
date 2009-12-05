@@ -111,6 +111,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public boolean m_godmode = false;
 	public String m_sError;
 	public String m_sInstallDir;
+	public Obstacle m_redBase = null;
+	public Obstacle m_blueBase = null;
 
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);

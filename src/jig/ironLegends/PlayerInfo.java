@@ -3,6 +3,7 @@ package jig.ironLegends;
 public class PlayerInfo 
 {
 	protected String m_sPlayer;
+	protected String m_sTeamColor;
 	
 	public PlayerInfo()
 	{

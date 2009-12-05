@@ -50,7 +50,14 @@ public class Obstacle extends MultiSpriteBody {
 		}
 		
 		if (m_name.equals("wall")) {
-			if (m_destructible.getHealth() < WALL_MAX_HEALTH) {
+			if (m_destructible.getHealth() <= WALL_MAX_HEALTH/2) {
+				getSprite(0).setFrame(1);
+			}
+		}
+		else if (m_name.equals("redbase") || 
+				 m_name.equals("bluebase"))
+		{
+			if (m_destructible.getHealth() <= BASE_MAX_HEALTH/2) {
 				getSprite(0).setFrame(1);
 			}
 		}

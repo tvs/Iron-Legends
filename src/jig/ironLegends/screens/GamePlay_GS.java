@@ -77,7 +77,7 @@ public class GamePlay_GS extends GameScreen {
 		}
 		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_tankLayer.size()-1);
 		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
-		
+		game.m_gameProgress.setBasesRemaining(2);
 		
 		game.m_physicsEngine
 				.manageViewableSet(game.m_tankLayer);
@@ -167,8 +167,13 @@ public class GamePlay_GS extends GameScreen {
 				Destructible d = o.getDestructible();
 				if (d != null)
 				{
-					if (d.causeDamage(b.getDamage())) {
+					if (d.causeDamage(b.getDamage())) {						
 						o.setActivation(false);
+						if (o.name().equals("redbase") || 
+								o.name().equals("bluebase")  )
+						{
+							game.m_gameProgress.baseDestroyed(o);
+						}
 					}
 				}
 				
@@ -255,6 +260,10 @@ public class GamePlay_GS extends GameScreen {
 			bGameOver = true;
 		}
 		else if (game.m_levelProgress.getTanksRemaining() <= 0) {
+			bGameOver = true;
+		}
+		else if (game.m_gameProgress.getBasesRemaining() <= 1)
+		{
 			bGameOver = true;
 		}
 		

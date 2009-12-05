@@ -661,7 +661,7 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		double dist2 = other.getPosition().translate(other.offsetToRotation).difference(getPosition().translate(offsetToRotation)).magnitude2();
 		// square of the (sum of each radius) 
 		double r2 = (other.radius + radius)*(other.radius + radius);
-		if (other.nCorners !=12)
+		//if (other.nCorners !=12)
 		{
 			if (r2 < dist2)
 				return null;
