@@ -34,6 +34,11 @@ import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.StaticBodyLayer;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
+import jig.ironLegends.messages.Message;
+import jig.ironLegends.messages.SPStartGame;
+import jig.ironLegends.router.ClientContext;
+import jig.ironLegends.router.IMsgTransport;
+import jig.ironLegends.router.ServerContext;
 import jig.ironLegends.screens.GameInfoTextLayer;
 import jig.ironLegends.screens.GameOverTextLayer;
 import jig.ironLegends.screens.GameOver_GS;
@@ -113,6 +118,11 @@ public class IronLegends extends ScrollingScreenGame {
 	public String m_sInstallDir;
 	public Obstacle m_redBase = null;
 	public Obstacle m_blueBase = null;
+	
+	public ClientContext m_client = null;
+	public ServerContext m_server = null;
+	public IMsgTransport m_clientMsgTransport = null;
+	public IMsgTransport m_serverMsgTransport = null;
 
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -214,6 +224,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_keyCmds.addCommand("shield", KeyEvent.VK_1);
 		m_keyCmds.addCommand("upgrade", KeyEvent.VK_2);
 		m_keyCmds.addCommand("doublecannon", KeyEvent.VK_3);
+		m_keyCmds.addCommand("die", KeyEvent.VK_9);
 		
 		m_keyCmds.addAlphabet();
 	}
@@ -252,7 +263,7 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 		// SCREENS
 		m_screens.addScreen(new SplashScreen(SPLASH_SCREEN, m_fonts,
-				m_playerInfo));
+				m_playerInfo, this));
 		
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
 		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts));
@@ -288,6 +299,19 @@ public class IronLegends extends ScrollingScreenGame {
 		gs.populateLayers(gameObjectLayers);
 	}
 
+	public void screenTransition(int iFromScreen, int iToScreen)
+	{
+		if (iFromScreen != iToScreen)
+		{
+			GameScreen curScreen = m_screens.getScreen(iFromScreen);
+			m_screens.setActiveScreen(iToScreen);
+			GameScreen newScreen = m_screens.getActiveScreen();
+			if (curScreen != null)
+				curScreen.deactivate();
+			newScreen.activate(iFromScreen);
+		}
+	}
+	
 	public void processCommands(long deltaMs) {
 		m_keyCmds.update(keyboard);
 		int activeScreen = m_screens.activeScreen();
@@ -297,24 +321,13 @@ public class IronLegends extends ScrollingScreenGame {
 			int iNewScreen = curScreen.processCommands(m_keyCmds, mouse,
 					deltaMs);
 			int iCurScreen = curScreen.name();
-			if (iCurScreen != iNewScreen) {
-				// NOTE if had a SplashScreen GameScreen, the activate could
-				// populateGameLayers?
-				m_screens.setActiveScreen(iNewScreen);
-				GameScreen newScreen = m_screens.getActiveScreen();
-				curScreen.deactivate();
-				//populateGameLayers();
-				newScreen.activate(iCurScreen);
-			}
+			screenTransition(iCurScreen, iNewScreen);
 		}
 
 		// Screen Transitions
 		ScreenTransition t = m_screens.transition(m_keyCmds);
 		if (t != null) {
-			GameScreen newScreen = m_screens.getActiveScreen();
-			curScreen.deactivate();
-			newScreen.activate(t.m_from);
-			populateGameLayers();
+			screenTransition(t.m_from, t.m_to);
 		}
 
 		if (m_keyCmds.wasPressed("pause")) {
@@ -370,6 +383,35 @@ public class IronLegends extends ScrollingScreenGame {
 
 	@Override
 	public void update(long deltaMs) {
+		if (m_client != null)
+		{
+			// send msgs to server
+			m_clientMsgTransport.send(m_client.getTxQueue());
+		}
+		if (m_server != null)
+		{
+			// process client msgs
+			while (m_serverMsgTransport.hasRxMsg())
+			{
+				Message msg = m_serverMsgTransport.nextRxMsg();
+				SPStartGame startGame = (SPStartGame)msg;
+				// send msg responses to client
+				m_serverMsgTransport.send(startGame);	
+			}
+		}
+		if (m_client != null)
+		{
+			// process server msgs
+			while (m_clientMsgTransport.hasRxMsg())
+			{
+				Message msg = m_clientMsgTransport.nextRxMsg();
+				SPStartGame startGame = (SPStartGame)msg;
+				// set active screen
+				int as = m_screens.activeScreen();
+				screenTransition(m_screens.activeScreen(), GAMEPLAY_SCREEN);				
+			}
+		}
+		
 		processCommands(deltaMs);
 
 		if (m_levelProgress.isExitActivated()) {

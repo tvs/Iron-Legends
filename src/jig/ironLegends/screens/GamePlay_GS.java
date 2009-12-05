@@ -45,6 +45,12 @@ public class GamePlay_GS extends GameScreen {
 		game.newGame();
 	}
 
+	@Override
+	public void deactivate()
+	{
+		game.m_server = null;
+		game.m_client = null;
+	}
 	
 	@Override
 	public void populateLayers(List<ViewableLayer> gameObjectLayers) {
@@ -190,15 +196,6 @@ public class GamePlay_GS extends GameScreen {
 						game.m_tankBulletObstacleLayer,
 						game.m_bulletLayer, 4, 27, bulldestroyable));
 
-		/*
-		// Tank & Obstacles
-		game.m_physicsEngine
-		.registerCollisionHandler(new Handler_CPB_CPBLayer(
-				game.m_tank,
-				game.m_tankObstacleLayer,
-				new Sink_CPB_CPB_Default()));
-		 */
-		
 		// Tanks & Obstacles
 		game.m_physicsEngine
 		.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(
@@ -230,6 +227,11 @@ public class GamePlay_GS extends GameScreen {
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse,
 			final long deltaMs) {
+		if (keyCmds.wasPressed("die"))
+		{
+			game.m_tank.causeDamage(game.m_tank.getHealth());
+			game.m_gameProgress.playerDied();
+		}
 		game.m_tank.controlMovement(keyCmds, mouse);
 		return name();
 	}
@@ -269,7 +271,6 @@ public class GamePlay_GS extends GameScreen {
 		
 		if (bGameOver)
 		{
-			game.m_screens.setActiveScreen(IronLegends.GAMEOVER_SCREEN);
 			game.m_gameProgress.getLevelProgress().setExit(true);
 
 			int totalScore = game.m_gameProgress.gameOver();
@@ -277,7 +278,9 @@ public class GamePlay_GS extends GameScreen {
 				game.m_highScore.setHighScore(totalScore);
 				game.m_highScore.setPlayer(game.m_playerInfo.getName());
 				game.m_highScorePersist.save(game.m_highScore);
-			}		
+			}
+			
+			game.screenTransition(name(), IronLegends.GAMEOVER_SCREEN);
 		}
 	}
 	

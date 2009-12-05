@@ -32,4 +32,10 @@ public class GameOver_GS extends GameScreen {
 		m_game.m_physicsEngine.applyLawsOfPhysics(deltaMs);
 	}
 	
+	@Override
+	public void deactivate()
+	{
+		m_game.m_server = null;
+		m_game.m_client = null;
+	}
 }

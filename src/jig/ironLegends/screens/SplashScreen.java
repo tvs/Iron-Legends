@@ -11,6 +11,10 @@ import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
+import jig.ironLegends.messages.SPStartGame;
+import jig.ironLegends.router.ClientContext;
+import jig.ironLegends.router.ServerContext;
+import jig.ironLegends.router.SinglePlayerMsgTransport;
 
 /**
  * A splash screen class with the corresponding button "links" and rollovers.
@@ -28,11 +32,13 @@ public class SplashScreen extends GameScreen {
 	protected RolloverButton sbutton;
 	
 	protected TextEditBox csEntryBox;
+	protected IronLegends m_game;
 		
-	public SplashScreen(int name, Fonts fonts, PlayerInfo playerInfo) {
+	public SplashScreen(int name, Fonts fonts, PlayerInfo playerInfo, IronLegends game) {
 		super(name);
 		
 		m_playerInfo = playerInfo;
+		m_game = game;
 
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -80,8 +86,26 @@ public class SplashScreen extends GameScreen {
 			return IronLegends.SERVER_SCREEN;
 		sbutton.update(mouse, deltaMs);
 		if (sbutton.wasLeftClicked())
+		{
+			if (m_game.m_server == null)
+			{
+				// single player, so launch server on this client
+				m_game.m_server = new ServerContext();
+				// send message to server to "start game"
+				//(probably should have "connection logic" first
+				m_game.m_client = new ClientContext();
+				// transport of messages can just be queue movement for single player
+				m_game.m_clientMsgTransport = new SinglePlayerMsgTransport(m_game.m_server.getRxQueue(), m_game.m_client.getRxQueue());
+				m_game.m_serverMsgTransport = new SinglePlayerMsgTransport(m_game.m_client.getRxQueue(), m_game.m_server.getRxQueue());
+				
+				SPStartGame msg = new SPStartGame("mapitems.txt");
+				m_game.m_client.send(msg);
+			}
+			
 			// TODO Push this to the correct "Lobby" screen
-			return IronLegends.GAMEPLAY_SCREEN;
+			//return IronLegends.GAMEPLAY_SCREEN;
+			return name();
+		}
 		
 		csEntryBox.update(mouse, deltaMs);
 		if (csEntryBox.isActive())
@@ -91,5 +115,11 @@ public class SplashScreen extends GameScreen {
 		}
 		
 		return name();		
+	}
+	
+	@Override
+	public void activate(int prevScreen)
+	{
+		super.activate(prevScreen);
 	}
 }
