@@ -97,6 +97,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public MapCalc m_mapCalc;
 
 	public RadarHUD m_radarHUD;
+	public PowerUpHUD m_powerUpHUD;
+	
 	public String m_mapName;
 	public PlayerInfo m_playerInfo;
 	public Tank m_tank;
@@ -257,8 +259,13 @@ public class IronLegends extends ScrollingScreenGame {
 			PaintableCanvas.loadDefaultFrames("health_total", 4,4,1, JIGSHAPE.RECTANGLE, new Color(255,0,0));
 			PaintableCanvas.loadDefaultFrames("health_remaining", 4,4,1, JIGSHAPE.RECTANGLE, new Color(0,255,0));
 				
-			m_radarHUD = new RadarHUD(0,0, 64, 1000, this);
-			m_radarHUD.setWorldDim(2000,2000);
+			int radiusInScreenUnits = 64;
+			int radarRangeWorldUnits = 1000;
+			
+			m_radarHUD = new RadarHUD(0,0, radiusInScreenUnits, radarRangeWorldUnits, this);
+			m_radarHUD.setWorldDim(WORLD_WIDTH,WORLD_HEIGHT);
+			m_powerUpHUD = new PowerUpHUD(0, SCREEN_HEIGHT, this);
+			
 			m_spawnInfo = new Vector<SpawnInfo>();
 		}
 		// SCREENS
