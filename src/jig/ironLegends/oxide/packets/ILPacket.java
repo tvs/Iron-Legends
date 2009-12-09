@@ -74,6 +74,22 @@ public abstract class ILPacket {
 		return bytes;
 	}
 	
+	public int getPacketID() {
+		return this.packetID;
+	}
+	
+	public byte getPacketNumber() {
+		return this.packetNumber;
+	}
+	
+	public byte getPacketCount() {
+		return this.packetCount;
+	}
+	
+	public short getSplitSize() {
+		return this.splitSize;
+	}
+	
 	public boolean inOrder() {
 		return ((this.flags & ORDER_FLAG) == ORDER_FLAG);
 	}

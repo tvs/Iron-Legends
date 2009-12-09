@@ -125,12 +125,8 @@ public class ILServerThread implements Runnable {
 						if (key.isAcceptable()) {
 							this.accept(key);
 						} else if (key.isReadable()) {
-							this.read(key);
+							this.read(key, this.clients.get(key));
 						}
-						// Removed in favor of a full client-update method
-//						else if (key.isWritable()) {
-//							this.write(key);
-//						}
 						
 						// If the tick has expired, update each of the clients
 						if (this.time - this.lastUpdate > this.tickTime) {
@@ -142,7 +138,6 @@ public class ILServerThread implements Runnable {
 				}
 				
 
-//				dSocket.send(this.packet);
 			} catch (IOException e) {
 				continue;
 			}
@@ -228,40 +223,54 @@ public class ILServerThread implements Runnable {
 		}
 	}
 	
-	private void read(SelectionKey key) throws IOException {
-		SocketChannel socketChannel = (SocketChannel) key.channel();
-		
-		ByteBuffer readBuffer = ByteBuffer.allocate(ILPacket.MAX_PACKET_SIZE);
-		
-		// Attempt to read off the channel
+	/**
+	 * Read client's data and add any completed packets to the received queue
+	 * @param key 
+	 * @param client
+	 * @throws IOException
+	 */
+	private void read(SelectionKey key, ClientInfo client) throws IOException {
 		int numRead;
 		try {
-			numRead = socketChannel.read(readBuffer);
+			// Attempt to read off the channel
+			numRead = client.read();
 		} catch (IOException e) {
-			// The remote forcibly closed the connection. Cancel the key and close the channel
-			key.cancel();
-			socketChannel.close();
-			this.clients.remove(key);
+			// The remote forcibly closed the connection. Cancel the key
+			this.close(key);
 			return;
 		}
 		
 		if (numRead == -1) {
-			// Remote entity shut the socket down cleanly, let's do the same and cancel the channel
-			key.channel().close();
-			key.cancel();
-			this.clients.remove(key);
+			// Remote entity shut the socket down cleanly, let's do the same
+			this.close(key);
 			return;
 		}
 		
-		// TODO: Add the received packet to the event queue
-		this.receivedData.add(ILPacketFactory.getPacketFromData(readBuffer.array()).getEvent());
+		// TODO: Add the completed packets to the event queue
+		
+		
+//		this.receivedData.add(ILPacketFactory.getPacketFromData(readBuffer.array()).getEvent());
 		
 		// TODO: If we receive an ACK, map the key to the ACK'd packet
 		
 	}
 	
+	/**
+	 * Cancel the key, close the channel, and remove it from the clients map
+	 * @param key The key to cancel
+	 * @throws IOException
+	 */
+	private void close(SelectionKey key) throws IOException {
+		key.cancel();
+		key.channel().close();
+		this.clients.remove(key);
+	}
+	
+	/**
+	 * Write updates to each of the clients
+	 */
 	private void updateClients() {
-		
+		// TODO: Keep a queue of the last X number of packets sent out
 		synchronized (this.outgoingData) {
 			// Create a (set) of packet events
 			// packetQueue<ILPacket> = ILPacketFactory.createEventPacket(this.outgoingData)
@@ -275,37 +284,6 @@ public class ILServerThread implements Runnable {
 					c.channel.write(p.getByteBuffer());
 				}
 			}
-		}
-	}
-	
-	private void write(SelectionKey key) throws IOException {
-		// TODO: Keep a queue of the last X number of packets sent out
-		SocketChannel socketChannel = (SocketChannel) key.channel();
-		
-		synchronized (this.outgoingData) {
-			
-			// TODO: Create EventPacket[s] (if there are new pending events)
-			// TODO: Send the delta change between last ACK'd and current event packet
-			
-			
-			// Write until there are no events left
-			// eventQueue<ILPacket> = ILPacketFactory.createEventPacket(this.outgoingData)
-			while (!eventQueue.isEmpty()) {
-				ByteBuffer buf = eventQueue.get(0).getBytes();
-				socketChannel.write(buf);
-				if (buf.remaining() > 0) {
-					// If the socket fills we just give up
-					break;
-				}
-				eventQueue.remove(0);
-			}
-			
-			if (eventQueue.isEmpty()) {
-				// We wrote all the data off so we don't really care about writing for a while
-				// Switch back to waiting for data
-				key.interestOps(SelectionKey.OP_READ);
-			}
-			
 		}
 	}
 	

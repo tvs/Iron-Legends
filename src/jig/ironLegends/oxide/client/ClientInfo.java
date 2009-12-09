@@ -6,8 +6,11 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import jig.ironLegends.oxide.exceptions.PacketFormatException;
 import jig.ironLegends.oxide.packets.ILPacket;
+import jig.ironLegends.oxide.packets.ILPacketFactory;
 
 /**
  * @author Travis Hall
@@ -29,7 +32,11 @@ public class ClientInfo {
 		ByteBuffer readBuffer = ByteBuffer.allocate(ILPacket.MAX_PACKET_SIZE);
 		int numread = this.channel.read(readBuffer);
 		
-		
+		try {
+			ILPacket packet = ILPacketFactory.getPacketFromData(readBuffer);
+		} catch (PacketFormatException e) {
+			Logger.getLogger("server").info(e.toString());
+		}
 		
 		return numread;
 	}

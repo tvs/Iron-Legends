@@ -14,10 +14,10 @@ import jig.ironLegends.oxide.exceptions.PacketFormatException;
  */
 public class ILPacketFactory {
 	
-	public static ILPacket getPacketFromData(byte[] rawData)
+	public static ILPacket getPacketFromData(ByteBuffer buffer)
 			throws PacketFormatException 
 	{
-		ByteBuffer buffer = ByteBuffer.wrap(rawData);
+//		ByteBuffer buffer = ByteBuffer.wrap(rawData);
 		
 		buffer.getInt(); // Strip the protocol ID
 		
