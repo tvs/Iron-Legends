@@ -9,8 +9,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import jig.ironLegends.oxide.exceptions.IronOxideException;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
@@ -18,6 +16,8 @@ import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 
 /**
+ * Assumes that received and outgoing packets are NEVER SPLIT
+ * 
  * @author Travis Hall
  */
 public class ILAdvertisementSocket {
@@ -82,10 +82,7 @@ public class ILAdvertisementSocket {
 			throws PacketFormatException 
 	{
 		this.buffer.rewind();
-		byte[] packetData = new byte[this.buffer.remaining()];
-		this.buffer.get(packetData);
-		
-		return ILPacketFactory.getPacketFromData(packetData);
+		return ILPacketFactory.getPacketFromData(this.buffer);
 	}
 	
 	/**
@@ -98,51 +95,10 @@ public class ILAdvertisementSocket {
 	public ILPacket getMessage() 
 			throws IOException, SocketTimeoutException, IronOxideException
 	{
-		int bytesRead;
 		ILPacket packet;
 		
-		bytesRead = this.receivePacket();
-		
-		buffer.getInt(); // Throw away the protocol ID for now
-		if(this.packetIsSplit()) {
-			byte[] splitData;
-			int packetCount, packetNumber, packetId, splitSize;
-			ArrayList<byte[]> splitPackets = new ArrayList<byte[]>();
-			
-			do {
-				// Parsing of split packet headers
-				packetId = this.buffer.getInt();
-				packetNumber = this.buffer.get();
-				packetCount = this.buffer.get();
-				splitSize = this.buffer.getShort();
-				
-				// Caching split packet data
-				splitData = new byte[Math.min(splitSize, this.buffer.remaining())];
-				this.buffer.get(splitData);
-				splitPackets.ensureCapacity(packetCount);
-				splitPackets.add(packetNumber, splitData);
-				
-				// Receiving the next packet
-				if (splitPackets.size() < packetCount) {
-					try {
-						bytesRead = this.receivePacket();
-					} catch(SocketTimeoutException e) {
-						bytesRead = 0;
-					}
-				} else {
-					bytesRead = 0;
-				}
-				
-				Logger.getLogger("global").info("Received packet #" +
-						packetNumber + " of " + packetCount + 
-						" for request ID "+ packetId + ".");
-			} while (bytesRead > 0 && this.packetIsSplit());
-			
-			packet = ILPacketFactory.reassemblePacket(splitPackets);
-		} else {
-			packet = this.getPacketFromData();
-		}
-		
+		this.receivePacket();
+		packet = this.getPacketFromData();
 		this.buffer.flip();
 		
 		return packet;

@@ -2,11 +2,11 @@ package jig.ironLegends.oxide.packets;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 import jig.ironLegends.oxide.exceptions.IncompletePacketException;
 import jig.ironLegends.oxide.exceptions.IronOxideException;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
+import jig.ironLegends.oxide.util.PacketList;
 
 
 /**
@@ -14,12 +14,17 @@ import jig.ironLegends.oxide.exceptions.PacketFormatException;
  */
 public class ILPacketFactory {
 	
-	public static ILPacket getPacketFromData(ByteBuffer buffer)
+	public static ILPacket getPacketFromData(ByteBuffer buffer) 
 			throws PacketFormatException 
 	{
-//		ByteBuffer buffer = ByteBuffer.wrap(rawData);
-		
-		buffer.getInt(); // Strip the protocol ID
+		return getPacketFromData(buffer, true);
+	}
+	
+	public static ILPacket getPacketFromData(ByteBuffer buffer, boolean hasProtocolID)
+			throws PacketFormatException 
+	{	
+		if (hasProtocolID)
+			buffer.getInt(); // Strip the protocol ID
 		
 		byte[] protocolData = new byte[9];
 		buffer.get(protocolData,0, protocolData.length);
@@ -28,7 +33,7 @@ public class ILPacketFactory {
 		
 		byte[] contentData = new byte[buffer.remaining()];
 		buffer.get(contentData);
-		
+		buffer.rewind();
 		
 		switch(header) {
 		case ILPacket.IL_SERVER_ADVERTISEMENT_HEADER:
@@ -44,27 +49,26 @@ public class ILPacketFactory {
 		}
 	}
 	
-	public static ILPacket reassemblePacket(ArrayList<byte[]> splitPackets)
+	public static ILPacket reassemblePacket(PacketList packetList)
 			throws IOException, IronOxideException
 	{
-		byte[] packetData, tmpData;
-		packetData = new byte[0];
+		ILPacket firstPacket = packetList.list[0];
 		
-		for (byte[] splitPacket : splitPackets) {
+		if (firstPacket == null) {
+			throw new IncompletePacketException();
+		}
+		
+		for (int i = 1; i < packetList.list.length; i++) {
+			ILPacket splitPacket = packetList.list[i];
+			
 			if (splitPacket == null) {
 				throw new IncompletePacketException();
 			}
 			
-			tmpData = packetData;
-			packetData = new byte[tmpData.length + splitPacket.length];
-			System.arraycopy(tmpData, 0, packetData, 0, tmpData.length);
-			System.arraycopy(splitPacket, 0, packetData, tmpData.length, 
-					splitPacket.length);
+			firstPacket.getContent().concatenatePacketBuffer(splitPacket.getContent());
 		}
 		
-		packetData = new String(packetData).substring(4).getBytes();
-		
-		return ILPacketFactory.getPacketFromData(packetData);
+		return ILPacketFactory.getPacketFromData(firstPacket.getByteBuffer());
 	}
 
 	/**

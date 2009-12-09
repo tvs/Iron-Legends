@@ -123,4 +123,21 @@ public class PacketBuffer {
 		this.byteBuffer.rewind();
 	}
 	
+	/**
+	 * Concatenate buffer onto the end of the packet buffer
+	 * @param buffer
+	 */
+	public void concatenateByteBuffer(ByteBuffer buffer) {
+		this.byteBuffer.mark();
+		
+		this.byteBuffer.position(this.byteBuffer.limit());
+		this.byteBuffer.put(buffer);
+		
+		this.byteBuffer.reset();
+	}
+	
+	public void concatenatePacketBuffer(PacketBuffer buffer) {
+		this.concatenateByteBuffer(buffer.byteBuffer);
+	}
+	
 }

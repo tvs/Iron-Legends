@@ -127,17 +127,14 @@ public class ILServerThread implements Runnable {
 						} else if (key.isReadable()) {
 							this.read(key, this.clients.get(key));
 						}
-						
-						// If the tick has expired, update each of the clients
-						if (this.time - this.lastUpdate > this.tickTime) {
-							this.updateClients();
-						}
-						
-						// Remove the key.isWritable line
 					}
 				}
 				
-
+				// If the tick has expired, update each of the clients
+				if (this.time - this.lastUpdate > this.tickTime) {
+					this.updateClients();
+				}
+				
 			} catch (IOException e) {
 				continue;
 			}
@@ -246,7 +243,11 @@ public class ILServerThread implements Runnable {
 			return;
 		}
 		
-		// TODO: Add the completed packets to the event queue
+		// TODO: Add any completed packets to the event queue
+		for (ILPacket p : client.pendingPackets) {
+			// Convert the packet to its constituent event(s)
+			// If it's an event packet add them to the event queue
+		}
 		
 		
 //		this.receivedData.add(ILPacketFactory.getPacketFromData(readBuffer.array()).getEvent());
@@ -279,11 +280,11 @@ public class ILServerThread implements Runnable {
 			// TODO: Create delta change packets between last ACK'd and current event packet
 			// TODO: Keep a queue of the last X number of packets sent out
 		
-			for (ClientInfo c : this.clients.values()) {
-				for (ILPacket p : packetQueue) {
-					c.channel.write(p.getByteBuffer());
-				}
-			}
+//			for (ClientInfo c : this.clients.values()) {
+//				for (ILPacket p : packetQueue) {
+//					c.channel.write(p.getByteBuffer());
+//				}
+//			}
 		}
 	}
 	

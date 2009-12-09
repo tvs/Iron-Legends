@@ -6,7 +6,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
@@ -22,6 +21,7 @@ import jig.ironLegends.oxide.packets.ILPacketFactory;
 
 /**
  * Simple socket-reading class using channels
+ * NOT IN USE
  * @author Travis Hall
  */
 public abstract class ILSocket {
@@ -53,11 +53,8 @@ public abstract class ILSocket {
 	 */
 	protected ILPacket getPacketFromData() 
 			throws PacketFormatException 
-	{
-		byte[] packetData = new byte[this.buffer.remaining()];
-		this.buffer.get(packetData);
-		
-		return ILPacketFactory.getPacketFromData(packetData);
+	{		
+		return ILPacketFactory.getPacketFromData(this.buffer);
 	}
 	
 	/**
@@ -109,7 +106,8 @@ public abstract class ILSocket {
 						" for request ID "+ packetId + ".");
 			} while (bytesRead > 0 && this.packetIsSplit());
 			
-			packet = ILPacketFactory.reassemblePacket(splitPackets);
+			packet = null;
+//			packet = ILPacketFactory.reassemblePacket(splitPackets);
 		} else {
 			packet = this.getPacketFromData();
 		}

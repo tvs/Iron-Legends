@@ -54,6 +54,10 @@ public abstract class ILPacket {
 		this.protocolData.rewind();
 	}
 	
+	public PacketBuffer getContent() {
+		return this.contentData;
+	}
+	
 	/**
 	 * Get a byte array representation of the packet for sending
 	 * @return byte array of the data

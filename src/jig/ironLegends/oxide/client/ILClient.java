@@ -4,6 +4,8 @@ package jig.ironLegends.oxide.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import jig.ironLegends.oxide.exceptions.IronOxideException;
@@ -22,6 +24,7 @@ public class ILClient {
 		ILDataSocket dSocket = new ILDataSocket(InetAddress.getByName("localhost"), 4445);
 		
 		boolean cont = true;
+		
 		while (cont) {
 			try {
 				ILPacket packet = aSocket.getMessage();
