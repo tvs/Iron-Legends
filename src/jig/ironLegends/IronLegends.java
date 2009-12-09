@@ -98,6 +98,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public RadarHUD m_radarHUD;
 	public PowerUpHUD m_powerUpHUD;
+	public LifeHUD m_lifeHUD;
 	
 	public String m_mapName;
 	public PlayerInfo m_playerInfo;
@@ -265,6 +266,7 @@ public class IronLegends extends ScrollingScreenGame {
 			m_radarHUD = new RadarHUD(0,0, radiusInScreenUnits, radarRangeWorldUnits, this);
 			m_radarHUD.setWorldDim(WORLD_WIDTH,WORLD_HEIGHT);
 			m_powerUpHUD = new PowerUpHUD(0, SCREEN_HEIGHT, this);
+			m_lifeHUD = new LifeHUD(SCREEN_WIDTH, SCREEN_HEIGHT, this);
 			
 			m_spawnInfo = new Vector<SpawnInfo>();
 		}

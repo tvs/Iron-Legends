@@ -63,8 +63,8 @@ public class RadarHUD extends MultiSpriteBody
 		if (dMaxWorld < m_worldHeight)
 			dMaxWorld = m_worldHeight;
 		
-		sx = m_radiusScreen/dMaxWorld/2.0;
-		sy = m_radiusScreen/dMaxWorld/2.0;
+		sx = m_radiusScreen/(dMaxWorld/2.0);
+		sy = m_radiusScreen/(dMaxWorld/2.0);
 		
 		double scale = sx;
 		
