@@ -29,6 +29,7 @@ public class RadarHUD extends MultiSpriteBody
 	{
 		super(game.m_polygonFactory.createNGon(new Vector2D(0,0), radiusScreen, 20));
 		super.addSprite(IronLegends.SPRITE_SHEET + "#radar");
+		super.addSprite(IronLegends.SPRITE_SHEET + "#radar-sweep");
 		super.setCenterPosition(new Vector2D(sx+radiusScreen,sy+radiusScreen)); // position is treated as screen position since in a static screen layer
 		//super.setRotation(0);
 					
@@ -161,7 +162,7 @@ public class RadarHUD extends MultiSpriteBody
 		double deltaDeg = 360.0/(10.0*1000.0);
 		if (m_elapsedMs > 10000)
 			m_elapsedMs = 0;
-		setRotation(Math.toRadians(deltaDeg*m_elapsedMs));
+		setSpriteRotation(1, Math.toRadians(deltaDeg*m_elapsedMs));
 	}
 
 	public void setWorldDim(int width, int height) {
