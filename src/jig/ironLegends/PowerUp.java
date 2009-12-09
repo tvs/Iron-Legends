@@ -7,9 +7,11 @@ public class PowerUp extends VanillaAARectangle {
 		UPGRADE, REPAIR, SHIELD, LIFE, DAMAGE
 	};
 
+	private int MAX_ACTIVE_TIME = 10000;
 	private Type type;
 	private int[] points = { 20, 15, 15, 30, 10 };
-
+	private long timer = 0;
+	
 	public PowerUp() {
 		this(getRandomType());
 	}
@@ -18,9 +20,22 @@ public class PowerUp extends VanillaAARectangle {
 		super(IronLegends.SPRITE_SHEET + "#powerups");
 		setType(type);
 	}
-
+	
+	public void reset() {
+		active = true;
+		timer = 0;
+	}
+	
 	@Override
 	public void update(long deltaMs) {
+		if (!active) {
+			return;
+		}
+		
+		timer += deltaMs;
+		if (timer >= MAX_ACTIVE_TIME) {
+			active = false;
+		}
 	}
 
 	public void setType(Type type) {
@@ -32,6 +47,11 @@ public class PowerUp extends VanillaAARectangle {
 		return type;
 	}
 
+	public static Type getType(int t) {
+		Type[] types = Type.values();
+		return types[t];
+	}
+	
 	public static Type getRandomType() {
 		Type[] types = Type.values();
 		return types[(int) (Math.random() * types.length)];

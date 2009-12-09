@@ -3,6 +3,7 @@ package jig.ironLegends;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -242,7 +243,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_bulletLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		m_tankObstacleLayer = new AbstractBodyLayer.NoUpdate<Body>();
 		m_tankBulletObstacleLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
-		m_powerUpLayer = new AbstractBodyLayer.NoUpdate<Body>();
+		m_powerUpLayer = new AbstractBodyLayer.IterativeUpdate<Body>();
 		
 		{
 			//m_hudLayer = new AbstractBodyLayer.NoUpdate<Body>();
@@ -506,13 +507,20 @@ public class IronLegends extends ScrollingScreenGame {
 	
 	public void addPowerUp(Body b) {
 		PowerUp power = null;
-		PowerUp.Type t = PowerUp.getRandomType();
+		// UPGRADE, REPAIR, SHIELD, LIFE, DAMAGE
+		int[] prob = {55, 10, 15, 5, 10}; // probabilities
+		int c = getRandomChoice(prob);
+		if (c == -1) {
+			return;
+		}
+		
+		PowerUp.Type t = PowerUp.getType(c);
 		// find existing, inactive powerup object
 		for (Body p : m_powerUpLayer) {
 			PowerUp pow = (PowerUp) p;
 			if (!p.isActive() && pow.getType() == t) {
 				power = pow;
-				power.setActivation(true);
+				power.reset();
 			}
 		}
 		
@@ -522,5 +530,21 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 		
 		power.setCenterPosition(b.getCenterPosition());		
+	}
+	
+	public int getRandomChoice(int[] probabilities) {
+		Integer[] choices = new Integer[100];
+		int total = 0;
+		for (int i=0; i < probabilities.length; i++) {
+			for (int j=0; j < probabilities[i] && total < choices.length; j++) {
+				choices[total++] = i;
+			}
+		}
+		for (int j=0; total < choices.length; j++) {
+			choices[total++] = -1;
+		}
+		
+		java.util.Collections.shuffle(Arrays.asList(choices));
+		return choices[(int) (Math.random() * 100)];
 	}
 }
