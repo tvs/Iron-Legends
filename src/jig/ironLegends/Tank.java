@@ -285,6 +285,10 @@ public class Tank extends MultiSpriteBody {
 		}
 	}
 	
+	public void repair() {
+		setHealth(MAX_HEALTH);		
+	}
+	
 	@Override
 	public int getWidth() {
 		return getSprite(0).getWidth();

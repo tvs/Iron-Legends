@@ -1,11 +1,7 @@
 package jig.ironLegends;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import jig.engine.RenderingContext;
 import jig.engine.Sprite;
-import jig.engine.physics.vpe.PersonsConvexPolygon;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.core.MultiSpriteBody;
 import jig.ironLegends.mapEditor.MapItemPersist;
@@ -17,16 +13,14 @@ public class Obstacle extends MultiSpriteBody {
 	private static int WALL_MAX_HEALTH = 40;
 	private String m_name;
 	private Destructible m_destructible;
-	private HealthBar m_healthBar=null;
-	
+	private HealthBar m_healthBar = null;
+
 	public String name() {
 		return m_name;
 	}
 
-	Obstacle(String cellInfo, PolygonFactory pf) {
+	Obstacle(MapItemPersist item, PolygonFactory pf) {
 		super(null);
-
-		MapItemPersist item = new MapItemPersist(cellInfo);
 
 		m_name = item.name();
 
@@ -43,47 +37,47 @@ public class Obstacle extends MultiSpriteBody {
 		setItemSpecificData(pf);
 	}
 
+	Obstacle(String cellInfo, PolygonFactory pf) {
+		this(new MapItemPersist(cellInfo), pf);
+	}
+
 	@Override
 	public void update(long deltaMs) {
 		if (!isActive()) {
 			return;
 		}
-		
+
 		if (m_name.equals("wall")) {
-			if (m_destructible.getHealth() <= WALL_MAX_HEALTH/2) {
+			if (m_destructible.getHealth() <= WALL_MAX_HEALTH / 2) {
 				getSprite(0).setFrame(1);
 			}
-		}
-		else if (m_name.equals("redbase") || 
-				 m_name.equals("bluebase"))
-		{
-			if (m_destructible.getHealth() <= BASE_MAX_HEALTH/2) {
+		} else if (m_name.equals("redbase") || m_name.equals("bluebase")) {
+			if (m_destructible.getHealth() <= BASE_MAX_HEALTH / 2) {
 				getSprite(0).setFrame(1);
 			}
 		}
 	}
-	
+
 	// allow caller to set damage? or create wrapper methods?
 	public Destructible getDestructible() {
 		return m_destructible;
 	}
 
 	@Override
-	public void render(RenderingContext rc)
-	{
+	public void render(RenderingContext rc) {
 		if (!isActive())
 			return;
-		
+
 		super.render(rc);
-		if (m_healthBar != null && m_destructible != null)
-		{
+		if (m_healthBar != null && m_destructible != null) {
 			m_healthBar.render(rc, m_destructible.getHealth());
 		}
-		//else if (m_healthBar != null)
+		// else if (m_healthBar != null)
 		{
-		//	m_healthBar.render(rc, 10);
+			// m_healthBar.render(rc, 10);
 		}
 	}
+
 	// TODO: override render and set frame based on health?
 	// TODO: on collision, get destructible and assign damage
 	private void setItemSpecificData(PolygonFactory pf) {
@@ -166,10 +160,10 @@ public class Obstacle extends MultiSpriteBody {
 			Sprite s = getSprite(0);
 			double w = s.getWidth();
 			double h = s.getHeight();
-			double sm = w < h?w:h;
-			sm = .75*sm;
-			//double r = Math.sqrt(w*w + h*h)/2;
-			double r = Math.sqrt(sm*sm + sm*sm)/2;
+			double sm = w < h ? w : h;
+			sm = .75 * sm;
+			// double r = Math.sqrt(w*w + h*h)/2;
+			double r = Math.sqrt(sm * sm + sm * sm) / 2;
 			Vector2D centerPos = getCenterPosition();
 			setShape(pf.createNGon(getPosition(), r, 12));
 			setCenterPosition(centerPos);
@@ -179,13 +173,15 @@ public class Obstacle extends MultiSpriteBody {
 			m_destructible = new Destructible(CRATE_MAX_HEALTH);
 		} else if (m_name.equals("bluebase")) {
 			m_destructible = new Destructible(BASE_MAX_HEALTH);
-			m_healthBar = new HealthBar(getPosition(), m_destructible.getMaxHealth(), 20, true);
+			m_healthBar = new HealthBar(getPosition(), m_destructible
+					.getMaxHealth(), 20, true);
 		} else if (m_name.equals("redbase")) {
-			m_destructible 	= new Destructible(BASE_MAX_HEALTH);
-			m_healthBar 	= new HealthBar(getPosition(), m_destructible.getMaxHealth(), 20, true);
+			m_destructible = new Destructible(BASE_MAX_HEALTH);
+			m_healthBar = new HealthBar(getPosition(), m_destructible
+					.getMaxHealth(), 20, true);
 		}
 	}
-	
+
 	public boolean isTree() {
 		return m_name.equals("tree");
 	}

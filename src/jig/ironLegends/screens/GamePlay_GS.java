@@ -1,6 +1,5 @@
 package jig.ironLegends.screens;
 
-import java.util.Iterator;
 import java.util.List;
 
 import jig.engine.Mouse;
@@ -12,7 +11,7 @@ import jig.ironLegends.Bullet;
 import jig.ironLegends.Destructible;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.Obstacle;
-import jig.ironLegends.SpawnInfo;
+import jig.ironLegends.PowerUp;
 import jig.ironLegends.Tank;
 import jig.ironLegends.collision.Handler_CPBLayer_BodyLayer;
 import jig.ironLegends.collision.Handler_CPBLayer_CPBLayer;
@@ -71,7 +70,7 @@ public class GamePlay_GS extends GameScreen {
 			game.m_entityLayer.add(game.m_tank);
 			
 			// Temporary: add random 10 AI tanks
-			while (game.m_tankLayer.size() < 3) {
+			while (game.m_tankLayer.size() < 5) {
 				game.addAITank();
 			}
 		}
@@ -135,6 +134,7 @@ public class GamePlay_GS extends GameScreen {
 						if (t.getHealth() <= 0)
 						{
 							game.m_gameProgress.tankDestroyed(t);
+							game.addPowerUp(t);
 						}		
 						// TODO? if death match vs capture do different behavior
 						// in death match if only single tank remaining game over, winner is last tank
@@ -179,6 +179,8 @@ public class GamePlay_GS extends GameScreen {
 								o.name().equals("bluebase")  )
 						{
 							game.m_gameProgress.baseDestroyed(o);
+						} else if(o.name().equals("crate")) {
+							game.addPowerUp(o);
 						}
 					}
 				}
@@ -222,6 +224,26 @@ public class GamePlay_GS extends GameScreen {
 						game.m_polygonFactory,
 						game.m_tankObstacleLayer,
 						game.m_bulletLayer, 4, 27, bullobstacles));
+		
+		// Tanks & PowerUps
+		ISink_CPB_Body htankpowerup = new ISink_CPB_Body() {
+			@Override
+			public boolean onCollision(ConvexPolyBody main, Body other,
+					Vector2D vCorrection) {
+				Tank t = (Tank) main;
+				PowerUp p = (PowerUp) other;
+				t.addPoints(p.getPoint());
+				p.executePower(t);
+				p.setActivation(false);
+				return true;
+			}
+		};
+
+		game.m_physicsEngine
+				.registerCollisionHandler(new Handler_CPBLayer_BodyLayer(
+						game.m_polygonFactory,
+						game.m_tankLayer,
+						game.m_powerUpLayer, 36, 36, htankpowerup));		
 	}
 
 	@Override

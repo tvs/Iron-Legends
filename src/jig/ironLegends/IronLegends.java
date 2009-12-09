@@ -503,4 +503,24 @@ public class IronLegends extends ScrollingScreenGame {
 		m_tankLayer.add(t);
 		m_entityLayer.add(t);
 	}
+	
+	public void addPowerUp(Body b) {
+		PowerUp power = null;
+		PowerUp.Type t = PowerUp.getRandomType();
+		// find existing, inactive powerup object
+		for (Body p : m_powerUpLayer) {
+			PowerUp pow = (PowerUp) p;
+			if (!p.isActive() && pow.getType() == t) {
+				power = pow;
+				power.setActivation(true);
+			}
+		}
+		
+		if (power == null) {
+			power = new PowerUp(t);
+			m_powerUpLayer.add(power);
+		}
+		
+		power.setCenterPosition(b.getCenterPosition());		
+	}
 }
