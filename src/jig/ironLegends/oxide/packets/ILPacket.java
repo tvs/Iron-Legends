@@ -1,5 +1,8 @@
 package jig.ironLegends.oxide.packets;
 
+import java.nio.ByteBuffer;
+
+import jig.ironLegends.oxide.events.ILEvent;
 import jig.ironLegends.oxide.util.PacketBuffer;
 import jig.ironLegends.oxide.util.Utility;
 
@@ -115,4 +118,14 @@ public abstract class ILPacket {
 			   			"\t\tIn Order: " + this.inOrder() + "\n" +
 			   			"\t\tIs Split: " + this.isSplit();
 	}
+
+	/**
+	 * @return A byte buffer wrapped around our byte array
+	 */
+	public ByteBuffer getByteBuffer() {
+		return ByteBuffer.wrap(this.getBytes());
+	}
+	
+	public abstract ILEvent getEvent();
+	
 }

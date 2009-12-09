@@ -12,7 +12,7 @@ public class ILServer {
 		try {
 			InetAddress addr = InetAddress.getByName("localhost");
 			
-			ILServerThread sThread = new ILServerThread(addr, 2555);
+			ILServerThread sThread = new ILServerThread(addr, 2555, 33);
 			sThread.setActive(true);
 			sThread.setServerPacket((byte) 3, (byte) 4, "Doggles house of dogs\0", "Badlands\0", "1.0.1\0");
 			new Thread(sThread).start();

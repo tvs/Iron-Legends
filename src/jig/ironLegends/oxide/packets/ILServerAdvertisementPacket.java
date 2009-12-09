@@ -1,5 +1,6 @@
 package jig.ironLegends.oxide.packets;
 
+import jig.ironLegends.oxide.events.ILEvent;
 import jig.ironLegends.oxide.util.Utility;
 
 /**
@@ -71,4 +72,13 @@ public class ILServerAdvertisementPacket extends ILPacket {
 		"\tMap: " + this.map + "\n" +
 		"\tGame Version: " + this.gameVersion;
  	}
+
+	/* (non-Javadoc)
+	 * @see jig.ironLegends.oxide.packets.ILPacket#getEvent()
+	 */
+	@Override
+	public ILEvent getEvent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

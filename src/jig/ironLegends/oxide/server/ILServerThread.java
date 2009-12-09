@@ -10,10 +10,13 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.events.ILEvent;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
@@ -23,6 +26,14 @@ import jig.ironLegends.oxide.sockets.ILDataSocket;
 
 
 /**
+ * <p>ILServerThread that handles packet sending and receiving.</p>
+ * 
+ * <p>Outgoing events are stuffed into a queue and then converted into a packet.</p>
+ * 
+ * <p>Incoming events are stuffed into an event queue for the server to execute.</p>
+ * 
+ * <p><i>Note:</i> The server needs to be updated by the main game loop so that we 
+ * can maintain the tickrate</p>
  * @author Travis Hall
  */
 public class ILServerThread implements Runnable {
@@ -38,9 +49,11 @@ public class ILServerThread implements Runnable {
 	
 	private ILServerAdvertisementPacket advertPacket;
 	private ILAdvertisementSocket advertSocket;
-//	private ILDataSocket dataSocket;
 	
-	private List<ILEvent> pendingData;
+	private List<ILEvent> receivedData;
+	private List<ILEvent> outgoingData;
+	
+	private Map<SelectionKey, ClientInfo> clients;
 	
 	protected boolean advertise;
 	protected boolean active;
@@ -52,18 +65,37 @@ public class ILServerThread implements Runnable {
 	private String version;
 	
 	private int packetID = 0;
+	
+	private int tickrate;
+	private double tickTime;
+	private long lastUpdate = 0;
+	private long time = 0;
 
-	public ILServerThread(InetAddress hostAddress, int port) 
+	public ILServerThread(InetAddress hostAddress, int port, int tickrate) 
 			throws IOException 
 	{
 		this.hostAddress = hostAddress;
 		this.port = port;
+		this.tickrate = tickrate;
+		
+		this.tickTime = (1.0 / this.tickrate); // Ticks per second
+		
 		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
-//		this.dataSocket = new ILDataSocket(InetAddress.getByName("localhost"), 4445);
 		this.selector = this.initSelector();
 		this.advertise = true;
 		this.active = true;
-		this.pendingData = new LinkedList<ILEvent>();
+		this.receivedData = new LinkedList<ILEvent>();
+		this.outgoingData = new LinkedList<ILEvent>();
+		this.clients = new HashMap<SelectionKey, ClientInfo>();
+	}
+	
+	/**
+	 * Updates the server time (used for sending at a tickrate)
+	 * @param deltaMs Change in time since last update occurred
+	 */
+	public void update(long deltaMs) {
+		this.lastUpdate = this.time;
+		this.time += deltaMs;
 	}
 	
 	public void run() {
@@ -94,11 +126,17 @@ public class ILServerThread implements Runnable {
 							this.accept(key);
 						} else if (key.isReadable()) {
 							this.read(key);
-						} else if (key.isWritable()) {
-							this.write(key);
+						}
+						// Removed in favor of a full client-update method
+//						else if (key.isWritable()) {
+//							this.write(key);
+//						}
+						
+						// If the tick has expired, update each of the clients
+						if (this.time - this.lastUpdate > this.tickTime) {
+							this.updateClients();
 						}
 						
-						// TODO: If the tick has expired, update the clients
 						// Remove the key.isWritable line
 					}
 				}
@@ -136,8 +174,8 @@ public class ILServerThread implements Runnable {
 	}
 	
 	public void addEvent(ILEvent event) {
-		synchronized(this.pendingData) {
-			this.pendingData.add(event);
+		synchronized(this.outgoingData) {
+			this.outgoingData.add(event);
 		}
 	}
 	
@@ -167,7 +205,7 @@ public class ILServerThread implements Runnable {
 	
 	private void accept(SelectionKey key) {	
 		if (this.numberOfPlayers > maxPlayers) {
-			// Send reject packet?
+			// TODO: Send reject packet?
 		} else {
 			ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
 			
@@ -176,11 +214,15 @@ public class ILServerThread implements Runnable {
 				SocketChannel socketChannel = serverSocketChannel.accept();
 				// Socket socket = socketChannnel.socket();
 				socketChannel.configureBlocking(false);
+				// Register the socket with the selector and an interest on reading
 				socketChannel.register(this.selector, SelectionKey.OP_READ);
-				// TODO: Add player to a queue with an associated ID -- IN READ
+				// Load the client into our map of key->clients
+				this.clients.put(key, new ClientInfo(this.numberOfPlayers, socketChannel));
+				this.numberOfPlayers++;
+				
 				this.updatePacket();
 			} catch (IOException e) {
-				// Send reject packet?
+				// TODO: Send reject packet?
 			}
 			
 		}
@@ -199,6 +241,7 @@ public class ILServerThread implements Runnable {
 			// The remote forcibly closed the connection. Cancel the key and close the channel
 			key.cancel();
 			socketChannel.close();
+			this.clients.remove(key);
 			return;
 		}
 		
@@ -206,26 +249,47 @@ public class ILServerThread implements Runnable {
 			// Remote entity shut the socket down cleanly, let's do the same and cancel the channel
 			key.channel().close();
 			key.cancel();
+			this.clients.remove(key);
 			return;
 		}
 		
-		// TODO: Deal with the received data!
+		// TODO: Add the received packet to the event queue
+		this.receivedData.add(ILPacketFactory.getPacketFromData(readBuffer.array()).getEvent());
+		
 		// TODO: If we receive an ACK, map the key to the ACK'd packet
 		
 	}
 	
+	private void updateClients() {
+		
+		synchronized (this.outgoingData) {
+			// Create a (set) of packet events
+			// packetQueue<ILPacket> = ILPacketFactory.createEventPacket(this.outgoingData)
+			
+			// TODO: Create EventPacket[s]
+			// TODO: Create delta change packets between last ACK'd and current event packet
+			// TODO: Keep a queue of the last X number of packets sent out
+		
+			for (ClientInfo c : this.clients.values()) {
+				for (ILPacket p : packetQueue) {
+					c.channel.write(p.getByteBuffer());
+				}
+			}
+		}
+	}
+	
 	private void write(SelectionKey key) throws IOException {
-		// TODO: Write sequence
 		// TODO: Keep a queue of the last X number of packets sent out
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		
-		synchronized (this.pendingData) {
+		synchronized (this.outgoingData) {
 			
 			// TODO: Create EventPacket[s] (if there are new pending events)
 			// TODO: Send the delta change between last ACK'd and current event packet
 			
 			
 			// Write until there are no events left
+			// eventQueue<ILPacket> = ILPacketFactory.createEventPacket(this.outgoingData)
 			while (!eventQueue.isEmpty()) {
 				ByteBuffer buf = eventQueue.get(0).getBytes();
 				socketChannel.write(buf);
