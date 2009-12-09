@@ -29,6 +29,7 @@ public class RadarHUD extends MultiSpriteBody
 	{
 		super(game.m_polygonFactory.createNGon(new Vector2D(0,0), radiusScreen, 20));
 		super.addSprite(IronLegends.SPRITE_SHEET + "#radar");
+		super.addSprite(IronLegends.SPRITE_SHEET + "#radar-sweep");
 		super.setCenterPosition(new Vector2D(sx+radiusScreen,sy+radiusScreen)); // position is treated as screen position since in a static screen layer
 		//super.setRotation(0);
 					
@@ -62,14 +63,14 @@ public class RadarHUD extends MultiSpriteBody
 		if (dMaxWorld < m_worldHeight)
 			dMaxWorld = m_worldHeight;
 		
-		sx = m_radiusScreen/dMaxWorld;
-		sy = m_radiusScreen/dMaxWorld;
+		sx = m_radiusScreen/(dMaxWorld/2.0);
+		sy = m_radiusScreen/(dMaxWorld/2.0);
 		
 		double scale = sx;
 		
 		Vector2D selfPos = m_game.m_tank.getCenterPosition();
-		Vector2D center = new Vector2D(getPosition().getX() + m_radiusScreen/2
-									 , getPosition().getY() + m_radiusScreen/2);
+		Vector2D center = new Vector2D(getPosition().getX() + m_radiusScreen
+									 , getPosition().getY() + m_radiusScreen);
 		int startx = (int) center.getX();
 		int starty = (int) center.getY();
 		
@@ -123,7 +124,8 @@ public class RadarHUD extends MultiSpriteBody
 		int startx = (int) tl.getX();
 		int starty = (int) tl.getY();
 		
-		int x = (int) (m_worldWidth/2.0*sx);
+		//int x = (int) (m_worldWidth/2.0*sx);
+		int x = (int)(m_worldWidth*sx);
 		int y = 0;
 
 		Iterator<Body> iter = m_game.m_tankLayer.iterator();
@@ -161,7 +163,7 @@ public class RadarHUD extends MultiSpriteBody
 		double deltaDeg = 360.0/(10.0*1000.0);
 		if (m_elapsedMs > 10000)
 			m_elapsedMs = 0;
-		setRotation(Math.toRadians(deltaDeg*m_elapsedMs));
+		setSpriteRotation(1, Math.toRadians(deltaDeg*m_elapsedMs));
 	}
 
 	public void setWorldDim(int width, int height) {

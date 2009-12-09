@@ -52,6 +52,7 @@ public class ILServerThread implements Runnable {
 	private String version;
 	
 	private int packetID = 0;
+	private List<ILEvent> eventQueue;
 
 	public ILServerThread(InetAddress hostAddress, int port) 
 			throws IOException 
@@ -227,7 +228,8 @@ public class ILServerThread implements Runnable {
 			
 			// Write until there are no events left
 			while (!eventQueue.isEmpty()) {
-				ByteBuffer buf = eventQueue.get(0).getBytes();
+				ByteBuffer buf = null;
+				/*compile error*///buf = eventQueue.get(0).getBytes();
 				socketChannel.write(buf);
 				if (buf.remaining() > 0) {
 					// If the socket fills we just give up

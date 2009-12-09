@@ -451,4 +451,36 @@ public class Tank extends MultiSpriteBody {
 		*/		
 		respawn();
 	}
+
+	public boolean isPowerUpActive(int name) {
+
+		boolean bActive = false;
+		
+		switch (name)
+		{
+			case 0:
+				if (sShield.isActive())
+					bActive = true;
+			break;
+			case 1:
+				if (sSpeed.isActive())
+					bActive = true;
+			break;
+			case 2:
+				if (sArmor.isActive())
+					bActive = true;
+			break;
+				/*
+			case 3:
+				if (sMine.isActive())
+					return true;
+					break;
+					*/
+			case 4:
+				if (weapon == Weapon.DOUBLECANNON)
+					bActive = true;
+			break;
+		}
+		return bActive;
+	}
 }

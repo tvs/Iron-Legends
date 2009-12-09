@@ -65,13 +65,19 @@ public class HealthBar {
 		}
 		else
 		{
+			y = text.getY() + ticks*m_fg.getHeight();
+			
 			for (int i = 0; i < fgTicks; ++i)
 			{
+				text.setY((int)y);
 				text.println(m_fg);
+				y -= m_fg.getHeight();
 			}
 			for (int i = fgTicks; i < bgTicks; ++i)
 			{
+				text.setY((int)y);
 				text.println(m_bg);
+				y -= m_bg.getHeight();
 			}
 		}
 		
