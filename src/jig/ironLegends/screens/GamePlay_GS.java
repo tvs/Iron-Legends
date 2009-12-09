@@ -79,6 +79,7 @@ public class GamePlay_GS extends GameScreen {
 		{
 			game.m_hudLayer.clear();
 			game.m_hudLayer.add(game.m_radarHUD);
+			game.m_hudLayer.add(game.m_powerUpHUD);
 		}
 		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_tankLayer.size()-1);
 		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
@@ -311,8 +312,5 @@ public class GamePlay_GS extends GameScreen {
 	public void render(RenderingContext rc)
 	{
 		super.render(rc);
-		//render hud
-		//game.m_radarHUD.render(rc);
-		
 	}
 }
