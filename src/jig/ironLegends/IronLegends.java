@@ -32,6 +32,7 @@ import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.SoundFx;
+import jig.ironLegends.core.SpecialFx;
 import jig.ironLegends.core.StaticBodyLayer;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
@@ -90,7 +91,9 @@ public class IronLegends extends ScrollingScreenGame {
 	public GameScreens m_screens = new GameScreens();
 	public KeyCommands m_keyCmds = new KeyCommands();
 	public Fonts m_fonts = new Fonts();
-	public SoundFx m_sfx;
+	public SoundFx m_soundFx;
+	public SpecialFx m_sfx;
+	
 	public LevelProgress m_levelProgress;
 	public GameProgress m_gameProgress;
 	public HighScore m_highScore = new HighScore();
@@ -143,7 +146,16 @@ public class IronLegends extends ScrollingScreenGame {
 		m_levelProgress = new LevelProgress();
 		m_gameProgress = new GameProgress(m_levelProgress);
 		m_rr = new ResourceIO(m_sInstallDir);
-		m_sfx = new SoundFx();
+		m_soundFx = new SoundFx();
+		m_sfx = new SpecialFx(m_soundFx);
+		
+		// test adding special effects
+		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
+		/*
+		 testing an animated sprite
+		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#wall", 1500, 2);
+		*/
+		
 		m_playerInfo = new PlayerInfo("ace");
 		m_highScorePersist = new HighScorePersistance(m_sInstallDir);
 		m_highScorePersist.load(m_highScore);

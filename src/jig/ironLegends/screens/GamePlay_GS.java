@@ -81,6 +81,8 @@ public class GamePlay_GS extends GameScreen {
 			game.m_hudLayer.add(game.m_radarHUD);
 			game.m_hudLayer.add(game.m_powerUpHUD);
 			game.m_hudLayer.add(game.m_lifeHUD);
+			
+			
 		}
 		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_tankLayer.size()-1);
 		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
@@ -262,6 +264,7 @@ public class GamePlay_GS extends GameScreen {
 	
 	@Override
 	public void update(long deltaMs) {
+		
 		Vector2D center = game.m_tank.getShapeCenter();
 		game.updateMapCenter(center.clamp(IronLegends.VISIBLE_BOUNDS));
 		
@@ -272,7 +275,8 @@ public class GamePlay_GS extends GameScreen {
 		} else {
 			game.m_physicsEngine.applyLawsOfPhysics(deltaMs);
 		}
-
+		game.m_sfx.update(deltaMs);
+		
 		// TODO: check tanks for death? then respawn (team) or adjust life (deathmatch)
 		// if deathmatch (ie single player for now?)
 		//if (game.m_tank.getHealth() < 0)
@@ -313,5 +317,8 @@ public class GamePlay_GS extends GameScreen {
 	public void render(RenderingContext rc)
 	{
 		super.render(rc);
+
+		rc.setTransform(game.m_mapCalc.getWorldToScreenTransform());
+		game.m_sfx.render(rc);
 	}
 }

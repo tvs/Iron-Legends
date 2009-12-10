@@ -281,6 +281,8 @@ public class Tank extends MultiSpriteBody {
 		if (playerControlled) { // if died lose all power
 			setType(Type.BASIC);
 		}
+		
+		game.m_sfx.play("tankExplosion", getCenterPosition());
 	}
 
 	public void setShield(boolean s) {
