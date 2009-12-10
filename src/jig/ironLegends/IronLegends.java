@@ -516,9 +516,15 @@ public class IronLegends extends ScrollingScreenGame {
 	
 	public void addPowerUp(Body b) {
 		PowerUp power = null;
+		int c = -1;
 		// UPGRADE, REPAIR, SHIELD, LIFE, DAMAGE
-		int[] prob = {55, 10, 15, 5, 10}; // probabilities
-		int c = getRandomChoice(prob);
+		if (b instanceof Tank) { // Tank destroyed
+			int[] prob = {4, 10, 10, 3, 7}; // probabilities
+			c = getRandomChoice(prob);
+		} else { // crate destroyed
+			int[] prob = {7, 25, 30, 5, 15}; // probabilities
+			c = getRandomChoice(prob);			
+		}
 		if (c == -1) {
 			return;
 		}

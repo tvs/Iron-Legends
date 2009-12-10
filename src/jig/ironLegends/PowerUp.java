@@ -4,7 +4,7 @@ import jig.engine.physics.vpe.VanillaAARectangle;
 
 public class PowerUp extends VanillaAARectangle {
 	public static enum Type {
-		UPGRADE, REPAIR, SHIELD, LIFE, DAMAGE
+		UPGRADE, REPAIR, SHIELD, LIFE, DOUBLECANNON
 	};
 
 	private int MAX_ACTIVE_TIME = 10000;
@@ -87,8 +87,8 @@ public class PowerUp extends VanillaAARectangle {
 			// TODO: add life
 			break;
 
-		case DAMAGE:
-			// TODO: ???
+		case DOUBLECANNON:
+			t.doubleCannon();
 			break;
 		}
 	}

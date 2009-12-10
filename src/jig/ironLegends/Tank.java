@@ -58,6 +58,7 @@ public class Tank extends MultiSpriteBody {
 	private IronLegends game = null;
 	private HealthBar m_healthBar = null;
 	private double initialRotDeg = 0;
+	private boolean fireSecondBullet = false;
 
 	public Tank(IronLegends game, Team team, Vector2D pos, Type type) {
 		super(game.m_polygonFactory.createRectangle(pos, 85, 101),
@@ -115,8 +116,12 @@ public class Tank extends MultiSpriteBody {
 			}
 			return;
 		}
-
+		
 		timeSinceFired += deltaMs;
+		if (fireSecondBullet && timeSinceFired > 75) {
+			fireBullet();
+		}		
+		
 		if (shield) {
 			timeSinceShield += deltaMs;
 			if (timeSinceShield > MAX_SHIELD_TIME) {
@@ -237,14 +242,22 @@ public class Tank extends MultiSpriteBody {
 		getSprite(0).setFrame(m_animator.getFrame());
 	}
 
+	private void fireBullet() {
+		Bullet b = game.getBullet();
+		b.reload(damageAmount, bulletRange);
+		b.fire(this, getShapeCenter().translate(
+				new Vector2D(0, 20 - 86).rotate(getTurretRotation())),
+				getTurretRotation());	
+		fireSecondBullet = false;
+	}
+	
 	public void fire() {
 		if (timeSinceFired > FIRE_DELAY) {
+			fireBullet();
 			timeSinceFired = 0;
-			Bullet b = game.getBullet();
-			b.reload(damageAmount, bulletRange);
-			b.fire(this, getShapeCenter().translate(
-					new Vector2D(0, 20 - 86).rotate(getTurretRotation())),
-					getTurretRotation());
+			if (weapon == Weapon.DOUBLECANNON) {
+				fireSecondBullet = true;
+			}
 		}
 	}
 
@@ -287,6 +300,10 @@ public class Tank extends MultiSpriteBody {
 	
 	public void repair() {
 		setHealth(MAX_HEALTH);		
+	}
+	
+	public void doubleCannon() {
+		setWeapon(Weapon.DOUBLECANNON);
 	}
 	
 	@Override
@@ -365,7 +382,6 @@ public class Tank extends MultiSpriteBody {
 	public void setWeapon(Weapon weapon) {
 		this.weapon = weapon;
 		sTurret.setFrame(weapon.ordinal());
-		// TODO: set fire to do multiple shot
 	}
 
 	public Weapon getWeapon() {
