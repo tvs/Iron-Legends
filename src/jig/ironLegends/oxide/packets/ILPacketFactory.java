@@ -17,17 +17,16 @@ import jig.ironLegends.oxide.util.PacketList;
  */
 public class ILPacketFactory {
 	
-	public static ILPacket getPacketFromData(ByteBuffer buffer) 
-			throws PacketFormatException 
-	{
-		return getPacketFromData(buffer, true);
-	}
 	
-	public static ILPacket getPacketFromData(ByteBuffer buffer, boolean hasProtocolID)
+	public static ILPacket getPacketFromData(ByteBuffer buffer)
 			throws PacketFormatException 
 	{	
-		if (hasProtocolID)
-			buffer.getInt(); // Strip the protocol ID
+		int protocolID = buffer.getInt(); // Strip the protocol ID
+		
+		if (protocolID != ILPacket.IL_PROTOCOL_ID) {
+			throw new PacketFormatException("Unknown packet protocol. Header: 0x"
+					+ Integer.toHexString(protocolID));
+		}
 		
 		byte[] protocolData = new byte[9];
 		buffer.get(protocolData,0, protocolData.length);
@@ -45,6 +44,12 @@ public class ILPacketFactory {
 			return new ILLobbyPacket(protocolData, contentData);
 		case ILPacket.IL_EVENT_HEADER:
 			return new ILEventPacket(protocolData, contentData);
+		case ILPacket.IL_CONNECT_HEADER:
+			return new ILConnectPacket(protocolData, contentData);
+		case ILPacket.IL_READY_HEADER:
+			return new ILReadyPacket(protocolData);
+		case ILPacket.IL_LOBBY_EVENT_HEADER:
+			return new ILLobbyEventPacket(protocolData, contentData);
 		
 		default:
 			throw new PacketFormatException("Unknown packet. Header: 0x"

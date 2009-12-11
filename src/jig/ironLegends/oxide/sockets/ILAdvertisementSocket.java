@@ -4,6 +4,7 @@ package jig.ironLegends.oxide.sockets;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -14,6 +15,7 @@ import jig.ironLegends.oxide.exceptions.IronOxideException;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
+import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 
 /**
  * Assumes that received and outgoing packets are NEVER SPLIT
@@ -21,6 +23,7 @@ import jig.ironLegends.oxide.packets.ILPacketFactory;
  * @author Travis Hall
  */
 public class ILAdvertisementSocket {
+	protected InetSocketAddress address;
 	protected ByteBuffer buffer;
 	protected InetAddress group;
 	protected int port;
@@ -95,10 +98,11 @@ public class ILAdvertisementSocket {
 	public ILPacket getMessage() 
 			throws IOException, SocketTimeoutException, IronOxideException
 	{
-		ILPacket packet;
+		ILServerAdvertisementPacket packet;
 		
 		this.receivePacket();
-		packet = this.getPacketFromData();
+		packet = (ILServerAdvertisementPacket) this.getPacketFromData();
+		packet.address = this.address;
 		this.buffer.flip();
 		
 		return packet;
@@ -125,6 +129,9 @@ public class ILAdvertisementSocket {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		
 		this.inSocket.receive(packet);
+		
+		this.address = (InetSocketAddress) packet.getSocketAddress();
+		
 		this.buffer = ByteBuffer.wrap(packet.getData());
 				
 		return packet.getLength();

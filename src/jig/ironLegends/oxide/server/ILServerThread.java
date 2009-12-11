@@ -69,8 +69,7 @@ public class ILServerThread implements Runnable {
 	private int packetID = 0;
 	
 	private int tickrate;
-	private double tickTime;
-	private long lastUpdate = 0;
+	private long lastTick = 0;
 	private long time = 0;
 
 	public ILServerThread(InetAddress hostAddress, int port, int tickrate) 
@@ -78,9 +77,7 @@ public class ILServerThread implements Runnable {
 	{
 		this.hostAddress = hostAddress;
 		this.port = port;
-		this.tickrate = tickrate;
-		
-		this.tickTime = (1.0 / this.tickrate); // Ticks per second
+		this.tickrate = tickrate; // Ticks per second
 		
 		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
 		this.selector = this.initSelector();
@@ -91,8 +88,12 @@ public class ILServerThread implements Runnable {
 		this.outgoingData = new LinkedList<ILPacket>();
 		this.clients = new HashMap<SelectionKey, ClientInfo>();
 		
-		this.map = "";
+		this.serverName = "Server\0";
+		this.map = "Map\0";
+		this.version = "1.0.0\0";
+		this.numberOfPlayers = 0;
 		
+		this.updateAdvertisementPacket();
 		this.updateLobbyPacket();
 	}
 	
@@ -101,28 +102,29 @@ public class ILServerThread implements Runnable {
 	 * @param deltaMs Change in time since last update occurred
 	 */
 	public void update(long deltaMs) {
-		this.lastUpdate = this.time;
 		this.time += deltaMs;
 	}
 	
+
 	public void run() {
 		while(active) {
 			try {
 				// Advertise the server over the LAN (multicast)
 				if (advertise) {
 					synchronized(this.advertPacket) {
-						advertSocket.send(this.advertPacket);
+						this.updateAdvertisementPacket();
+						if (this.tickExpired()) {
+							advertSocket.send(this.advertPacket);
+						}
 					}
 				}
 				
-				// TODO: Create lobby status packets
+				// Send out lobby updates
 				if (lobby) {
 					synchronized(this.lobbyPacket) {
-						
 						this.updateLobbyPacket();
-						// Create the lobby packet (if something has changed since)
-						// Send it out
-						// TODO: Update the clients with the lobby status (put lobby packet into outgoing queue)
+						if (this.tickExpired())
+							this.sendLobbyState();
 					}
 				}
 				
@@ -149,7 +151,7 @@ public class ILServerThread implements Runnable {
 				}
 				
 				// If the tick has expired, update each of the clients
-				if (this.time - this.lastUpdate > this.tickTime) {
+				if (this.tickExpired()) {
 					this.updateClients();
 				}
 				
@@ -163,30 +165,25 @@ public class ILServerThread implements Runnable {
 		this.advertise = state;
 	}
 	
+
 	public void setActive(boolean state) {
 		this.active = state;
 	}
 	
-	public void setServerPacket(byte numberOfPlayers, byte maxPlayers, String serverName, String map, String version) {
-		this.numberOfPlayers = numberOfPlayers;
-		this.maxPlayers = maxPlayers;
+
+	public void setServerName(String serverName) {
 		this.serverName = serverName;
+	}
+	
+	public void setMapName(String map) {
 		this.map = map;
-		this.version = version;
-		
-		if (this.advertPacket == null) {
-			this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), numberOfPlayers, maxPlayers, serverName, map, version);
-		} else {
-			synchronized(this.advertPacket) {
-				this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), numberOfPlayers, maxPlayers, serverName, map, version);
-			}
-		}
 	}
 	
 	private int packetID() {
 		return this.packetID++;
 	}
 	
+
 	private void updateAdvertisementPacket() {
 		this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), this.numberOfPlayers, this.maxPlayers, this.serverName, this.map, this.version);
 	}
@@ -215,6 +212,7 @@ public class ILServerThread implements Runnable {
 		return socketSelector;
 	}
 	
+
 	private void accept(SelectionKey key) {	
 		if (this.numberOfPlayers > maxPlayers) {
 			// TODO: Send reject packet?
@@ -247,6 +245,7 @@ public class ILServerThread implements Runnable {
 	 * @throws IOException
 	 */
 	private void read(SelectionKey key, ClientInfo client) throws IOException {
+		if (client == null) return;
 		int numRead;
 		try {
 			// Attempt to read off the channel
@@ -277,6 +276,7 @@ public class ILServerThread implements Runnable {
 		
 	}
 	
+	
 	/**
 	 * Cancel the key, close the channel, and remove it from the clients map
 	 * @param key The key to cancel
@@ -288,12 +288,24 @@ public class ILServerThread implements Runnable {
 		this.clients.remove(key);
 	}
 	
+
 	/**
 	 * Write updates to each of the clients
 	 */
 	private void updateClients() {
 		// TODO: Keep a queue of the last X number of packets sent out
-		synchronized (this.outgoingData) {
+		synchronized(this.outgoingData) {
+			while(!outgoingData.isEmpty()) {
+				ILPacket p = outgoingData.get(0);
+				for (ClientInfo c : this.clients.values()) {
+					try {
+						c.channel.write(p.getByteBuffer());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				outgoingData.remove(0);
+			}
 			// Create a (set) of packet events
 			// packetQueue<ILPacket> = ILPacketFactory.createEventPacket(this.outgoingData)
 			
@@ -309,4 +321,32 @@ public class ILServerThread implements Runnable {
 		}
 	}
 	
+	private void sendLobbyState() {
+		for (Iterator<ClientInfo> it = this.clients.values().iterator(); it.hasNext();) {
+			ClientInfo c = it.next();
+			try {
+				c.channel.write(this.lobbyPacket.getByteBuffer());
+			} catch (IOException e) {
+				// Remote closed the connection -- scrag him
+				try {
+					c.channel.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				it.remove();
+				//e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Side effect -- if the tick has expired, updates the last tick time
+	 * @return true if the tick has expired
+	 */
+	private boolean tickExpired() {
+		boolean t = (this.time - this.lastTick > this.tickrate);
+		if (t) this.lastTick = this.time;
+		return t;
+	}
 }

@@ -3,12 +3,14 @@ package jig.ironLegends.oxide.packets;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.SocketAddress;
 
 /**
  * @author Travis Hall
  */
 public class ILServerAdvertisementPacket extends ILPacket {
 
+	public SocketAddress address;
 	protected byte numberOfPlayers;
 	protected byte maxPlayers;
 	protected String serverName;

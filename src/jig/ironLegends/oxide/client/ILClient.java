@@ -3,12 +3,9 @@ package jig.ironLegends.oxide.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
 
-import jig.ironLegends.oxide.exceptions.IronOxideException;
-import jig.ironLegends.oxide.packets.ILPacket;
-import jig.ironLegends.oxide.sockets.ILAdvertisementSocket;
-import jig.ironLegends.oxide.sockets.ILDataSocket;
+import jig.ironLegends.oxide.packets.ILLobbyPacket;
+import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 
 /**
  * A little testing class for emulating a client that receives data
@@ -17,26 +14,42 @@ import jig.ironLegends.oxide.sockets.ILDataSocket;
 public class ILClient {
 	
 	public static void main(String[] args) throws IOException {
-		ILAdvertisementSocket aSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
-		ILDataSocket dSocket = new ILDataSocket(InetAddress.getByName("localhost"), 4445);
-		
-		boolean cont = true;
-		
-		while (cont) {
-			try {
-				ILPacket packet = aSocket.getMessage();
-//				ILPacket packet = dSocket.getMessage();
-				System.out.println(packet);
-				cont = false;
-			} catch (SocketTimeoutException e) {
-				continue;
-			} catch (IronOxideException e) {
-				e.printStackTrace();
+		try {
+			InetAddress addr = InetAddress.getByName("localhost");
+			
+			ILClientThread cThread = new ILClientThread(20);
+			cThread.connectTo(addr, 2555);
+			cThread.lookingForServers = true;
+			
+			new Thread(cThread).start();
+			boolean cont = true;
+			boolean advert = true;
+			boolean lobby = true;
+			while(cont) {
+				if (advert) {
+					synchronized (cThread.servers) {
+						for (ILServerAdvertisementPacket p : cThread.servers.values() ) {
+							System.out.println(p);
+							advert = false;
+						}
+					}
+				}
+				
+				if (lobby) {
+					synchronized (cThread.lobbyUpdates) {
+						for (ILLobbyPacket p : cThread.lobbyUpdates) {
+							System.out.println(p);
+							lobby = false;
+						}
+					}
+				}
+				if (lobby == false && advert == false) {
+					cont = false;
+				}
 			}
-//				catch (TimeoutException e) {
-//				continue;
-//				e.printStackTrace();
-//			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

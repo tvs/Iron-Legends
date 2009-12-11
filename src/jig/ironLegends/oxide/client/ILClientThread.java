@@ -3,21 +3,28 @@ package jig.ironLegends.oxide.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import jig.ironLegends.EntityState;
 import jig.ironLegends.oxide.events.ILCommandEvent;
-import jig.ironLegends.oxide.events.ILLobbyEvent;
-import jig.ironLegends.oxide.server.ServerInfo;
+import jig.ironLegends.oxide.exceptions.PacketFormatException;
+import jig.ironLegends.oxide.packets.ILGameStatePacket;
+import jig.ironLegends.oxide.packets.ILLobbyPacket;
+import jig.ironLegends.oxide.packets.ILPacket;
+import jig.ironLegends.oxide.packets.ILPacketFactory;
+import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 import jig.ironLegends.oxide.sockets.ILAdvertisementSocket;
 import jig.ironLegends.oxide.util.ChangeRequest;
 
@@ -36,17 +43,16 @@ public class ILClientThread implements Runnable {
 	ILAdvertisementSocket advertSocket;
 	
 	// A map of servers discovered by the aSocket
-	private Map<InetAddress, ServerInfo> servers;
+	public Map<SocketAddress, ILServerAdvertisementPacket> servers;
 	
 	private List<ChangeRequest> pendingChanges;
 	
 	public List<EntityState> stateUpdates;
-	public List<ILCommandEvent> outgoingData;
-	public List<ILLobbyEvent> lobbyUpdates;
+	public List<ILPacket> outgoingData;
+	public List<ILLobbyPacket> lobbyUpdates;
 	
-	protected boolean lookingForServers;
-	protected boolean active;
-	protected boolean lobby;
+	public boolean lookingForServers;
+	public boolean active;
 	
 //	private String name;
 //	private int playerID;
@@ -68,13 +74,13 @@ public class ILClientThread implements Runnable {
 		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
 		this.selector = this.initSelector();
 		this.lookingForServers = false;
-		this.active = false;
-		this.lobby = false;
+		this.active = true;
 		
+		this.servers = new HashMap<SocketAddress, ILServerAdvertisementPacket>();
 		this.pendingChanges = new LinkedList<ChangeRequest>();
 		this.stateUpdates = new LinkedList<EntityState>();
-		this.outgoingData = new LinkedList<ILCommandEvent>();
-		this.lobbyUpdates = new LinkedList<ILLobbyEvent>();
+		this.outgoingData = new LinkedList<ILPacket>();
+		this.lobbyUpdates = new LinkedList<ILLobbyPacket>();
 	}
 	
 	public void update(long deltaMs) {
@@ -92,7 +98,7 @@ public class ILClientThread implements Runnable {
 		// Kick off our connection establishment
 		socketChannel.connect(new InetSocketAddress(this.hostAddress, this.port));
 		
-		// Queue a channel registration since hte caller is not the selecting
+		// Queue a channel registration since the caller is not the selecting
 		// thread. As part of the registration, we'll register an interest in 
 		// connection events. These are raised when a channel is ready to
 		// complete connection establishment.
@@ -125,7 +131,12 @@ public class ILClientThread implements Runnable {
 					}
 					this.pendingChanges.clear();
 				}
-
+				
+				if (lookingForServers) {
+					ILServerAdvertisementPacket aPacket = (ILServerAdvertisementPacket) advertSocket.getMessage();
+					servers.put(aPacket.address, aPacket);
+				}
+ 				
 				// Wait for an event on one of the registered channels
 				this.selector.select();
 				
@@ -143,13 +154,96 @@ public class ILClientThread implements Runnable {
 					if (key.isConnectable()) {
 						this.finishConnection(key);
 					} else if (key.isReadable()) {
-//						this.read(key);
+						this.read(key);
 					} else if (key.isWritable()) {
-//						this.write(key);
+						this.write(key);
 					}
 				} 
 			} catch (Exception e) {
 					e.printStackTrace();
+			}
+		}
+	}
+	
+//	public void send(CommandState event) throws IOException {
+		// TODO: Send events by wrapping them into a packet and then queueing
+//	}
+	
+	public void send(ILPacket packet) throws IOException {
+		synchronized(this.outgoingData) {
+			this.outgoingData.add(packet);
+		}
+		
+		this.selector.wakeup();
+	}
+	
+	private void read(SelectionKey key) throws IOException {
+		SocketChannel socketChannel = (SocketChannel) key.channel();
+		
+		ByteBuffer readBuffer = ByteBuffer.allocate(ILPacket.MAX_PACKET_SIZE);
+		
+		int numRead;
+		try {
+			numRead = socketChannel.read(readBuffer);
+		} catch (IOException e) {
+			// The remote forcibly closed the connection. Cancel the selection key
+			// and close the channel
+			key.cancel();
+			socketChannel.close();
+			return;
+		}
+		
+		if (numRead == -1) {
+			// Remote entity shut the socket down cleanly. Do the same from our end
+			// and cancel the channel.
+			key.channel().close();
+			key.cancel();
+			return;
+		}
+		
+		readBuffer.rewind();
+		this.handleResponse(socketChannel, readBuffer, numRead);
+	}
+	
+	private void handleResponse(SocketChannel socketChannel, ByteBuffer data, int numRead)  
+	{	
+		ILPacket p = null;
+		try {
+			p = ILPacketFactory.getPacketFromData(data);
+		} catch (PacketFormatException e) {
+			Logger.getLogger("global").warning("Received garbage packet");
+			return;
+		}
+		
+		if (p instanceof ILLobbyPacket) {
+			synchronized(this.lobbyUpdates) {
+				this.lobbyUpdates.add((ILLobbyPacket) p);
+			}
+		} 
+//		else if (p instanceof ILGameStatePacket) {
+//			synchronized(this.stateUpdates) {
+//				p = (ILGameStatePacket) p;
+//				this.stateUpdates.add(p.state);
+//			}
+//		}
+		
+	}
+	
+	private void write(SelectionKey key) throws IOException {
+	SocketChannel socketChannel = (SocketChannel) key.channel();
+		
+		synchronized (this.outgoingData) {
+			// Write until there's no more data
+			while (!this.outgoingData.isEmpty()) {
+				ILPacket packet = this.outgoingData.get(0);
+				socketChannel.write(packet.getByteBuffer());
+				this.outgoingData.remove(0);
+			}
+			
+			if (this.outgoingData.isEmpty()) {
+				// We wrote all the data off, so we no longer are interested
+				// in writing on this socket. Switch back to waiting for data.
+				key.interestOps(SelectionKey.OP_READ);
 			}
 		}
 	}

@@ -25,6 +25,8 @@ public class ClientInfo {
 	public byte team;
 	public SocketChannel channel;
 	
+	public boolean ready = false;
+	
 	public Map<Integer, PacketList> splitPackets;
 	
 	public List<ILPacket> pendingPackets;

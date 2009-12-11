@@ -67,7 +67,7 @@ public class ILLobbyPacket extends ILPacket {
 		
 		for (ClientInfo c : clients) {
 			dos.write(c.id);
-			dos.writeBytes(c.name);
+			dos.writeBytes("blah"); //c.name
 		}
 		
 		dos.flush();

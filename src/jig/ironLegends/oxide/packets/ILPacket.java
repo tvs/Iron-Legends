@@ -19,16 +19,19 @@ public abstract class ILPacket {
 	public static final byte ACK_HEADER = 0x6A;
 	public static final byte PING_HEADER = 0x69;
 	
-	public static final byte IL_GAME_DATA_HEADER = 0x71;
+	public static final byte IL_GAME_DATA_HEADER = 0x47; // 'G'
+	public static final byte IL_CONNECT_HEADER = 0x43; // 'C'
 	public static final byte IL_EVENT_HEADER = 0x45; // 'E'
 	public static final byte IL_SERVER_ADVERTISEMENT_HEADER = 0x53; // 'S'
-	public static final byte IL_LOBBY_DATA_HEADER = 0x76; // 'L'
+	public static final byte IL_LOBBY_DATA_HEADER = 0x4C; // 'L'
+	public static final byte IL_LOBBY_EVENT_HEADER = 0x6C; // 'l'
+	public static final byte IL_READY_HEADER = 0x52; // 'R'
 	
 	public static final int ORDER_FLAG = 0x80;
 	public static final int SPLIT_FLAG = 0x40;
 	
 	/** Iron Legends protocol identifier for filtering purposes */
-	private static final int IL_PROTOCOL_ID = 0xFCFC731F;
+	public static final int IL_PROTOCOL_ID = 0xFCFC731F;
 		
 	protected byte headerData;
 	protected PacketBuffer contentData;
@@ -75,6 +78,11 @@ public abstract class ILPacket {
 		dos.write(this.protocolData.array());
 		dos.writeByte(this.headerData);
 		dos.write(this.contentData.array());
+		
+		// Fill out the buffer
+		int remaining = MAX_PACKET_SIZE - dos.size();
+		for (int i = 0; i < remaining; i++)
+			dos.writeByte('\0');
 		
 		dos.flush();
 		dos.close();

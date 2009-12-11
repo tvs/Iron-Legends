@@ -9,6 +9,7 @@ import jig.ironLegends.oxide.util.PacketBuffer;
 /**
  * Command event Ð based on the KeyCommands class.
  * Corresponds to a single event.
+ * To be sent from the client to the server
  * @author Travis Hall
  */
 public class ILCommandEvent {
