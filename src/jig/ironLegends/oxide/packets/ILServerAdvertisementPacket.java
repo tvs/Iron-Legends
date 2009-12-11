@@ -1,7 +1,8 @@
 package jig.ironLegends.oxide.packets;
 
-import jig.ironLegends.oxide.events.ILEvent;
-import jig.ironLegends.oxide.util.Utility;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @author Travis Hall
@@ -32,8 +33,9 @@ public class ILServerAdvertisementPacket extends ILPacket {
 	
 	public static ILServerAdvertisementPacket packetFromData(byte[] protocolData, 
 			byte numberOfPlayers,byte maxPlayers, String serverName, String map, 
-			String gameVersion) {
-		
+			String gameVersion) 
+		throws IOException 
+	{	
 		byte[] contentBytes = createContent(numberOfPlayers, maxPlayers, 
 						serverName, map, gameVersion);
 		
@@ -42,24 +44,21 @@ public class ILServerAdvertisementPacket extends ILPacket {
 	
 	protected static byte[] createContent(byte numberOfPlayers, byte maxPlayers,
 									   String serverName, String map, 
-									   String gameVersion) {
-		int len = serverName.length() + map.length() + gameVersion.length() + 2;
+									   String gameVersion) 
+		throws IOException 
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
 		
-		byte[] contentData = new byte[len];
+		dos.writeByte(numberOfPlayers);
+		dos.writeByte(maxPlayers);
+		dos.writeBytes(serverName);
+		dos.writeBytes(map);
+		dos.writeBytes(gameVersion);
+		dos.flush();
+		dos.close();
 		
-		int pos = 0;
-		contentData[pos++] = numberOfPlayers;
-		contentData[pos++] = maxPlayers;
-		
-		Utility.addStringToByteArray(serverName, contentData, pos);
-		pos += serverName.length();
-		
-		Utility.addStringToByteArray(map, contentData, pos);
-		pos += map.length();
-		
-		Utility.addStringToByteArray(gameVersion, contentData, pos);
-		
-		return contentData;
+		return baos.toByteArray();
 	}
 
 	public String toString() {
@@ -73,12 +72,4 @@ public class ILServerAdvertisementPacket extends ILPacket {
 		"\tGame Version: " + this.gameVersion;
  	}
 
-	/* (non-Javadoc)
-	 * @see jig.ironLegends.oxide.packets.ILPacket#getEvent()
-	 */
-	@Override
-	public ILEvent getEvent() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

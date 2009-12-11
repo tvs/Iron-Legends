@@ -4,7 +4,6 @@ package jig.ironLegends.oxide.server;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -17,12 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 import jig.ironLegends.oxide.client.ClientInfo;
-import jig.ironLegends.oxide.events.ILEvent;
+import jig.ironLegends.oxide.events.ILCommandEvent;
+import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 import jig.ironLegends.oxide.sockets.ILAdvertisementSocket;
-import jig.ironLegends.oxide.sockets.ILDataSocket;
 
 
 /**
@@ -50,13 +49,16 @@ public class ILServerThread implements Runnable {
 	private ILServerAdvertisementPacket advertPacket;
 	private ILAdvertisementSocket advertSocket;
 	
-	private List<ILEvent> receivedData;
-	private List<ILEvent> outgoingData;
+	private ILLobbyPacket lobbyPacket;
+	
+	private List<ILCommandEvent> receivedData;
+	private List<ILPacket> outgoingData;
 	
 	private Map<SelectionKey, ClientInfo> clients;
 	
 	protected boolean advertise;
 	protected boolean active;
+	protected boolean lobby;
 	
 	private byte numberOfPlayers;
 	private byte maxPlayers;
@@ -83,10 +85,15 @@ public class ILServerThread implements Runnable {
 		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
 		this.selector = this.initSelector();
 		this.advertise = true;
+		this.lobby = true;
 		this.active = true;
-		this.receivedData = new LinkedList<ILEvent>();
-		this.outgoingData = new LinkedList<ILEvent>();
+		this.receivedData = new LinkedList<ILCommandEvent>();
+		this.outgoingData = new LinkedList<ILPacket>();
 		this.clients = new HashMap<SelectionKey, ClientInfo>();
+		
+		this.map = "";
+		
+		this.updateLobbyPacket();
 	}
 	
 	/**
@@ -105,6 +112,17 @@ public class ILServerThread implements Runnable {
 				if (advertise) {
 					synchronized(this.advertPacket) {
 						advertSocket.send(this.advertPacket);
+					}
+				}
+				
+				// TODO: Create lobby status packets
+				if (lobby) {
+					synchronized(this.lobbyPacket) {
+						
+						this.updateLobbyPacket();
+						// Create the lobby packet (if something has changed since)
+						// Send it out
+						// TODO: Update the clients with the lobby status (put lobby packet into outgoing queue)
 					}
 				}
 				
@@ -157,22 +175,24 @@ public class ILServerThread implements Runnable {
 		this.version = version;
 		
 		if (this.advertPacket == null) {
-			this.advertPacket = ILPacketFactory.newAdvertisementPacket(packetID, numberOfPlayers, maxPlayers, serverName, map, version);
+			this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), numberOfPlayers, maxPlayers, serverName, map, version);
 		} else {
 			synchronized(this.advertPacket) {
-				this.advertPacket = ILPacketFactory.newAdvertisementPacket(packetID, numberOfPlayers, maxPlayers, serverName, map, version);
+				this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), numberOfPlayers, maxPlayers, serverName, map, version);
 			}
 		}
 	}
 	
-	public void addEvent(ILEvent event) {
-		synchronized(this.outgoingData) {
-			this.outgoingData.add(event);
-		}
+	private int packetID() {
+		return this.packetID++;
 	}
 	
-	private void updatePacket() {
-		this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID, this.numberOfPlayers, this.maxPlayers, this.serverName, this.map, this.version);
+	private void updateAdvertisementPacket() {
+		this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), this.numberOfPlayers, this.maxPlayers, this.serverName, this.map, this.version);
+	}
+	
+	private void updateLobbyPacket() {
+		this.lobbyPacket = ILPacketFactory.newLobbyPacket(this.packetID(), this.numberOfPlayers, this.map, this.clients.values());
 	}
 	
 	private Selector initSelector() throws IOException {
@@ -212,7 +232,7 @@ public class ILServerThread implements Runnable {
 				this.clients.put(key, new ClientInfo(this.numberOfPlayers, socketChannel));
 				this.numberOfPlayers++;
 				
-				this.updatePacket();
+				this.updateAdvertisementPacket();
 			} catch (IOException e) {
 				// TODO: Send reject packet?
 			}
@@ -244,6 +264,7 @@ public class ILServerThread implements Runnable {
 		}
 		
 		// TODO: Add any completed packets to the event queue
+		// TODO: Receive a connection data (id, team, etc.) to update client status
 		for (ILPacket p : client.pendingPackets) {
 			// Convert the packet to its constituent event(s)
 			// If it's an event packet add them to the event queue

@@ -2,7 +2,10 @@ package jig.ironLegends.oxide.packets;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.logging.Logger;
 
+import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.exceptions.IncompletePacketException;
 import jig.ironLegends.oxide.exceptions.IronOxideException;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
@@ -38,10 +41,10 @@ public class ILPacketFactory {
 		switch(header) {
 		case ILPacket.IL_SERVER_ADVERTISEMENT_HEADER:
 			return new ILServerAdvertisementPacket(protocolData, contentData);
-//		case IronLegendsPacket.IL_SERVER_LOBBY_DATA_HEADER:
-//			return new ILServerLobbyDataPacket(protocolData, contentData);
-//		case IronLegendsPacket.IL_GAME_DATA_HEADER:
-//			return new ILGameDataPacket(protocolData, contentData);
+		case ILPacket.IL_LOBBY_DATA_HEADER:
+			return new ILLobbyPacket(protocolData, contentData);
+		case ILPacket.IL_EVENT_HEADER:
+			return new ILEventPacket(protocolData, contentData);
 		
 		default:
 			throw new PacketFormatException("Unknown packet. Header: 0x"
@@ -84,17 +87,46 @@ public class ILPacketFactory {
 			int packetID, byte numberOfPlayers, byte maxPlayers,
 			String serverName, String map, String version) {
 	
-		byte[] protocolData = getProtocolData(packetID);
-		byte[] contentBytes = ILServerAdvertisementPacket.createContent(numberOfPlayers, maxPlayers, serverName, map, version);
+		byte[] protocolData = null;
+		try {
+			protocolData = getProtocolData(packetID);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		byte[] contentBytes = null;
+		try {
+			contentBytes = ILServerAdvertisementPacket.createContent(numberOfPlayers, maxPlayers, serverName, map, version);
+		} catch (IOException e) {
+//			Logger.getLogger()
+			e.printStackTrace();
+		}
 		
 		return new ILServerAdvertisementPacket(protocolData, contentBytes);
 	}
 
+	public static ILLobbyPacket newLobbyPacket(int packetID, byte numberOfPlayers, String map, Collection<ClientInfo> clients) {
+		byte[] protocolData = null;
+		try {
+			protocolData = getProtocolData(packetID);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			return new ILLobbyPacket(protocolData, numberOfPlayers, map, clients);
+		} catch (IOException e) {
+			Logger.getLogger("global").warning(e.toString());
+			return null;
+		}
+	}
+	
 	/**
 	 * @param packetID
 	 * @return
+	 * @throws IOException 
 	 */
-	private static byte[] getProtocolData(int packetID) {
+	private static byte[] getProtocolData(int packetID) throws IOException {
 		return ILPacket.createProtocolData(packetID, (byte) 0, (byte) 1, ILPacket.DEFAULT_SPLIT_SIZE);
 	}
 }

@@ -1,10 +1,11 @@
 package jig.ironLegends.oxide.packets;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import jig.ironLegends.oxide.events.ILEvent;
 import jig.ironLegends.oxide.util.PacketBuffer;
-import jig.ironLegends.oxide.util.Utility;
 
 /**
  * Generic packet class for sending data between server and client
@@ -17,9 +18,11 @@ public abstract class ILPacket {
 	// Headers
 	public static final byte ACK_HEADER = 0x6A;
 	public static final byte PING_HEADER = 0x69;
+	
 	public static final byte IL_GAME_DATA_HEADER = 0x71;
-	public static final byte IL_SERVER_ADVERTISEMENT_HEADER = 0x53;
-	public static final byte IL_SERVER_LOBBY_DATA_HEADER = 0x76;
+	public static final byte IL_EVENT_HEADER = 0x45; // 'E'
+	public static final byte IL_SERVER_ADVERTISEMENT_HEADER = 0x53; // 'S'
+	public static final byte IL_LOBBY_DATA_HEADER = 0x76; // 'L'
 	
 	public static final int ORDER_FLAG = 0x80;
 	public static final int SPLIT_FLAG = 0x40;
@@ -61,21 +64,22 @@ public abstract class ILPacket {
 	/**
 	 * Get a byte array representation of the packet for sending
 	 * @return byte array of the data
+	 * @throws IOException 
 	 */
-	public byte[] getBytes() {
-		int pos = 0;
-		byte[] bytes = new byte[this.contentData.getLength() + this.protocolData.getLength() + 5];
-		Utility.addIntegerToByteArray(IL_PROTOCOL_ID, bytes, pos);
-		pos = 4;
+	public byte[] getBytes() throws IOException {
 		
-		System.arraycopy(this.protocolData.array(), 0, bytes, pos, this.protocolData.getLength());
-		pos += this.protocolData.getLength();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
 		
-		bytes[pos++] = this.headerData;
+		dos.writeInt(IL_PROTOCOL_ID);
+		dos.write(this.protocolData.array());
+		dos.writeByte(this.headerData);
+		dos.write(this.contentData.array());
 		
-		System.arraycopy(this.contentData.array(), 0, bytes, pos, this.contentData.getLength());
+		dos.flush();
+		dos.close();
 		
-		return bytes;
+		return baos.toByteArray();
 	}
 	
 	public int getPacketID() {
@@ -103,27 +107,32 @@ public abstract class ILPacket {
 	}
 	
 	public static byte[] createProtocolData(int packetID, byte packetNum, 
-			byte packetCount, short splitSize, boolean inOrder, boolean split) {
+			byte packetCount, short splitSize, boolean inOrder, boolean split) 
+			throws IOException
+	{
 		
-		byte[] data = new byte[9];
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
 		
 		byte flag = 0;
 		if(inOrder) flag |= ORDER_FLAG;
 		if(split) flag |= SPLIT_FLAG;
 		
-		data[0] = flag;
+		dos.writeByte(flag);
+		dos.writeInt(packetID);
+		dos.writeByte(packetNum);
+		dos.writeByte(packetCount);
+		dos.writeShort(splitSize);
+		dos.flush();
+		dos.close();
 		
-		Utility.addIntegerToByteArray(packetID, data, 1);
-		data[5] = packetNum;
-		data[6] = packetCount;
-		Utility.addShortToByteArray(splitSize, data, 7);
-		
-		return data;
-		
+		return baos.toByteArray();
 	}
 	
 	public static byte[] createProtocolData(int packetID, byte packetNum,
-			byte packetCount, short splitSize) {
+			byte packetCount, short splitSize) 
+			throws IOException 
+	{
 		return createProtocolData(packetID, packetNum, packetCount, splitSize, 
 				false, false);
 	}
@@ -141,11 +150,10 @@ public abstract class ILPacket {
 
 	/**
 	 * @return A byte buffer wrapped around our byte array
+	 * @throws IOException 
 	 */
-	public ByteBuffer getByteBuffer() {
+	public ByteBuffer getByteBuffer() throws IOException {
 		return ByteBuffer.wrap(this.getBytes());
 	}
-	
-	public abstract ILEvent getEvent();
 	
 }

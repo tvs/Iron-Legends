@@ -17,7 +17,7 @@ public class ILServer {
 			sThread.setServerPacket((byte) 3, (byte) 4, "Doggles house of dogs\0", "Badlands\0", "1.0.1\0");
 			new Thread(sThread).start();
 			
-//			sThread.setServerPacket((byte) 4, (byte) 4, "Doggles house of dogs\0", "Badlands\0", "1.0.1\0");
+			//sThread.setServerPacket((byte) 4, (byte) 4, "Doggles house of dogs\0", "Badlands\0", "1.0.1\0");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

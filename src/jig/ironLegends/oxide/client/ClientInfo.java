@@ -21,6 +21,8 @@ import jig.ironLegends.oxide.util.PacketList;
 public class ClientInfo {
 	
 	public int id;
+	public String name;
+	public byte team;
 	public SocketChannel channel;
 	
 	public Map<Integer, PacketList> splitPackets;
@@ -34,6 +36,20 @@ public class ClientInfo {
 		this.channel = channel;
 		this.splitPackets = new HashMap<Integer, PacketList>();
 		this.pendingPackets = new LinkedList<ILPacket>(); 
+	}
+	
+	/**
+	 * A constructor for purely information-related purposes.
+	 * Has no channel to read/write with!
+	 * @param id The player's ID
+	 * @param name The player's name
+	 * @param team The player's team selection
+	 */
+	public ClientInfo(int id, String name, byte team) {
+		this.id = id;
+		this.name = name;
+		this.team = team;
+		this.channel = null;
 	}
 	
 	public int read() throws IOException {
