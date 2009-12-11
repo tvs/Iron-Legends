@@ -1,6 +1,7 @@
 package jig.ironLegends.screens;
 
 import jig.engine.Mouse;
+import jig.engine.RenderingContext;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
@@ -30,6 +31,7 @@ public class GameOver_GS extends GameScreen {
 	public void update(long deltaMs) {
 		// allow things to keep moving
 		m_game.m_physicsEngine.applyLawsOfPhysics(deltaMs);
+		m_game.m_sfx.update(deltaMs);
 	}
 	
 	@Override
@@ -37,5 +39,13 @@ public class GameOver_GS extends GameScreen {
 	{
 		m_game.m_server = null;
 		m_game.m_client = null;
+	}
+	@Override
+	public void render(RenderingContext rc)
+	{
+		super.render(rc);
+		rc.setTransform(m_game.m_mapCalc.getWorldToScreenTransform());
+		m_game.m_sfx.render(rc);
+
 	}
 }

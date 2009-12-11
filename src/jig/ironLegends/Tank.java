@@ -149,37 +149,31 @@ public class Tank extends MultiSpriteBody {
 		}
 	}
 
-	public void controlMovement(KeyCommands m_keyCmds, Mouse mouse) {
-		if (m_keyCmds.isPressed("up") || m_keyCmds.isPressed("w")) {
+	public void controlMovement(KeyCommands m_keyCmds, Mouse mouse, CommandState cs) {
+		if (cs.isActive(CommandState.CMD_UP))
 			curSpeed = SPEED;
-		}
 
-		if (m_keyCmds.isPressed("down") || m_keyCmds.isPressed("s")) {
+		if (cs.isActive(CommandState.CMD_DOWN))
 			curSpeed = -SPEED;
-		}
 
-		if (!m_keyCmds.isPressed("up") && !m_keyCmds.isPressed("down")
-				&& !m_keyCmds.isPressed("w") && !m_keyCmds.isPressed("s")) {
+		if (!cs.isActive(CommandState.CMD_UP) && 
+			!cs.isActive(CommandState.CMD_DOWN) )
 			stopMoving();
-		}
 
-		if (m_keyCmds.isPressed("left") || m_keyCmds.isPressed("a")) {
+		if (cs.isActive(CommandState.CMD_LEFT))
 			angularVelocity = -TURN_RATE;
-		}
 
-		if (m_keyCmds.isPressed("right") || m_keyCmds.isPressed("d")) {
+		if (cs.isActive(CommandState.CMD_RIGHT))
 			angularVelocity = TURN_RATE;
-		}
 
-		if (!m_keyCmds.isPressed("left") && !m_keyCmds.isPressed("right")
-				&& !m_keyCmds.isPressed("a") && !m_keyCmds.isPressed("d")) {
+		if (!cs.isActive(CommandState.CMD_LEFT) &&
+			!cs.isActive(CommandState.CMD_RIGHT) )
 			stopTurning();
-		}
 
-		if (mouse.isLeftButtonPressed() || m_keyCmds.isPressed("fire")) {
+		if (cs.isActive(CommandState.CMD_FIRE))
 			fire();
-		}
 
+		// why not use wasPressed?
 		if (m_keyCmds.wasReleased("fixturret")) {
 			fixturret = !fixturret;
 		}

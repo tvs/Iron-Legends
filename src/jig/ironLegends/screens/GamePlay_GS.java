@@ -8,6 +8,7 @@ import jig.engine.ViewableLayer;
 import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.Bullet;
+import jig.ironLegends.CommandState;
 import jig.ironLegends.Destructible;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.Obstacle;
@@ -250,6 +251,35 @@ public class GamePlay_GS extends GameScreen {
 						game.m_powerUpLayer, 36, 36, htankpowerup));		
 	}
 
+	protected void processCommands(KeyCommands keyCmds, Mouse mouse, CommandState cs)
+	{
+		if (keyCmds.isPressed("up") || keyCmds.isPressed("w"))
+			cs.setState(CommandState.CMD_UP, true);
+		else
+			cs.setState(CommandState.CMD_UP, false);
+
+
+		if (keyCmds.isPressed("down") || keyCmds.isPressed("s"))
+			cs.setState(CommandState.CMD_DOWN, true);
+		else
+			cs.setState(CommandState.CMD_DOWN, false);
+
+		if (keyCmds.isPressed("left") || keyCmds.isPressed("a"))
+			cs.setState(CommandState.CMD_LEFT, true);
+		else
+			cs.setState(CommandState.CMD_LEFT, false);
+
+		if (keyCmds.isPressed("right") || keyCmds.isPressed("d"))
+			cs.setState(CommandState.CMD_RIGHT, true);
+		else
+			cs.setState(CommandState.CMD_RIGHT, false);
+		
+		if (mouse.isLeftButtonPressed() || keyCmds.isPressed("fire"))
+			cs.setState(CommandState.CMD_FIRE, true);
+		else
+			cs.setState(CommandState.CMD_FIRE, false);
+	}
+	
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse,
 			final long deltaMs) {
@@ -258,7 +288,11 @@ public class GamePlay_GS extends GameScreen {
 			game.m_tank.causeDamage(game.m_tank.getHealth());
 			game.m_gameProgress.playerDied();
 		}
-		game.m_tank.controlMovement(keyCmds, mouse);
+		
+		CommandState cs = new CommandState();
+		processCommands(keyCmds, mouse, cs);
+		
+		game.m_tank.controlMovement(keyCmds, mouse, cs);
 		return name();
 	}
 	
