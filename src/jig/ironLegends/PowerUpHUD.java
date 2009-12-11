@@ -26,11 +26,11 @@ public class PowerUpHUD extends Body
 		
 		String indicators[] = 
 		{
-				"shield"
-			,	"speed"
-			,	"armor"
-			,	"mine"
-			,	"damage"				
+				"shield"	// PU_SHIELD
+			,	"speed"		// PU_SPEED
+			,	"armor"		// PU_ARMOR
+			,	"mine"		// PU_MINE
+			,	"damage"	// PU_DAMAGE
 		};
 		
 		

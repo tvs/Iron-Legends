@@ -26,6 +26,13 @@ public class Tank extends MultiSpriteBody {
 	private static final double TURN_RATE = 2.0;
 	private static final int MAX_HEALTH = 100;
 	private static final int RESPAWN_DELAY = 1000;
+	
+	public static final int PU_SHIELD = 0;
+	public static final int PU_SPEED = 1;
+	public static final int PU_ARMOR = 2;
+	public static final int PU_MINE = 3;
+	public static final int PU_DAMAGE = 4;
+	
 	private int MAX_SHIELD_TIME = 10000;
 	private int SPEED = 300;
 	private int FIRE_DELAY = 300;
@@ -39,6 +46,9 @@ public class Tank extends MultiSpriteBody {
 	private Animator m_animator;
 	private Type type = Type.BASIC;
 	private Team team = Team.WHITE;
+	private int m_team = 0;	// TODO: set during construction
+	private int m_entityNumber = 0;	// TODO: set during construction
+	
 	private Weapon weapon = Weapon.CANNON;
 	private Body target = null;
 	private boolean playerControlled = true;
@@ -59,11 +69,15 @@ public class Tank extends MultiSpriteBody {
 	private HealthBar m_healthBar = null;
 	private double initialRotDeg = 0;
 	private boolean fireSecondBullet = false;
+	private double m_turretRotationRad;
 
-	public Tank(IronLegends game, Team team, Vector2D pos, Type type) {
+	public Tank(IronLegends game, int iTeam, Team team, Vector2D pos, Type type, int entityNumber) {
 		super(game.m_polygonFactory.createRectangle(pos, 85, 101),
 				IronLegends.SPRITE_SHEET + "#tank");
+		
 		setGame(game);
+		m_entityNumber = entityNumber;
+		m_team = iTeam;
 
 		// Tank Powers
 		sSpeed = getSprite(addSprite(IronLegends.SPRITE_SHEET + "#speed"));
@@ -92,19 +106,100 @@ public class Tank extends MultiSpriteBody {
 		respawn();
 	}
 
-	public Tank(IronLegends game, Team team, Vector2D pos) {
-		this(game, team, pos, Type.BASIC);
+	public Tank(IronLegends game, int iTeam, Team team, Vector2D pos, int entityNumber) {
+		this(game, iTeam, team, pos, Type.BASIC, entityNumber);
 	}
 
 	// AI Tank
-	public Tank(IronLegends game, Team team, Vector2D pos, boolean AI) {
-		this(game, team, pos);
+	public Tank(IronLegends game, int iTeam, Team team, Vector2D pos, boolean AI, int entityNumber) {
+		this(game, iTeam, team, pos, entityNumber);
 		setPlayerControlled(false);
 		allowRespawn(false);
 		FIRE_DELAY = 500;
 		damageAmount = 10;
 	}
+	
+	// update client's "entity state" from es
+	public void clientUpdate(final EntityState es)
+	{
+		m_entityNumber = es.m_entityNumber;
+		setPosition(es.m_pos);
+		setRotation(es.m_tankRotationRad);
+		m_turretRotationRad = es.m_turretRotationRad;
+		m_team = es.m_team;
+		curSpeed = es.m_speed;
+		health = es.m_health;
+		
+		// maxHealth
+		if ((es.m_flags & EntityState.ESF_TT_BASIC) == EntityState.ESF_TT_BASIC)
+			setType(Type.BASIC);
+		if ((es.m_flags & EntityState.ESF_TT_ARMORED) == EntityState.ESF_TT_ARMORED)
+			setType(Type.ARMORED);
+		if ((es.m_flags & EntityState.ESF_TT_SPEED) == EntityState.ESF_TT_SPEED)
+			setType(Type.SPEEDY);
+		
+		if ((es.m_flags & EntityState.ESF_ACTIVE) == EntityState.ESF_ACTIVE)
+			setActivation(true);
+		else
+			setActivation(false);
+		
+		if ((es.m_flags & EntityState.ESF_PU_DBL_CANNON) == EntityState.ESF_PU_DBL_CANNON)
+			setWeapon(Weapon.DOUBLECANNON);
+		else
+			setWeapon(Weapon.CANNON);
+		
+		if ((es.m_flags & EntityState.ESF_PU_SHIELD) == EntityState.ESF_PU_SHIELD)
+			sShield.setActivation(true);
+		else
+			sShield.setActivation(false);
 
+		/*
+		if ((es.m_flags & EntityState.ESF_PU_MINE) == EntityState.ESF_PU_MINE)
+			sMine.setActivation(true);
+		else
+			sMine.setActivation(false);
+		*/
+	}
+	
+	// fill in an entity state that can later be transmitted
+	public void serverPopulate(EntityState es)
+	{
+		es.m_entityNumber = m_entityNumber ;
+		
+		es.m_pos = getPosition();
+		es.m_tankRotationRad = getRotation();
+		es.m_turretRotationRad = m_turretRotationRad;
+		es.m_team = m_team;
+		es.m_speed = curSpeed;
+		es.m_health = getHealth();
+		es.m_maxHealth = getMaxHealth();
+			
+		es.m_flags = 0;
+		es.m_flags |= (isActive()?EntityState.ESF_ACTIVE:0);
+		es.m_flags |= (curSpeed != 0?EntityState.ESF_MOVING:0);
+		
+		switch(getType())
+		{
+			case ARMORED:
+				es.m_flags |= EntityState.ESF_TT_ARMORED;
+			break;
+			case SPEEDY:
+				es.m_flags |= EntityState.ESF_TT_SPEED;
+			break;
+			case BASIC:
+			default:
+				es.m_flags |= EntityState.ESF_TT_BASIC;
+			break;
+		}
+
+		if (isPowerUpActive(PU_SHIELD))
+			es.m_flags |= EntityState.ESF_PU_SHIELD;
+		if (isPowerUpActive(PU_DAMAGE))
+			es.m_flags |= EntityState.ESF_PU_DBL_CANNON;
+		if (isPowerUpActive(PU_MINE))
+			es.m_flags |= EntityState.ESF_PU_MINE;	
+	}
+	
 	@Override
 	public void update(long deltaMs) {
 		if (!isActive()) {
@@ -148,45 +243,54 @@ public class Tank extends MultiSpriteBody {
 			getSprite(0).setFrame(m_animator.getFrame());
 		}
 	}
+	public void serverControlMovement(KeyCommands m_keyCmds, Mouse mouse, CommandState cs) {
+		// server
+		{			
+			if (cs.isActive(CommandState.CMD_UP))
+				curSpeed = SPEED;
+	
+			if (cs.isActive(CommandState.CMD_DOWN))
+				curSpeed = -SPEED;
+	
+			if (!cs.isActive(CommandState.CMD_UP) && 
+				!cs.isActive(CommandState.CMD_DOWN) )
+				stopMoving();
+	
+			if (cs.isActive(CommandState.CMD_LEFT))
+				angularVelocity = -TURN_RATE;
+	
+			if (cs.isActive(CommandState.CMD_RIGHT))
+				angularVelocity = TURN_RATE;
+	
+			if (!cs.isActive(CommandState.CMD_LEFT) &&
+				!cs.isActive(CommandState.CMD_RIGHT) )
+				stopTurning();
+	
+			if (cs.isActive(CommandState.CMD_FIRE))
+				fire();
+		}		
+	}
 
-	public void controlMovement(KeyCommands m_keyCmds, Mouse mouse, CommandState cs) {
-		if (cs.isActive(CommandState.CMD_UP))
-			curSpeed = SPEED;
+	public void clientControlMovement(KeyCommands m_keyCmds, Mouse mouse) {
 
-		if (cs.isActive(CommandState.CMD_DOWN))
-			curSpeed = -SPEED;
-
-		if (!cs.isActive(CommandState.CMD_UP) && 
-			!cs.isActive(CommandState.CMD_DOWN) )
-			stopMoving();
-
-		if (cs.isActive(CommandState.CMD_LEFT))
-			angularVelocity = -TURN_RATE;
-
-		if (cs.isActive(CommandState.CMD_RIGHT))
-			angularVelocity = TURN_RATE;
-
-		if (!cs.isActive(CommandState.CMD_LEFT) &&
-			!cs.isActive(CommandState.CMD_RIGHT) )
-			stopTurning();
-
-		if (cs.isActive(CommandState.CMD_FIRE))
-			fire();
-
+		// can turret fixed stay at client if send turret rotation to server?
 		// why not use wasPressed?
+		// turret rotation can get set here for client, but needs to send command to server
 		if (m_keyCmds.wasReleased("fixturret")) {
 			fixturret = !fixturret;
 		}
 
 		if (fixturret) {
-			setTurretRotation(getRotation());
+			m_turretRotationRad = getRotation();
+			setTurretRotation(m_turretRotationRad);
 		} else {
 			Point loc = mouse.getLocation();
 			Vector2D tankCenterPos = getShapeCenter();
 			Vector2D mousePt = game.m_mapCalc.screenToWorld(new Vector2D(loc.x,
 					loc.y));
-			double rot = tankCenterPos.angleTo(mousePt);
-			setTurretRotation(rot + Math.toRadians(90));
+			m_turretRotationRad = tankCenterPos.angleTo(mousePt) + Math.toRadians(90);
+			
+			setTurretRotation(m_turretRotationRad);
 		}
 	}
 
@@ -267,15 +371,13 @@ public class Tank extends MultiSpriteBody {
 	}
 
 	public void explode() {
-		// TODO: activate explosion animation (hmm.. maybe can just use specialEffects class 
-		// to activate a "special effect" and it will deactivate on its own time elsewhere
 		stopMoving();
 		active = false;
 		timeSinceDied = 0;
 		if (playerControlled) { // if died lose all power
 			setType(Type.BASIC);
 		}
-		
+		// TODO: should server send a special effect update?
 		game.m_sfx.play("tankExplosion", getCenterPosition());
 	}
 
@@ -470,29 +572,33 @@ public class Tank extends MultiSpriteBody {
 		
 		switch (name)
 		{
-			case 0:
+			case PU_SHIELD:
 				if (sShield.isActive())
 					bActive = true;
 			break;
-			case 1:
+			case PU_SPEED:
 				if (sSpeed.isActive())
 					bActive = true;
 			break;
-			case 2:
+			case PU_ARMOR:
 				if (sArmor.isActive())
 					bActive = true;
 			break;
 				/*
-			case 3:
+			case PU_MINE:
 				if (sMine.isActive())
 					return true;
 					break;
 					*/
-			case 4:
+			case PU_DAMAGE:
 				if (weapon == Weapon.DOUBLECANNON)
 					bActive = true;
 			break;
 		}
 		return bActive;
+	}
+
+	public int getEntityNumber() {
+		return m_entityNumber;
 	}
 }

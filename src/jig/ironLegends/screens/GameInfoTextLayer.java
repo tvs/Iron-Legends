@@ -2,6 +2,7 @@ package jig.ironLegends.screens;
 
 import java.awt.Color;
 import jig.ironLegends.GameProgress;
+import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.HighScore;
 import jig.ironLegends.core.ScreenTextLayer;
@@ -16,10 +17,12 @@ public class GameInfoTextLayer extends ScreenTextLayer {
 	protected VanillaAARectangle m_gameInfoArea;
 	protected GameProgress m_gameProgress;
 	protected HighScore m_highScore;
+	protected IronLegends m_game;
 
 	public GameInfoTextLayer(Fonts fonts, GameProgress gameProgress,
-			HighScore highScore) {
+			HighScore highScore, IronLegends game) {
 		super(fonts);
+		m_game = game;
 
 		m_gameProgress = gameProgress;
 		m_highScore = highScore;
@@ -61,6 +64,12 @@ public class GameInfoTextLayer extends ScreenTextLayer {
 		// TODO: put mini tank icons for lives remaining (print the sprite)
 		text.println("Lives: " + (m_gameProgress.getLivesRemaining()<0?"You're Dead!":m_gameProgress.getLivesRemaining()));
 		text.println("Enemies: " + m_gameProgress.m_levelProgress.getTanksRemaining());
+		
+		// God mode on m_tank?
+		if (m_game.m_godmode)
+		{
+			text.println("GOD mode active");
+		}
 
 		text.setY(300);
 		text = null;

@@ -294,7 +294,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 		GameScreen gameplayScreen = m_screens.getScreen(GAMEPLAY_SCREEN);
 		gameplayScreen.addViewableLayer(new GameInfoTextLayer(m_fonts,
-				m_gameProgress, m_highScore));
+				m_gameProgress, m_highScore, this));
 		gameplayScreen.addViewableLayer(new GamePlayTextLayer(m_fonts,
 				m_gameProgress, m_playerInfo));
 
@@ -405,6 +405,9 @@ public class IronLegends extends ScrollingScreenGame {
 
 	@Override
 	public void update(long deltaMs) {
+		// out of band entityStates for now
+		Vector<EntityState> entityStates = new Vector<EntityState>();
+		
 		if (m_client != null)
 		{
 			// send msgs to server
@@ -420,9 +423,35 @@ public class IronLegends extends ScrollingScreenGame {
 				// send msg responses to client
 				m_serverMsgTransport.send(startGame);	
 			}
+			// send entity states (game state)
+			{
+				Iterator<Body> iter = m_tankLayer.iterator();
+				while (iter.hasNext())
+				{
+					Tank t = (Tank) iter.next();
+					EntityState es = new EntityState();
+					
+					t.serverPopulate(es);
+					entityStates.add(es);
+				}
+				
+			}
 		}
+		
 		if (m_client != null)
 		{
+			// update tanks from entityStates
+			{
+				// for each entityState, find appropriate entity and update
+				Iterator<EntityState> iter = entityStates.iterator();
+				while (iter.hasNext())
+				{
+					EntityState es = iter.next();
+					Tank t = findEntity(es.m_entityNumber);
+					t.clientUpdate(es);
+				}
+			}
+			
 			// process server msgs
 			while (m_clientMsgTransport.hasRxMsg())
 			{
@@ -455,6 +484,17 @@ public class IronLegends extends ScrollingScreenGame {
 
 		GameScreen activeGS = m_screens.getActiveScreen();
 		activeGS.update(deltaMs);		
+	}
+
+	private Tank findEntity(int entityNumber) {
+		Iterator<Body> iter = m_tankLayer.iterator();
+		while (iter.hasNext())
+		{
+			Tank t = (Tank) iter.next();
+			if (t.getEntityNumber() == entityNumber)
+				return t;
+		}
+		return null;
 	}
 
 	@Override
@@ -514,11 +554,11 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 	}
 	
-	public void addAITank() {
+	public void addAITank(int entityNumber) {
 		Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
 				VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
 				VISIBLE_BOUNDS.getMaxY());
-		Tank t = new Tank(this, Tank.Team.RED, pos, true);
+		Tank t = new Tank(this, 1, Tank.Team.RED, pos, true, entityNumber);
 		t.setTarget(m_tank);
 		setSpawn(t, "redspawn");
 		

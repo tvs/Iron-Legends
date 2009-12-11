@@ -57,10 +57,14 @@ public class GamePlay_GS extends GameScreen {
 		super.populateLayers(gameObjectLayers);
 
 		// part of single player "start game" - based on map and user selections
+		// for multiplayer, tank creation all happens on the server as well, each player
+		// will have to be assigned a unique entityNumber
 		{
 			game.m_tank = null;
 			// Main player
-			game.m_tank = new Tank(game, Tank.Team.WHITE, new Vector2D(100, 250));
+			int entityNumber = 0;
+			game.m_tank = new Tank(game, 0, Tank.Team.WHITE, new Vector2D(100, 250), entityNumber);
+			entityNumber++;
 			
 			// set position of tank to one of "bluespawn" locations/orientations
 			game.setSpawn(game.m_tank, "bluespawn");
@@ -72,7 +76,8 @@ public class GamePlay_GS extends GameScreen {
 			
 			// Temporary: add random 10 AI tanks
 			while (game.m_tankLayer.size() < 5) {
-				game.addAITank();
+				game.addAITank(entityNumber);
+				entityNumber++;
 			}
 		}
 		
@@ -288,11 +293,17 @@ public class GamePlay_GS extends GameScreen {
 			game.m_tank.causeDamage(game.m_tank.getHealth());
 			game.m_gameProgress.playerDied();
 		}
-		
+
+		// command state may get modified per tank by client update
+		// for now just suck in the commands here
 		CommandState cs = new CommandState();
 		processCommands(keyCmds, mouse, cs);
-		
-		game.m_tank.controlMovement(keyCmds, mouse, cs);
+
+		// TODO: will need to control movement for all tanks
+		// might need to associate with each tank the CommandState
+		// so it can easily be updated
+		game.m_tank.serverControlMovement(keyCmds, mouse, cs);
+		game.m_tank.clientControlMovement(keyCmds, mouse);
 		return name();
 	}
 	
