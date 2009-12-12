@@ -16,7 +16,6 @@ import jig.ironLegends.PowerUp;
 import jig.ironLegends.Tank;
 import jig.ironLegends.collision.Handler_CPBLayer_BodyLayer;
 import jig.ironLegends.collision.Handler_CPBLayer_CPBLayer;
-import jig.ironLegends.collision.Handler_CPB_CPBLayer;
 import jig.ironLegends.collision.ISink_CPB_Body;
 import jig.ironLegends.collision.ISink_CPB_CPB;
 import jig.ironLegends.collision.Sink_CPB_CPB_Default;

@@ -13,7 +13,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import jig.engine.ResourceFactory;
-import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.ResourceIO;
 
 public class MapLoader 

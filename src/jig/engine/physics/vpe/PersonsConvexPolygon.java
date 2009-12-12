@@ -68,10 +68,11 @@ public class PersonsConvexPolygon extends ConvexPolygon
 	
 	private class BoundingBox
 	{
-		private static final int TOP_LEFT = 0;
-		private static final int TOP_RIGHT = 1;
-		private static final int BOT_RIGHT = 2;
-		private static final int BOT_LEFT = 3;
+		public static final int TOP_LEFT = 0;
+		protected static final int TOP_RIGHT = 1;
+		@SuppressWarnings("unused")
+		public static final int BOT_RIGHT = 2;
+		protected static final int BOT_LEFT = 3;
 		
 		private Vector2D m_vertices[];
 		private double m_width;
@@ -92,10 +93,12 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		{
 			return m_width;
 		}
+		@SuppressWarnings("unused")
 		Vector2D computeCenter()
 		{
 			return computeBBCenter(m_vertices);
 		}
+		@SuppressWarnings("unused")
 		public double maxY(Vector2D centerPosition) {
 			// find max y from this position to bounding box edge (top or bottom)
 			double dToTop = centerPosition.getY() - m_vertices[TOP_LEFT].getY();
@@ -104,6 +107,7 @@ public class PersonsConvexPolygon extends ConvexPolygon
 				return dToBot;
 			return dToTop;
 		}
+		@SuppressWarnings("unused")
 		public double maxX(Vector2D centerPosition) {
 			// find max x from this position to bounding box edge (left or right)
 			double dToLeft = centerPosition.getX() - m_vertices[TOP_LEFT].getX();
@@ -136,8 +140,8 @@ public class PersonsConvexPolygon extends ConvexPolygon
 		BoundingBox bb = new BoundingBox(vertices);
 		double w = bb.getWidth();
 		double h = bb.getHeight();
-		double maxY = bb.maxY(centerPosition);
-		double maxX = bb.maxX(centerPosition);
+		//double maxY = bb.maxY(centerPosition);
+		//double maxX = bb.maxX(centerPosition);
 		
 		// use maxX, maxY as rectangle to circumscribe
 		//radius = Math.sqrt(maxX*maxX + maxY*maxY)/2.0;

@@ -14,9 +14,9 @@ public class SpawnInfo {
 	public SpawnInfo(String name, int sequence, int mapItemSeq)
 	{
 		m_name = name;
-		m_sequence = sequence;
+		setSequence(sequence);
 		m_bOccupied = false;
-		m_mapItemSeq = mapItemSeq;
+		setMapItemSeq(mapItemSeq);
 	}
 	public void setCenterPosition(Vector2D centerPosition) {
 		m_centerPos = centerPosition;		
@@ -42,5 +42,17 @@ public class SpawnInfo {
 	}
 	public boolean isOccupied() {
 		return m_bOccupied;
+	}
+	public void setMapItemSeq(int m_mapItemSeq) {
+		this.m_mapItemSeq = m_mapItemSeq;
+	}
+	public int getMapItemSeq() {
+		return m_mapItemSeq;
+	}
+	public void setSequence(int m_sequence) {
+		this.m_sequence = m_sequence;
+	}
+	public int getSequence() {
+		return m_sequence;
 	}
 }
