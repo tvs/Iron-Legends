@@ -136,6 +136,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public ServerContext m_server = null;
 	public IMsgTransport m_clientMsgTransport = null;
 	public IMsgTransport m_serverMsgTransport = null;
+	public Vector<String> m_availableMaps;
 
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -149,6 +150,11 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
 				+ "IronLegends.class", "IronLegends.jar");
+
+		ResourceFactory resourceFactory = ResourceFactory.getFactory();
+
+		m_availableMaps = MapLoader.listMaps(m_sInstallDir, "IronLegends.jar");
+		
 		m_levelProgress = new LevelProgress();
 		m_gameProgress = new GameProgress(m_levelProgress);
 		m_rr = new ResourceIO(m_sInstallDir);

@@ -132,5 +132,4 @@ public class ILGameStatePacket extends ILPacket {
 		
 		return super.getBytes();
 	}
-	
 }
