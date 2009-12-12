@@ -375,6 +375,7 @@ public class Tank extends MultiSpriteBody {
 				new Vector2D(0, 20 - 86).rotate(getTurretRotation())),
 				getTurretRotation());	
 		fireSecondBullet = false;
+		game.m_soundFx.play("bullet");		
 	}
 	
 	public void fire() {

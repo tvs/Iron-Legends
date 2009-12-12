@@ -70,6 +70,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public static final String GAME_ROOT = "jig/ironLegends/";
 	public static final String RESOURCE_ROOT = "jig/ironLegends/resources/";
 	public static final String RESOURCE_SCREEN = "jig/ironLegends/resources/screens/";
+	public static final String RESOURCE_AUDIO = "jig/ironLegends/resources/audio/";
 
 	public static final String SPRITE_SHEET = RESOURCE_ROOT
 			+ "ironLegends-spritesheet.png";
@@ -78,6 +79,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public static final String MY_RESOURCES = "ironLegends-resources.xml";
 	public static final String SCREEN_RESOURCES = "menus-resources.xml";
+	public static final String AUDIO_RESOURCES = "audio-resources.xml";
 
 	public static final int SPLASH_SCREEN = 0;
 	public static final int HELP_SCREEN = 1;
@@ -144,26 +146,14 @@ public class IronLegends extends ScrollingScreenGame {
 		m_mapCalc = new MapCalc(SCREEN_WIDTH, SCREEN_HEIGHT);
 		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
 
-		// Load resources
-		loadResources();
-
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
 				+ "IronLegends.class", "IronLegends.jar");
 
-		m_availableMaps = MapLoader.listMaps(m_sInstallDir, "IronLegends.jar");
+		// Load resources
+		loadResources();
 		
 		m_levelProgress = new LevelProgress();
 		m_gameProgress = new GameProgress(m_levelProgress);
-		m_rr = new ResourceIO(m_sInstallDir);
-		m_soundFx = new SoundFx();
-		m_sfx = new SpecialFx(m_soundFx);
-		
-		// test adding special effects
-		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
-		/*
-		 testing an animated sprite
-		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#wall", 1500, 2);
-		*/
 		
 		m_playerInfo = new PlayerInfo("ace");
 		m_highScorePersist = new HighScorePersistance(m_sInstallDir);
@@ -204,7 +194,24 @@ public class IronLegends extends ScrollingScreenGame {
 		
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_SCREEN, SCREEN_RESOURCES);
+		resourceFactory.loadResources(RESOURCE_AUDIO, AUDIO_RESOURCES);
 		m_fonts.create(resourceFactory);
+		
+		m_availableMaps = MapLoader.listMaps(m_sInstallDir, "IronLegends.jar");
+		m_rr = new ResourceIO(m_sInstallDir);
+		m_soundFx = new SoundFx();
+		m_sfx = new SpecialFx(m_soundFx);
+		
+		// Load Sound Effects
+		m_soundFx.addSfx("bullet", "Light_ta-Diode111-8758.wav");
+		m_soundFx.addSfx("explosion", "18403__inferno__xplosm.wav");
+		
+		// Load Special Effects
+		m_sfx.add("tankExplosion", "explosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
+		/*
+		 testing an animated sprite
+		m_sfx.add("tankExplosion", "explosion", IronLegends.SPRITE_SHEET + "#wall", 1500, 2);
+		*/
 	}
 
 	public void loadMap(String sMapFile) {		
