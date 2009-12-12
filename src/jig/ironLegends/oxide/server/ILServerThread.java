@@ -15,8 +15,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import jig.ironLegends.CommandState;
 import jig.ironLegends.oxide.client.ClientInfo;
-import jig.ironLegends.oxide.events.ILCommandEvent;
+import jig.ironLegends.oxide.packets.ILEventPacket;
 import jig.ironLegends.oxide.packets.ILLobbyEventPacket;
 import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILPacket;
@@ -53,7 +54,7 @@ public class ILServerThread implements Runnable {
 	
 	private ILLobbyPacket lobbyPacket;
 	
-	private List<ILCommandEvent> receivedData;
+	private List<CommandState> receivedData;
 	private List<ILPacket> outgoingData;
 	
 	private Map<SelectionKey, ClientInfo> clients;
@@ -86,7 +87,7 @@ public class ILServerThread implements Runnable {
 		this.advertise = true;
 		this.lobby = true;
 		this.active = true;
-		this.receivedData = new LinkedList<ILCommandEvent>();
+		this.receivedData = new LinkedList<CommandState>();
 		this.outgoingData = new LinkedList<ILPacket>();
 		this.clients = new HashMap<SelectionKey, ClientInfo>();
 		
@@ -198,10 +199,12 @@ public class ILServerThread implements Runnable {
 	}
 	
 	/**
-	 * Returns a packet number and then increments the counter
+	 * Returns a packet number and then increments the counter (wraps back to 0
+	 * if we run out of numbers)
 	 * @return The packet number to be sent
 	 */
 	public long packetID() {
+		if (this.packetID == Integer.MAX_VALUE) this.packetID = 0;
 		return this.packetID++;
 	}
 	
@@ -285,9 +288,12 @@ public class ILServerThread implements Runnable {
 		}
 		
 		for (ILPacket p : client.pendingPackets) {
-			
-			// TODO: If it's an event packet add them to the event queue
-			if (p instanceof ILLobbyEventPacket) {
+			if (p instanceof ILEventPacket) {
+				synchronized(this.receivedData) {
+					ILEventPacket ep = (ILEventPacket) p;
+					this.receivedData.add(ep.event);
+				}
+			} else if (p instanceof ILLobbyEventPacket) {
 				// If it's a lobby packet, update the client state
 				ILLobbyEventPacket ep = (ILLobbyEventPacket) p;
 				synchronized(client)
@@ -338,12 +344,6 @@ public class ILServerThread implements Runnable {
 			// TODO: Create EventPacket[s]
 			// TODO: Create delta change packets between last ACK'd and current event packet
 			// TODO: Keep a queue of the last X number of packets sent out
-		
-//			for (ClientInfo c : this.clients.values()) {
-//				for (ILPacket p : packetQueue) {
-//					c.channel.write(p.getByteBuffer());
-//				}
-//			}
 		}
 	}
 	

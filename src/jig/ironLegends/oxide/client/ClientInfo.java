@@ -76,6 +76,8 @@ public class ClientInfo {
 					try {
 						completedPacket = ILPacketFactory.reassemblePacket(list);
 						this.addPacketToPendingData(completedPacket);
+						// Remove it from the map
+						splitPackets.remove(packet.getPacketID());
 					} catch (IronOxideException e) {
 						Logger.getLogger("server").warning(e.toString());
 					}
@@ -95,7 +97,7 @@ public class ClientInfo {
 	}
 	
 	private void addPacketToPendingData(ILPacket packet) {
-		if (packet.getPacketID() > this.lastPacketID) {
+		if (packet.getPacketID() >= this.lastPacketID) {
 			this.pendingPackets.add(packet);
 			this.lastPacketID = packet.getPacketID();
 		}

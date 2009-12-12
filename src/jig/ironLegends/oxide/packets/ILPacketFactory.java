@@ -49,6 +49,10 @@ public class ILPacketFactory {
 			return new ILReadyPacket(protocolData);
 		case ILPacket.IL_LOBBY_EVENT_HEADER:
 			return new ILLobbyEventPacket(protocolData, contentData);
+		case ILPacket.IL_START_GAME_HEADER:
+			return new ILStartGamePacket(protocolData, contentData);
+		case ILPacket.IL_GAME_DATA_HEADER:
+			return new ILGameStatePacket(protocolData, contentData);
 		
 		default:
 			throw new PacketFormatException("Unknown packet. Header: 0x"
@@ -144,9 +148,26 @@ public class ILPacketFactory {
 	/**
 	 * @param packetID
 	 * @return
+	 */
+	public static ILReadyPacket newReadyPacket(int packetID) {
+		byte[] protocolData = null;
+		try {
+			protocolData = getProtocolData(packetID);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return new ILReadyPacket(protocolData);
+	}
+	
+	/**
+	 * @param packetID
+	 * @return
 	 * @throws IOException 
 	 */
 	private static byte[] getProtocolData(int packetID) throws IOException {
 		return ILPacket.createProtocolData(packetID, (byte) 0, (byte) 1, ILPacket.DEFAULT_SPLIT_SIZE);
 	}
+
 }

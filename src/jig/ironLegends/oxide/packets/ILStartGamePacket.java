@@ -10,8 +10,8 @@ public class ILStartGamePacket extends ILPacket {
 	public String map;
 	
 	/**
-	 * @param headerData
 	 * @param protocolData
+	 * @param map
 	 */
 	protected ILStartGamePacket(byte[] protocolData, String map) {
 		super(ILPacket.IL_START_GAME_HEADER, protocolData);
