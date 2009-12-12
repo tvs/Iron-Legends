@@ -9,6 +9,7 @@ import jig.ironLegends.PlayerInfo;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
+import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 
 public class HelpScreen extends GameScreen {
@@ -19,10 +20,12 @@ public class HelpScreen extends GameScreen {
 	protected Sprite shader;
 	protected Sprite help_text;
 	protected RolloverButton bbutton;
+	protected Fonts m_fonts;
 		
 	public HelpScreen(int name, Fonts fonts) {
 		super(name);
-
+		m_fonts = fonts;
+		
 		// TODO share common elements between frames
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -47,6 +50,24 @@ public class HelpScreen extends GameScreen {
 		shader.render(rc);
 		help_text.render(rc);
 		bbutton.render(rc);
+		
+		// temporarily add text
+		TextWriter text = new TextWriter(rc);
+		
+		text.setY(50);
+		text.setLineStart(125);
+		
+		
+		text.setFont(m_fonts.instructionalFont);
+		text.println("Audio Credits");
+		
+		text.setFont(m_fonts.smInstructionalFont);
+		text.println("");
+		text.println("Creative Commons Sampling Plus 1.0 License");
+		text.setLineStart(150);
+		text.println("tank explosion: funhouse from freesound.org");
+		text.println("bullet hits: Rock Savage from freesound.org");
+		text.setLineStart(125);
 	}
 	
 	@Override

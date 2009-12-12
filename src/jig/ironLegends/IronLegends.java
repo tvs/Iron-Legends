@@ -144,6 +144,8 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_mapCalc = new MapCalc(SCREEN_WIDTH, SCREEN_HEIGHT);
 		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
+		
+		m_soundFx = new SoundFx();
 
 		// Load resources
 		loadResources();
@@ -158,7 +160,6 @@ public class IronLegends extends ScrollingScreenGame {
 		m_levelProgress = new LevelProgress();
 		m_gameProgress = new GameProgress(m_levelProgress);
 		m_rr = new ResourceIO(m_sInstallDir);
-		m_soundFx = new SoundFx();
 		m_sfx = new SpecialFx(m_soundFx);
 		
 		// test adding special effects
@@ -207,6 +208,11 @@ public class IronLegends extends ScrollingScreenGame {
 		
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_SCREEN, SCREEN_RESOURCES);
+		
+		m_soundFx.addSfx("tankExplosion", resourceFactory.getAudioClip(RESOURCE_ROOT + "audio/2512__funhouse__tro_bassPan.wav"));
+		m_soundFx.addSfx("bulletWall", resourceFactory.getAudioClip(RESOURCE_ROOT + "audio/81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_short1.wav"));
+		m_soundFx.addSfx("bulletHitTank", resourceFactory.getAudioClip(RESOURCE_ROOT + "audio/81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_hitTank_short.wav"));
+		
 		m_fonts.create(resourceFactory);
 	}
 
@@ -224,8 +230,9 @@ public class IronLegends extends ScrollingScreenGame {
 		MapLoader.loadLayer(sink, sMapFile, m_rr);
 	}
 
-	public void loadLevel() {
-		loadMap("maps/mapitems.txt");
+	public void loadLevel(String mapFile) {
+		//loadMap("maps/mapitems.txt");
+		loadMap(mapFile);
 
 		populateGameLayers();
 		m_levelProgress.setIntro(2999);
@@ -397,7 +404,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public void newGame() {
 		m_bGameOver = false;
 		m_gameProgress.reset();
-		loadLevel();
+		String mapFile = "maps/mapitems.txt";
+		loadLevel(mapFile);
 	}
 
 	public Bullet getBullet() {

@@ -16,7 +16,6 @@ import jig.ironLegends.PowerUp;
 import jig.ironLegends.Tank;
 import jig.ironLegends.collision.Handler_CPBLayer_BodyLayer;
 import jig.ironLegends.collision.Handler_CPBLayer_CPBLayer;
-import jig.ironLegends.collision.Handler_CPB_CPBLayer;
 import jig.ironLegends.collision.ISink_CPB_Body;
 import jig.ironLegends.collision.ISink_CPB_CPB;
 import jig.ironLegends.collision.Sink_CPB_CPB_Default;
@@ -136,7 +135,9 @@ public class GamePlay_GS extends GameScreen {
 				Tank bo = (Tank) b.getOwner();
 				if (!t.equals(bo)) { // not killing self
 					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
+						
 						if (!(game.m_godmode && t.isPlayerControlled())) {
+							game.m_soundFx.play("bulletHitTank");
 							t.causeDamage(b.getDamage());
 						}
 						
@@ -193,6 +194,8 @@ public class GamePlay_GS extends GameScreen {
 							game.addPowerUp(o);
 						}
 					}
+					
+					game.m_soundFx.play("bulletWall");
 				}
 				
 				Tank bo = (Tank) b.getOwner();
