@@ -42,6 +42,7 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 	public void onLine(String line) {
 		MapItemPersist mapItem = new MapItemPersist(line);
 
+		Obstacle ob = null;
 		
 		if (mapItem.name().equals("redspawn"))
 		{
@@ -65,14 +66,14 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 		}
 		else if (mapItem.name().equals("redbase"))
 		{
-			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 			m_ironLegends.m_redBase = ob;
 		}
 		else if (mapItem.name().equals("bluebase"))
 		{
-			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 			m_ironLegends.m_blueBase = ob;
@@ -80,20 +81,22 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 		else if (mapItem.name().equals("wall") 	|| 
 			mapItem.name().equals("building")||
 			mapItem.name().equals("crate") ) {
-			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 		} else if (mapItem.name().equals("tree")  ||
 				   mapItem.name().equals("rock1") ||
 				   mapItem.name().equals("rock2")   ){
-			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
 			m_mapItemSeq++;
 			m_ironLegends.m_tankObstacleLayer.add(ob);
 		} else {
-			Obstacle ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 		}
+		if (ob != null)
+			m_ironLegends.m_obstacles.put(ob.getMapItemSeq(), ob);
 		
 		
 	}

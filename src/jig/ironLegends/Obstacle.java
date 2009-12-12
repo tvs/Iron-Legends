@@ -19,7 +19,7 @@ public class Obstacle extends MultiSpriteBody {
 	public String name() {
 		return m_name;
 	}
-	public int mapItemSeq()
+	public int getMapItemSeq()
 	{
 		return m_mapItemSeq;
 	}
