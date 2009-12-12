@@ -218,4 +218,13 @@
 	</frameset>
 	<!-- @end Widgets -->
 	
+	<frameset>
+		<name>help-content</name>
+		<top>900</top>
+		<left>1323</left>
+		<width>360</width>
+		<height>147</height>
+	</frameset>
+	
+	
 </spriteset>

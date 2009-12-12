@@ -12,17 +12,17 @@ import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.ui.RolloverButton;
 
 public class HelpScreen extends GameScreen {
-	protected PlayerInfo m_playerInfo;
 	
+	protected PlayerInfo m_playerInfo;
 	protected Sprite bg;
 	protected Sprite banner;
 	protected Sprite shader;
 	protected Sprite help_text;
+	protected Sprite help_content;
 	protected RolloverButton bbutton;
 		
 	public HelpScreen(int name, Fonts fonts) {
 		super(name);
-
 		// TODO share common elements between frames
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -36,6 +36,9 @@ public class HelpScreen extends GameScreen {
 		help_text = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#help-text");
 		help_text.setPosition(new Vector2D(365, 28));
 		
+		help_content = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#help-content");
+		help_content.setPosition(new Vector2D(111, 72));
+		
 		bbutton = new RolloverButton(-3, 0, 535,
 			IronLegends.SCREEN_SPRITE_SHEET + "#back-button");
 	}
@@ -47,6 +50,7 @@ public class HelpScreen extends GameScreen {
 		shader.render(rc);
 		help_text.render(rc);
 		bbutton.render(rc);
+		help_content.render(rc);
 	}
 	
 	@Override
