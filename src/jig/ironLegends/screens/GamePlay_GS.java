@@ -135,7 +135,9 @@ public class GamePlay_GS extends GameScreen {
 				Tank bo = (Tank) b.getOwner();
 				if (!t.equals(bo)) { // not killing self
 					if (t.getTeam() != bo.getTeam()) { // don't damage team mate
+						
 						if (!(game.m_godmode && t.isPlayerControlled())) {
+							game.m_soundFx.play("bulletHitTank");
 							t.causeDamage(b.getDamage());
 						}
 						
@@ -192,6 +194,8 @@ public class GamePlay_GS extends GameScreen {
 							game.addPowerUp(o);
 						}
 					}
+					
+					game.m_soundFx.play("bulletWall");
 				}
 				
 				Tank bo = (Tank) b.getOwner();

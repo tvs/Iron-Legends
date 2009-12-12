@@ -58,7 +58,6 @@ public class GamePlayTextLayer extends ScreenTextLayer
 			text.println("");
 			text.setFont(m_fonts.instructionalFont);
 			text.println("Press enter to continue");
-			text.println("Add buttons for: continue or leave enter?");
 		}
 		else if (m_gameProgress.getLevelProgress().isIntro())
 		{
