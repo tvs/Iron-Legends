@@ -17,9 +17,11 @@ import java.util.Map;
 
 import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.events.ILCommandEvent;
+import jig.ironLegends.oxide.packets.ILLobbyEventPacket;
 import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
+import jig.ironLegends.oxide.packets.ILReadyPacket;
 import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 import jig.ironLegends.oxide.sockets.ILAdvertisementSocket;
 
@@ -66,11 +68,11 @@ public class ILServerThread implements Runnable {
 	private String map;
 	private String version;
 	
-	private int packetID = 0;
-	
 	private int tickrate;
 	private long lastTick = 0;
 	private long time = 0;
+	
+	public long packetID = 0;
 
 	public ILServerThread(InetAddress hostAddress, int port, int tickrate) 
 			throws IOException 
@@ -98,6 +100,13 @@ public class ILServerThread implements Runnable {
 	}
 	
 	/**
+	 * @return true if the tick has expired
+	 */
+	public boolean tickExpired() {
+		return (this.time - this.lastTick > this.tickrate);
+	}
+	
+	/**
 	 * Updates the server time (used for sending at a tickrate)
 	 * @param deltaMs Change in time since last update occurred
 	 */
@@ -105,7 +114,6 @@ public class ILServerThread implements Runnable {
 		this.time += deltaMs;
 	}
 	
-
 	public void run() {
 		while(active) {
 			try {
@@ -152,6 +160,8 @@ public class ILServerThread implements Runnable {
 				
 				// If the tick has expired, update each of the clients
 				if (this.tickExpired()) {
+					// Update the tick
+					this.lastTick = this.time;
 					this.updateClients();
 				}
 				
@@ -165,12 +175,10 @@ public class ILServerThread implements Runnable {
 		this.advertise = state;
 	}
 	
-
 	public void setActive(boolean state) {
 		this.active = state;
 	}
 	
-
 	public void setServerName(String serverName) {
 		this.serverName = serverName;
 	}
@@ -179,17 +187,30 @@ public class ILServerThread implements Runnable {
 		this.map = map;
 	}
 	
-	private int packetID() {
+	/**
+	 * Send a user-defined packet (ie game state, start game, etc)
+	 * @param packet
+	 */
+	public void send(ILPacket packet) {
+		synchronized(this.outgoingData) {
+			this.outgoingData.add(packet);
+		}
+	}
+	
+	/**
+	 * Returns a packet number and then increments the counter
+	 * @return The packet number to be sent
+	 */
+	public long packetID() {
 		return this.packetID++;
 	}
 	
-
 	private void updateAdvertisementPacket() {
-		this.advertPacket = ILPacketFactory.newAdvertisementPacket(this.packetID(), this.numberOfPlayers, this.maxPlayers, this.serverName, this.map, this.version);
+		this.advertPacket = ILPacketFactory.newAdvertisementPacket((int) this.packetID(), this.numberOfPlayers, this.maxPlayers, this.serverName, this.map, this.version);
 	}
 	
 	private void updateLobbyPacket() {
-		this.lobbyPacket = ILPacketFactory.newLobbyPacket(this.packetID(), this.numberOfPlayers, this.map, this.clients.values());
+		this.lobbyPacket = ILPacketFactory.newLobbyPacket((int) this.packetID(), this.numberOfPlayers, this.map, this.clients.values());
 	}
 	
 	private Selector initSelector() throws IOException {
@@ -212,9 +233,9 @@ public class ILServerThread implements Runnable {
 		return socketSelector;
 	}
 	
-
 	private void accept(SelectionKey key) {	
 		if (this.numberOfPlayers > maxPlayers) {
+			return;
 			// TODO: Send reject packet?
 		} else {
 			ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
@@ -232,6 +253,7 @@ public class ILServerThread implements Runnable {
 				
 				this.updateAdvertisementPacket();
 			} catch (IOException e) {
+				return;
 				// TODO: Send reject packet?
 			}
 			
@@ -262,21 +284,26 @@ public class ILServerThread implements Runnable {
 			return;
 		}
 		
-		// TODO: Add any completed packets to the event queue
-		// TODO: Receive a connection data (id, team, etc.) to update client status
 		for (ILPacket p : client.pendingPackets) {
-			// Convert the packet to its constituent event(s)
-			// If it's an event packet add them to the event queue
+			
+			// TODO: If it's an event packet add them to the event queue
+			if (p instanceof ILLobbyEventPacket) {
+				// If it's a lobby packet, update the client state
+				ILLobbyEventPacket ep = (ILLobbyEventPacket) p;
+				synchronized(client)
+				{
+					client.name = ep.name;
+					client.team = ep.team;
+				}
+			} else if (p instanceof ILReadyPacket) {
+				// If it's a ready packet, update the client to ready
+				synchronized(client) {
+					client.ready = true;
+				}
+			}
 		}
-		
-		
-//		this.receivedData.add(ILPacketFactory.getPacketFromData(readBuffer.array()).getEvent());
-		
-		// TODO: If we receive an ACK, map the key to the ACK'd packet
-		
 	}
-	
-	
+		
 	/**
 	 * Cancel the key, close the channel, and remove it from the clients map
 	 * @param key The key to cancel
@@ -288,7 +315,6 @@ public class ILServerThread implements Runnable {
 		this.clients.remove(key);
 	}
 	
-
 	/**
 	 * Write updates to each of the clients
 	 */
@@ -340,13 +366,4 @@ public class ILServerThread implements Runnable {
 		}
 	}
 	
-	/**
-	 * Side effect -- if the tick has expired, updates the last tick time
-	 * @return true if the tick has expired
-	 */
-	private boolean tickExpired() {
-		boolean t = (this.time - this.lastTick > this.tickrate);
-		if (t) this.lastTick = this.time;
-		return t;
-	}
 }

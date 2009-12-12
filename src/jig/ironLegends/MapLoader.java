@@ -122,26 +122,29 @@ public class MapLoader
 		String sMapJarLocation = sInstallDir + jarName;
 		
 		// read jar to get listing of maps
-		File file = new File(sMapJarLocation);
-		JarFile jarFile = null;
-		try {
-			jarFile = new JarFile(file);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		{
+			File file = new File(sMapJarLocation);
+			JarFile jarFile = null;
+			try {
+				jarFile = new JarFile(file);
+			} catch (IOException e1) {
+				jarFile = null;
+			}
+	
+			if (jarFile != null)
+			{
+			    Enumeration<JarEntry> e = jarFile.entries();
+			    while (e.hasMoreElements()) {
+			    	JarEntry j = e.nextElement();
+			    	if (j.getName().startsWith("jig/ironLegends/maps/") && 
+			    		j.getName().length() > "jig/ironLegends/maps/".length())
+			    	{
+			    		maps.add(j.getName());
+			    	}
+			    }	    
+			}
 		}
-
-	    Enumeration<JarEntry> e = jarFile.entries();
-	    while (e.hasMoreElements()) {
-	    	JarEntry j = e.nextElement();
-	    	//j.getName().equals("jig/ironLegends/maps");
-	    	if (j.getName().startsWith("jig/ironLegends/maps/") && 
-	    		j.getName().length() > "jig/ironLegends/maps/".length())
-	    	{
-	    		maps.add(j.getName());
-	    	}
-	    }	    
-
+		
 		String sMapDevJarLocation = sInstallDir + "\\bin\\jig\\ironLegends\\maps";
 		String sMapExtLocation = sInstallDir + "\\maps";
 		
