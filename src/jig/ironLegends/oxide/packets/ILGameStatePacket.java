@@ -9,6 +9,7 @@ import java.util.List;
 import jig.ironLegends.EntityState;
 import jig.ironLegends.oxide.events.ILEvent;
 import jig.ironLegends.oxide.states.ILObjectState;
+import jig.ironLegends.oxide.util.PacketBuffer;
 
 /**
  * @author Travis Hall
@@ -73,7 +74,9 @@ public class ILGameStatePacket extends ILPacket {
 		dos.flush();
 		dos.close();
 		
-		return baos.toByteArray();
+		this.contentData = new PacketBuffer(baos.toByteArray());
+		
+		return super.getBytes();
 	}
 	
 }
