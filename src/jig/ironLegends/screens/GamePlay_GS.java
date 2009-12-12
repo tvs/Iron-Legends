@@ -165,10 +165,10 @@ public class GamePlay_GS extends GameScreen {
 						game.m_tankLayer,
 						game.m_bulletLayer, 4, 27, htankbull));
 
-		// Tank & Destroyable
+		// Tanks & Destroyable
 		game.m_physicsEngine
-				.registerCollisionHandler(new Handler_CPB_CPBLayer(
-						game.m_tank,
+				.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(
+						game.m_tankLayer,
 						game.m_tankBulletObstacleLayer,
 						new Sink_CPB_CPB_Default()));
 

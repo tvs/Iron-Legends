@@ -1,6 +1,8 @@
 package jig.ironLegends.screens;
 
 import java.awt.Color;
+import java.util.Iterator;
+
 import jig.ironLegends.GameProgress;
 import jig.ironLegends.IronLegends;
 import jig.ironLegends.core.Fonts;
@@ -69,6 +71,18 @@ public class GameInfoTextLayer extends ScreenTextLayer {
 		if (m_game.m_godmode)
 		{
 			text.println("GOD mode active");
+		}
+		
+		{
+			text.setLineStart(10);
+			text.println("");
+			
+			Iterator<String> iter = m_game.m_availableMaps.iterator();
+			while (iter.hasNext())
+			{
+				String mapFile = iter.next();
+				text.println(mapFile);
+			}			
 		}
 
 		text.setY(300);

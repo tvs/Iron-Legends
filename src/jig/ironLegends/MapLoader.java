@@ -2,12 +2,18 @@ package jig.ironLegends;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Random;
+import java.util.Vector;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import jig.engine.ResourceFactory;
+import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.ResourceIO;
 
 public class MapLoader 
@@ -88,6 +94,66 @@ public class MapLoader
 		rw.close();
 		
 		return bSuccess;
+	}
+
+	protected static void addMaps(Vector<String> maps, String sDir)
+	{
+		File dir = new File(sDir);
+
+		String[] list = dir.list();
+		if (list == null)
+			return;
+		
+		String output = "";
+
+		for (int i = 0; i < list.length; i++)  {
+			if (list[i].endsWith(".txt"))
+			{
+				maps.add(sDir + "\\" + list[i]);
+				output += list[i]+"\n";
+			}
+		}
+		System.out.println(output);
+	}
+
+	public static Vector<String> listMaps(String sInstallDir, String jarName)
+	{
+		Vector<String> maps = new Vector<String>();
+		String sMapJarLocation = sInstallDir + jarName;
+		
+		// read jar to get listing of maps
+		File file = new File(sMapJarLocation);
+		JarFile jarFile = null;
+		try {
+			jarFile = new JarFile(file);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+	    Enumeration<JarEntry> e = jarFile.entries();
+	    while (e.hasMoreElements()) {
+	    	JarEntry j = e.nextElement();
+	    	//j.getName().equals("jig/ironLegends/maps");
+	    	if (j.getName().startsWith("jig/ironLegends/maps/") && 
+	    		j.getName().length() > "jig/ironLegends/maps/".length())
+	    	{
+	    		maps.add(j.getName());
+	    	}
+	    }	    
+
+		String sMapDevJarLocation = sInstallDir + "\\bin\\jig\\ironLegends\\maps";
+		String sMapExtLocation = sInstallDir + "\\maps";
+		
+		System.out.println(sMapJarLocation);
+		addMaps(maps, sMapJarLocation);
+		if (maps.size() == 0)
+			addMaps(maps, sMapDevJarLocation);
+		
+		System.out.println(sMapExtLocation);
+		addMaps(maps, sMapExtLocation);
+		
+		return maps;
 	}
 	
 	public static boolean loadLayer(IMapLoadSink sink, String sFile, ResourceIO rr)
