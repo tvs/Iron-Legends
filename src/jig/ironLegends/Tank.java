@@ -48,6 +48,7 @@ public class Tank extends MultiSpriteBody {
 	private Team team = Team.WHITE;
 	private int m_team = 0;	// TODO: set during construction
 	private int m_entityNumber = 0;	// TODO: set during construction
+	private SteeringBehavior m_steering;
 	
 	private Weapon weapon = Weapon.CANNON;
 	private Body target = null;
@@ -98,6 +99,7 @@ public class Tank extends MultiSpriteBody {
 		sTurret.setRotationOffset(new Vector2D(0, 22));
 		sTurret.setAbsRotation(true);
 
+		m_steering = null;
 		m_healthBar = new HealthBar();
 		m_animator = new Animator(2, 75, 0);
 		initialPosition = pos;
@@ -115,8 +117,9 @@ public class Tank extends MultiSpriteBody {
 		this(game, iTeam, team, pos, entityNumber);
 		setPlayerControlled(false);
 		allowRespawn(false);
+		setSteering();
 		FIRE_DELAY = 500;
-		damageAmount = 10;
+		damageAmount = 10;		
 	}
 	
 	// update client's "entity state" from es
@@ -224,23 +227,23 @@ public class Tank extends MultiSpriteBody {
 			}
 		}
 		
-		if (!playerControlled) {
+		if (playerControlled) {
+			double rotation = getRotation() + (angularVelocity * deltaMs / 1000.0);
+			Vector2D translateVec = Vector2D.getUnitLengthVector(
+					rotation + Math.toRadians(270)).scale(
+					curSpeed * deltaMs / 1000.0);
+			Vector2D p = position.translate(translateVec);
+			p = p.clampX(0, IronLegends.WORLD_WIDTH - getWidth());
+			p = p.clampY(0, IronLegends.WORLD_HEIGHT - getHeight());
+	
+			setPosition(p);
+			setRotation(rotation);
+			if ((curSpeed != 0 || angularVelocity != 0)
+					&& m_animator.update(deltaMs, translateVec)) {
+				getSprite(0).setFrame(m_animator.getFrame());
+			}
+		} else {
 			AIMovement(deltaMs);
-		}
-
-		double rotation = getRotation() + (angularVelocity * deltaMs / 1000.0);
-		Vector2D translateVec = Vector2D.getUnitLengthVector(
-				rotation + Math.toRadians(270)).scale(
-				curSpeed * deltaMs / 1000.0);
-		Vector2D p = position.translate(translateVec);
-		p = p.clampX(0, IronLegends.WORLD_WIDTH - getWidth());
-		p = p.clampY(0, IronLegends.WORLD_HEIGHT - getHeight());
-
-		setPosition(p);
-		setRotation(rotation);
-		if ((curSpeed != 0 || angularVelocity != 0)
-				&& m_animator.update(deltaMs, translateVec)) {
-			getSprite(0).setFrame(m_animator.getFrame());
 		}
 	}
 	public void serverControlMovement(KeyCommands m_keyCmds, Mouse mouse, CommandState cs) {
@@ -293,8 +296,9 @@ public class Tank extends MultiSpriteBody {
 			setTurretRotation(m_turretRotationRad);
 		}
 	}
-
-	private void AIMovement(long deltaMs) {
+	
+/*
+	private void AIMovement_old(long deltaMs) {
 		if (target == null || !target.isActive()) {
 			stopMoving();
 			stopTurning();
@@ -319,7 +323,59 @@ public class Tank extends MultiSpriteBody {
 			stopTurning();
 		}
 	}
+*/
+	
+	private void AIMovement(long deltaMs) {
+		double dist = 0.0;
+		double target_angle = 0.0;
+		
+		if (target == null || !target.isActive()) {
+			m_steering.setBehavior(SteeringBehavior.Behavior.WANDER);
+		} else {
+			Vector2D tp = target.getCenterPosition();
+			Vector2D sp = getCenterPosition();
+			dist = Math.sqrt(tp.distance2(sp));
+			target_angle = sp.angleTo(tp);
+			if (dist <= 3 * bulletRange) { // go towards the target
+				m_steering.setTarget(target);
+				if (dist <= 2 * bulletRange) { // chase
+					m_steering.setBehavior(SteeringBehavior.Behavior.SEEK);
+					m_steering.setTargetBound(bulletRange);					
+				} else {
+					m_steering.setBehavior(SteeringBehavior.Behavior.ARIVE);
+					m_steering.setTargetBound(1.75 * bulletRange);
+				}
+				
+				if (dist <= 1.25 * bulletRange) { // close enough start firing
+					fire();
+				}
+			} else {
+				m_steering.setBehavior(SteeringBehavior.Behavior.WANDER);
+			}
+		}
 
+		m_steering.apply(deltaMs);
+		Vector2D translateVec = getVelocity();
+		if (!translateVec.epsilonEquals(Vector2D.ZERO, 0.01)) { // moving
+			if (m_animator.update(deltaMs, translateVec)) {
+				getSprite(0).setFrame(m_animator.getFrame());
+			}
+			
+			Vector2D p = getCenterPosition().translate(translateVec);
+			p = p.clampX(0, IronLegends.WORLD_WIDTH - getWidth());
+			p = p.clampY(0, IronLegends.WORLD_HEIGHT - getHeight());
+	
+			setCenterPosition(p);
+			setRotation(m_steering.getVectorAngle(translateVec) + Math.toRadians(90));
+			if (m_steering.getBehavior() != SteeringBehavior.Behavior.WANDER) {
+				setTurretRotation(target_angle + Math.toRadians(90));				
+			} else {
+				setTurretRotation(getRotation()); // fix sTurret
+			}
+		} else {
+			setTurretRotation(target_angle + Math.toRadians(90));
+		}
+	}	
 
 	public void respawn() {
 		stopMoving();
@@ -335,7 +391,7 @@ public class Tank extends MultiSpriteBody {
 		setActivation(true);
 		setShield(true);
 		MAX_SHIELD_TIME = 2000; // initial temp shield
-
+		
 		m_animator.setFrameBase(0);
 		getSprite(0).setFrame(m_animator.getFrame());
 	}
@@ -600,5 +656,18 @@ public class Tank extends MultiSpriteBody {
 
 	public int getEntityNumber() {
 		return m_entityNumber;
+	}
+
+	public void setSteering() {
+		m_steering = new SteeringBehavior(this);
+		m_steering.setMaxSpeed(SPEED);
+	}
+	
+	public void setSteering(SteeringBehavior m_steering) {
+		this.m_steering = m_steering;
+	}
+
+	public SteeringBehavior getSteering() {
+		return m_steering;
 	}
 }

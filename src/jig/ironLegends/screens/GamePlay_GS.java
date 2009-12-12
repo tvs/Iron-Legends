@@ -75,7 +75,7 @@ public class GamePlay_GS extends GameScreen {
 			game.m_entityLayer.add(game.m_tank);
 			
 			// Temporary: add random 10 AI tanks
-			while (game.m_tankLayer.size() < 5) {
+			while (game.m_tankLayer.size() < 2) {
 				game.addAITank(entityNumber);
 				entityNumber++;
 			}
