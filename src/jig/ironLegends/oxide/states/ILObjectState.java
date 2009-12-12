@@ -20,7 +20,7 @@ public class ILObjectState {
 	public int health;
 	public Vector2D position;
 	
-	private ILObjectState(byte type, int id, int health, Vector2D position) {
+	public ILObjectState(byte type, int id, int health, Vector2D position) {
 		this.type = type;
 		this.id = id;
 		this.health = health;

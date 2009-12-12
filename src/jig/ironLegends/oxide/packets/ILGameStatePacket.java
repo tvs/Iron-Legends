@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import jig.engine.util.Vector2D;
 import jig.ironLegends.EntityState;
 import jig.ironLegends.oxide.events.ILEvent;
 import jig.ironLegends.oxide.states.ILObjectState;
@@ -28,6 +29,59 @@ public class ILGameStatePacket extends ILPacket {
 		this.tankStates = new LinkedList<EntityState>();
 		this.objectStates = new LinkedList<ILObjectState>();
 		this.events = new LinkedList<ILEvent>();
+	}
+	
+	public ILGameStatePacket(byte[] protocolData, byte[] contentData) {
+		this(protocolData);
+		this.contentData = new PacketBuffer(contentData);
+		
+		// Tank data
+		int numTanks = this.contentData.getInt();
+		for (int i = 0; i < numTanks; i++) {
+			EntityState e = new EntityState();
+			e.m_entityNumber = this.contentData.getInt();
+			e.m_pos = new Vector2D(this.contentData.getFloat(), this.contentData.getFloat());
+			e.m_health = this.contentData.getInt();
+			e.m_tankRotationRad = this.contentData.getFloat();
+			e.m_flags = this.contentData.getInt();
+			e.m_turretRotationRad = this.contentData.getFloat();
+			this.tankStates.add(e);
+		}
+		
+		// Object data
+		int numObjects = this.contentData.getInt();
+		for (int i = 0; i < numObjects; i++) {
+			byte type = this.contentData.getByte();
+			int id = this.contentData.getInt();
+			
+			if (type == ILObjectState.WALL || type == ILObjectState.BASE || type == ILObjectState.CRATE) {
+				this.objectStates.add(new ILObjectState(type, id, this.contentData.getInt(), new Vector2D(0, 0)));
+			} else if (type == ILObjectState.POWERUP) {
+				Vector2D v = new Vector2D(this.contentData.getFloat(), this.contentData.getFloat());
+				this.objectStates.add(new ILObjectState(type, id, 0, v));
+			}
+		}
+		
+		// Event data
+		int numEvents = this.contentData.getInt();
+		for (int i = 0; i < numEvents; i++) {
+			byte type = this.contentData.getByte();
+			Vector2D v = new Vector2D(this.contentData.getFloat(), this.contentData.getFloat());
+			
+			if (type == ILEvent.BULLET) {
+				byte team = this.contentData.getByte();
+				float dir = this.contentData.getFloat();
+				
+				this.events.add(ILEvent.getBullet(v, team, dir));
+			}
+			
+			if (type == ILEvent.MINE) {
+				byte team = this.contentData.getByte();
+				this.events.add(ILEvent.getMine(v, team));
+			}
+		}
+		
+		this.contentData.rewind();
 	}
 	
 	public void addTankState(EntityState state) {

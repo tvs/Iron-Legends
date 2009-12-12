@@ -18,13 +18,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import jig.ironLegends.CommandState;
-import jig.ironLegends.EntityState;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
 import jig.ironLegends.oxide.packets.ILGameStatePacket;
 import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
+import jig.ironLegends.oxide.packets.ILReadyPacket;
 import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
+import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.oxide.sockets.ILAdvertisementSocket;
 import jig.ironLegends.oxide.util.ChangeRequest;
 
@@ -47,16 +48,18 @@ public class ILClientThread implements Runnable {
 	
 	private List<ChangeRequest> pendingChanges;
 	
-	public List<EntityState> stateUpdates;
+	public List<ILGameStatePacket> stateUpdates;
 	public List<ILPacket> outgoingData;
 	public List<ILLobbyPacket> lobbyUpdates;
 	
 	public boolean lookingForServers;
 	public boolean active;
 	
+	public boolean receivedStartGame = false;
+	public ILStartGamePacket startGamePacket;
+	
 	private int tickrate;
-	private double tickTime;
-	private long lastUpdate = 0;
+	private long lastTick = 0;
 	private long time = 0;
 	
 	private long packetID = 0;
@@ -66,8 +69,6 @@ public class ILClientThread implements Runnable {
 	{
 		this.tickrate = tickrate;
 		
-		this.tickTime = (1.0 / this.tickrate); // Ticks per second
-		
 		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
 		this.selector = this.initSelector();
 		this.lookingForServers = false;
@@ -75,18 +76,22 @@ public class ILClientThread implements Runnable {
 		
 		this.servers = new HashMap<SocketAddress, ILServerAdvertisementPacket>();
 		this.pendingChanges = new LinkedList<ChangeRequest>();
-		this.stateUpdates = new LinkedList<EntityState>();
+		this.stateUpdates = new LinkedList<ILGameStatePacket>();
 		this.outgoingData = new LinkedList<ILPacket>();
 		this.lobbyUpdates = new LinkedList<ILLobbyPacket>();
 	}
 	
 	public long packetID() {
+		if (this.packetID == Integer.MAX_VALUE) this.packetID = 0;
 		return this.packetID++;
 	}
 	
 	public void update(long deltaMs) {
-		this.lastUpdate = this.time;
 		this.time += deltaMs;
+	}
+	
+	public boolean tickExpired() {
+		return (this.time - this.lastTick > this.tickrate);
 	}
 	
 	public void connectTo(InetAddress hostAddress, int port) throws IOException {
@@ -179,6 +184,14 @@ public class ILClientThread implements Runnable {
 		this.selector.wakeup();
 	}
 	
+	public void sendReadyPacket() throws IOException {
+		synchronized(this.outgoingData) {
+			ILReadyPacket p = ILPacketFactory.newReadyPacket((int) this.packetID());
+			this.receivedStartGame = false;
+			this.outgoingData.add(p);
+		}
+	}
+	
 	private void read(SelectionKey key) throws IOException {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		
@@ -217,35 +230,38 @@ public class ILClientThread implements Runnable {
 			return;
 		}
 		
-		if (p instanceof ILLobbyPacket) {
+		if (p instanceof ILGameStatePacket) {
+			synchronized(this.stateUpdates) {
+				this.stateUpdates.add((ILGameStatePacket) p);
+			}
+		} else if (p instanceof ILLobbyPacket) {
 			synchronized(this.lobbyUpdates) {
 				this.lobbyUpdates.add((ILLobbyPacket) p);
 			}
-		} 
-//		else if (p instanceof ILGameStatePacket) {
-//			synchronized(this.stateUpdates) {
-//				p = (ILGameStatePacket) p;
-//				this.stateUpdates.add(p.state);
-//			}
-//		}
+		} else if (p instanceof ILStartGamePacket) {
+			this.receivedStartGame = true;
+			this.startGamePacket = (ILStartGamePacket) p;
+		}
 		
 	}
 	
 	private void write(SelectionKey key) throws IOException {
 	SocketChannel socketChannel = (SocketChannel) key.channel();
-		
-		synchronized (this.outgoingData) {
-			// Write until there's no more data
-			while (!this.outgoingData.isEmpty()) {
-				ILPacket packet = this.outgoingData.get(0);
-				socketChannel.write(packet.getByteBuffer());
-				this.outgoingData.remove(0);
-			}
-			
-			if (this.outgoingData.isEmpty()) {
-				// We wrote all the data off, so we no longer are interested
-				// in writing on this socket. Switch back to waiting for data.
-				key.interestOps(SelectionKey.OP_READ);
+		if (this.tickExpired()) {
+			this.lastTick = this.time;
+			synchronized (this.outgoingData) {
+				// Write until there's no more data
+				while (!this.outgoingData.isEmpty()) {
+					ILPacket packet = this.outgoingData.get(0);
+					socketChannel.write(packet.getByteBuffer());
+					this.outgoingData.remove(0);
+				}
+				
+				if (this.outgoingData.isEmpty()) {
+					// We wrote all the data off, so we no longer are interested
+					// in writing on this socket. Switch back to waiting for data.
+					key.interestOps(SelectionKey.OP_READ);
+				}
 			}
 		}
 	}
