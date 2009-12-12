@@ -14,15 +14,21 @@ public class Obstacle extends MultiSpriteBody {
 	private String m_name;
 	private Destructible m_destructible;
 	private HealthBar m_healthBar = null;
+	private int m_mapItemSeq;
 
 	public String name() {
 		return m_name;
 	}
+	public int getMapItemSeq()
+	{
+		return m_mapItemSeq;
+	}
 
-	Obstacle(MapItemPersist item, PolygonFactory pf) {
+	Obstacle(MapItemPersist item, PolygonFactory pf, int mapItemSeq) {
 		super(null);
 
 		m_name = item.name();
+		m_mapItemSeq = mapItemSeq;
 
 		Vector2D pos = item.centerPosition();
 
@@ -37,8 +43,8 @@ public class Obstacle extends MultiSpriteBody {
 		setItemSpecificData(pf);
 	}
 
-	Obstacle(String cellInfo, PolygonFactory pf) {
-		this(new MapItemPersist(cellInfo), pf);
+	Obstacle(String cellInfo, PolygonFactory pf, int mapItemSeq) {
+		this(new MapItemPersist(cellInfo), pf, mapItemSeq);
 	}
 
 	@Override

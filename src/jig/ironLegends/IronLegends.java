@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.imageio.spi.ServiceRegistry;
@@ -30,6 +32,7 @@ import jig.ironLegends.core.HighScore;
 import jig.ironLegends.core.HighScorePersistance;
 import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
+import jig.ironLegends.core.KeyState;
 import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.SpecialFx;
@@ -116,6 +119,9 @@ public class IronLegends extends ScrollingScreenGame {
 	public BodyLayer<Body> m_powerUpLayer;
 	public StaticBodyLayer<Body> m_hudLayer;
 	public Vector<SpawnInfo> m_spawnInfo;
+	
+	public SortedMap<Integer, Obstacle> m_obstacles;
+
 
 	public boolean m_bGameOver = false;
 	public boolean m_bFirstLevelUpdate = false;
@@ -130,6 +136,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public ServerContext m_server = null;
 	public IMsgTransport m_clientMsgTransport = null;
 	public IMsgTransport m_serverMsgTransport = null;
+	public Vector<String> m_availableMaps;
 
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -143,6 +150,11 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
 				+ "IronLegends.class", "IronLegends.jar");
+
+		ResourceFactory resourceFactory = ResourceFactory.getFactory();
+
+		m_availableMaps = MapLoader.listMaps(m_sInstallDir, "IronLegends.jar");
+		
 		m_levelProgress = new LevelProgress();
 		m_gameProgress = new GameProgress(m_levelProgress);
 		m_rr = new ResourceIO(m_sInstallDir);
@@ -178,6 +190,8 @@ public class IronLegends extends ScrollingScreenGame {
 		// Physics Engine
 		m_physicsEngine = new VanillaPhysicsEngine();
 
+		m_obstacles = new TreeMap<Integer, Obstacle>();
+		
 		// Commands
 		configureCommands();
 
@@ -204,6 +218,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_tankObstacleLayer.clear();
 		m_tankBulletObstacleLayer.clear();
 		m_powerUpLayer.clear();
+		m_obstacles.clear();
 		
 		IronLegendsMapLoadSink sink = new IronLegendsMapLoadSink(this);
 		MapLoader.loadLayer(sink, sMapFile, m_rr);
@@ -486,7 +501,7 @@ public class IronLegends extends ScrollingScreenGame {
 		activeGS.update(deltaMs);		
 	}
 
-	private Tank findEntity(int entityNumber) {
+	public Tank findEntity(int entityNumber) {
 		Iterator<Body> iter = m_tankLayer.iterator();
 		while (iter.hasNext())
 		{

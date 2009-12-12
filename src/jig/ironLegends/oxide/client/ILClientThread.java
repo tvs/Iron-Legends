@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import jig.ironLegends.CommandState;
 import jig.ironLegends.EntityState;
-import jig.ironLegends.oxide.events.ILCommandEvent;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
 import jig.ironLegends.oxide.packets.ILGameStatePacket;
 import jig.ironLegends.oxide.packets.ILLobbyPacket;
@@ -54,15 +54,12 @@ public class ILClientThread implements Runnable {
 	public boolean lookingForServers;
 	public boolean active;
 	
-//	private String name;
-//	private int playerID;
-	
 	private int tickrate;
 	private double tickTime;
 	private long lastUpdate = 0;
 	private long time = 0;
 	
-	
+	private long packetID = 0;
 	
 	public ILClientThread(int tickrate) 
 			throws SocketException, IOException 
@@ -81,6 +78,10 @@ public class ILClientThread implements Runnable {
 		this.stateUpdates = new LinkedList<EntityState>();
 		this.outgoingData = new LinkedList<ILPacket>();
 		this.lobbyUpdates = new LinkedList<ILLobbyPacket>();
+	}
+	
+	public long packetID() {
+		return this.packetID++;
 	}
 	
 	public void update(long deltaMs) {
@@ -165,9 +166,10 @@ public class ILClientThread implements Runnable {
 		}
 	}
 	
-//	public void send(CommandState event) throws IOException {
-		// TODO: Send events by wrapping them into a packet and then queueing
-//	}
+	public void send(CommandState event) throws IOException {
+		ILPacket p = ILPacketFactory.newEventPacket((int) this.packetID(), event);
+		this.send(p);
+	}
 	
 	public void send(ILPacket packet) throws IOException {
 		synchronized(this.outgoingData) {

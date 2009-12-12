@@ -165,10 +165,10 @@ public class GamePlay_GS extends GameScreen {
 						game.m_tankLayer,
 						game.m_bulletLayer, 4, 27, htankbull));
 
-		// Tank & Destroyable
+		// Tanks & Destroyable
 		game.m_physicsEngine
-				.registerCollisionHandler(new Handler_CPB_CPBLayer(
-						game.m_tank,
+				.registerCollisionHandler(new Handler_CPBLayer_CPBLayer(
+						game.m_tankLayer,
 						game.m_tankBulletObstacleLayer,
 						new Sink_CPB_CPB_Default()));
 
@@ -256,7 +256,7 @@ public class GamePlay_GS extends GameScreen {
 						game.m_powerUpLayer, 36, 36, htankpowerup));		
 	}
 
-	protected void processCommands(KeyCommands keyCmds, Mouse mouse, CommandState cs)
+	protected void collectPlayerCommands(KeyCommands keyCmds, Mouse mouse, CommandState cs)
 	{
 		if (keyCmds.isPressed("up") || keyCmds.isPressed("w"))
 			cs.setState(CommandState.CMD_UP, true);
@@ -288,22 +288,40 @@ public class GamePlay_GS extends GameScreen {
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse,
 			final long deltaMs) {
-		if (keyCmds.wasPressed("die"))
-		{
-			game.m_tank.causeDamage(game.m_tank.getHealth());
-			game.m_gameProgress.playerDied();
-		}
-
+		
 		// command state may get modified per tank by client update
 		// for now just suck in the commands here
 		CommandState cs = new CommandState();
-		processCommands(keyCmds, mouse, cs);
+		// client processing
+		{
+			cs.setEntityNumber(game.m_tank.getEntityNumber());
+			cs.setTurretRotationRad(game.m_tank.getTurretRotation());
 
-		// TODO: will need to control movement for all tanks
-		// might need to associate with each tank the CommandState
-		// so it can easily be updated
-		game.m_tank.serverControlMovement(keyCmds, mouse, cs);
+			collectPlayerCommands(keyCmds, mouse, cs);
+			
+			if (keyCmds.wasPressed("die"))
+			{
+				cs.setState(CommandState.CMD_DIE, true);				
+			}
+			// send to server here?
+		}
+
+		// when server receives the entity command state, it can find the entity and then
+		// update it
+		{
+			Tank t = game.findEntity(cs.getEntityNumber());
+			t.serverControlMovement(keyCmds, mouse, cs);
+			if (cs.isActive(CommandState.CMD_DIE))
+			{
+				// the below should happen when server issues a die cmd
+				game.m_tank.causeDamage(game.m_tank.getHealth());
+				game.m_gameProgress.playerDied();
+			}
+		}
+
+		// this adjusts the tanks turret and handles the "fix" turret request (not currently "sent" to server)
 		game.m_tank.clientControlMovement(keyCmds, mouse);
+		
 		return name();
 	}
 	
