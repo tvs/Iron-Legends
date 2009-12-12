@@ -486,7 +486,7 @@ public class IronLegends extends ScrollingScreenGame {
 		activeGS.update(deltaMs);		
 	}
 
-	private Tank findEntity(int entityNumber) {
+	public Tank findEntity(int entityNumber) {
 		Iterator<Body> iter = m_tankLayer.iterator();
 		while (iter.hasNext())
 		{

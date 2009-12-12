@@ -9,12 +9,14 @@ public class SpawnInfo {
 	private Vector2D m_centerPos;
 	private double m_rotationDeg;
 	private boolean m_bOccupied;
+	private int m_mapItemSeq;
 	
-	public SpawnInfo(String name, int sequence)
+	public SpawnInfo(String name, int sequence, int mapItemSeq)
 	{
 		m_name = name;
 		m_sequence = sequence;
 		m_bOccupied = false;
+		m_mapItemSeq = mapItemSeq;
 	}
 	public void setCenterPosition(Vector2D centerPosition) {
 		m_centerPos = centerPosition;		
