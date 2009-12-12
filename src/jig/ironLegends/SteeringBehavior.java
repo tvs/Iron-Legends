@@ -3,7 +3,9 @@ package jig.ironLegends;
 import java.awt.Rectangle;
 import java.util.Random;
 
+import jig.engine.physics.AbstractBodyLayer;
 import jig.engine.physics.Body;
+import jig.engine.physics.BodyLayer;
 import jig.engine.util.Vector2D;
 
 /**
@@ -56,6 +58,10 @@ public class SteeringBehavior {
 	 */
 	protected double slowingDistance;
 	/**
+	 * Avoid Distance
+	 */
+	protected double avoidDistance;
+	/**
 	 * Target Margin/Bounds
 	 */
 	protected double targetBound;
@@ -70,12 +76,20 @@ public class SteeringBehavior {
 	/**
 	 * Random
 	 */
-	protected Random rand;	
+	protected Random rand;
 	/**
 	 * World Bounds
 	 */
 	protected Rectangle worldbounds;
-	
+	/**
+	 * Obstacles
+	 */
+	protected BodyLayer<Body> obstacles;
+	/**
+	 * Avoid obstacles
+	 */
+	protected boolean obstacleAvoidance;
+
 	/**
 	 * Steering Behavior
 	 * 
@@ -91,7 +105,10 @@ public class SteeringBehavior {
 		maxSpeed = 100.0;
 		maxSteerForce = 100.0;
 		slowingDistance = 10.0;
+		avoidDistance = 25.0;
+		obstacleAvoidance = true;
 		worldbounds = IronLegends.WORLD_BOUNDS;
+		obstacles = new AbstractBodyLayer.NoUpdate<Body>();
 		rand = new Random();
 	}
 
@@ -157,13 +174,14 @@ public class SteeringBehavior {
 
 	/**
 	 * Calculate Wander Target
+	 * 
 	 * @param t
 	 * @return Vector2D
 	 */
 	public Vector2D getWanderTarget(Vector2D t) {
 		Vector2D circleLocation = t;
 		// Normalize to get heading
-		if (circleLocation.epsilonEquals(Vector2D.ZERO, 0.01)) {			
+		if (circleLocation.epsilonEquals(Vector2D.ZERO, 0.01)) {
 			circleLocation = Vector2D.getUnitLengthVector((Math.random()
 					* Math.PI * 2.0));
 		} else {
@@ -179,30 +197,30 @@ public class SteeringBehavior {
 		// Multiply by Wander Radius
 		circleOffset = circleOffset.scale(wanderRadius);
 
-		// New target location		
+		// New target location
 		circleLocation = circleLocation.translate(circleOffset);
-		
+
 		return circleLocation;
 	}
-	
+
 	/**
 	 * Wander: Random steering. Retain steering direction and make random
 	 * displacement in each frame.
 	 */
 	public void wander() {
 		targetBound = 0.0;
-		
+
 		// Random change
 		wanderTheta += (Math.random() * 2 - 1) * wanderRate;
 
 		// Calculate the new location to steer towards on the wander circle
 		// Start with velocity
 		do {
-			target = getWanderTarget(agent.getVelocity());			
+			target = getWanderTarget(agent.getVelocity());
 			if (!clampToWorld(target, worldbounds)) {
 				break;
 			}
-		} while(true);
+		} while (true);
 
 		// Steer towards the target
 		steer(false);
@@ -255,8 +273,8 @@ public class SteeringBehavior {
 	}
 
 	/**
-	 * Apply Behavior
-	 * Only sets the velocity of the agent, caller need to set the position
+	 * Apply Behavior Only sets the velocity of the agent, caller need to set
+	 * the position
 	 * 
 	 * @param deltaMs
 	 */
@@ -282,6 +300,11 @@ public class SteeringBehavior {
 			return;
 		}
 
+		if (obstacleAvoidance) {
+			Vector2D avoid = avoidObstacle();
+			steerForce = steerForce.translate(avoid); // add forces
+		}
+
 		// Set Velocity
 		Vector2D vel = agent.getVelocity();
 		vel = vel.translate(steerForce);
@@ -289,14 +312,59 @@ public class SteeringBehavior {
 		vel = vel.scale(deltaMs / 1000.0);
 		agent.setVelocity(vel);
 
-		/* Set Position
-		Vector2D pos = agent.getCenterPosition();
-		pos = pos.translate(vel);
-		agent.setCenterPosition(pos);
-		//*/
-		
 		// System.out.printf("Steering: %s Velocity: %s\n", steerForce, vel);
 		steerForce = Vector2D.ZERO; // reset the force to zero
+	}
+
+	/**
+	 * Avoid Obstacles
+	 * TODO: not working properly, need to check logic
+	 * @return Vector2D
+	 */
+	public Vector2D avoidObstacle() {
+		Vector2D avoid = Vector2D.ZERO;
+		Vector2D uv = agent.getVelocity().unitVector();
+		double closest = agent.getVelocity().magnitude2();
+
+		for (Body b : obstacles) {
+			if (!b.equals(agent)) {
+				Vector2D dv = b.getCenterPosition().difference(
+						agent.getCenterPosition());
+
+				// Point at which the obstacle would intersect with the agent
+				Vector2D projection = uv.scale(dv.dot(uv));
+				Vector2D ortho = b.getCenterPosition().difference(
+						agent.getCenterPosition().translate(projection));
+				double pmag = projection.magnitude2();
+
+				// check for intersection and that its the closest
+				if (ortho.magnitude2() < avoidDistance * avoidDistance
+						&& pmag < closest) {
+					closest = pmag;
+					// to avoid, move perpendicularly away from the obstacle
+					avoid = ortho.unitVector().scale(agent.getVelocity())
+							.scale(-1.0);
+				}
+			}
+		}
+
+		return avoid;
+	}
+
+	/**
+	 * Simple distance check to see if two Body are in collision
+	 * 
+	 * @param a
+	 * @param b
+	 * @return boolean
+	 */
+	public boolean intersects(Body a, Body b) {
+		Vector2D aCenter = a.getCenterPosition();
+		Vector2D bCenter = b.getCenterPosition();
+
+		double aRadius = Math.max(a.getWidth() / 2, a.getHeight() / 2);
+		double bRadius = Math.max(b.getWidth() / 2, b.getHeight() / 2);
+		return (aCenter.distance2(bCenter) <= ((aRadius + bRadius) * (aRadius + bRadius)));
 	}
 
 	/**
@@ -316,6 +384,7 @@ public class SteeringBehavior {
 
 	/**
 	 * Clamp Velocity to keep agent in the World bounds
+	 * 
 	 * @param pos
 	 * @param r
 	 * @return
@@ -327,12 +396,12 @@ public class SteeringBehavior {
 		double py = pos.getY();
 		double vx = vel.getX();
 		double vy = vel.getY();
-		
+
 		if (px < r.getMinX() || px > r.getMaxX()) {
 			vx = Math.random();
 			changed = true;
 		}
-		
+
 		if (py < r.getMinY() || py > r.getMaxY()) {
 			vy = Math.random();
 			changed = true;
@@ -344,7 +413,7 @@ public class SteeringBehavior {
 		}
 		return changed;
 	}
-	
+
 	public double getVectorAngle(Vector2D v) {
 		return Math.atan2(v.getY(), v.getX());
 	}
@@ -455,5 +524,29 @@ public class SteeringBehavior {
 
 	public Rectangle getWorldbounds() {
 		return worldbounds;
+	}
+
+	public void setObstacles(BodyLayer<Body> obstacles) {
+		this.obstacles = obstacles;
+	}
+
+	public BodyLayer<Body> getObstacles() {
+		return obstacles;
+	}
+
+	public void setObstacleAvoidance(boolean obstacleAvoidance) {
+		this.obstacleAvoidance = obstacleAvoidance;
+	}
+
+	public boolean isObstacleAvoidance() {
+		return obstacleAvoidance;
+	}
+
+	public void setAvoidDistance(double avoidDistance) {
+		this.avoidDistance = avoidDistance;
+	}
+
+	public double getAvoidDistance() {
+		return avoidDistance;
 	}
 }
