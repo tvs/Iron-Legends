@@ -1,0 +1,11 @@
+<resources>
+    <audioclip>
+        <src>Light_ta-Diode111-8758.wav</src>
+    </audioclip>
+    <audioclip>
+        <src>Tank-Diode111-8759.wav</src>
+    </audioclip>
+    <audioclip>
+        <src>18403__inferno__xplosm.wav</src>
+    </audioclip>    
+</resources>
