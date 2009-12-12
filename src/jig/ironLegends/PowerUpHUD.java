@@ -6,7 +6,6 @@ import jig.engine.RenderingContext;
 import jig.engine.Sprite;
 import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
-import jig.ironLegends.core.ui.ButtonToolbar;
 
 public class PowerUpHUD extends Body
 {

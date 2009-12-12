@@ -115,13 +115,13 @@ public class ButtonToolbar <B extends Button>
 	public void render(RenderingContext rc) 
 	{
 		//double y = -m_buttons.get(m_topSpriteIdx).getPosition().getY();
-		double y = 0;
+		//double y = 0;
 		
 		Iterator<B> btIter = m_buttons.iterator();
 		while (btIter.hasNext())
 		{
 			Button b = btIter.next();
-			Vector2D vOrig = b.getPosition();
+			//Vector2D vOrig = b.getPosition();
 			//b.setPosition(new Vector2D(vOrig.getX(), vOrig.getY() + y));
 			b.render(rc);
 			//b.setPosition(vOrig);

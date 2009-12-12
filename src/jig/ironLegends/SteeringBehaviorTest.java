@@ -108,6 +108,7 @@ public class SteeringBehaviorTest extends StaticScreenGame {
 			}
 		}
 
+		@SuppressWarnings("unused")
 		boolean moving = player.processEvents(deltaMs, keys);
 		if (sb.getBehavior() != SteeringBehavior.Behavior.WANDER) {
 			sb.setTarget(obstacleLayer.get(0).getCenterPosition());

@@ -1,16 +1,11 @@
 package jig.ironLegends.core;
 
-import java.util.AbstractList;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
 
 import jig.engine.RenderingContext;
-import jig.engine.Sprite;
-import jig.engine.audio.jsound.AudioClip;
 import jig.engine.physics.Body;
 import jig.engine.util.Vector2D;
 import jig.ironLegends.Animator;

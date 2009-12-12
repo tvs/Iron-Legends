@@ -32,7 +32,6 @@ import jig.ironLegends.core.HighScore;
 import jig.ironLegends.core.HighScorePersistance;
 import jig.ironLegends.core.InstallInfo;
 import jig.ironLegends.core.KeyCommands;
-import jig.ironLegends.core.KeyState;
 import jig.ironLegends.core.ResourceIO;
 import jig.ironLegends.core.SoundFx;
 import jig.ironLegends.core.SpecialFx;
@@ -152,8 +151,6 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
 				+ "IronLegends.class", "IronLegends.jar");
-
-		ResourceFactory resourceFactory = ResourceFactory.getFactory();
 
 		m_availableMaps = MapLoader.listMaps(m_sInstallDir, "IronLegends.jar");
 		
@@ -479,6 +476,7 @@ public class IronLegends extends ScrollingScreenGame {
 			while (m_clientMsgTransport.hasRxMsg())
 			{
 				Message msg = m_clientMsgTransport.nextRxMsg();
+				@SuppressWarnings("unused")
 				SPStartGame startGame = (SPStartGame)msg;
 				// TODO: supply startGame parameters to gameplay screen 
 				// set active screen

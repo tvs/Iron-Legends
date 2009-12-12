@@ -296,35 +296,7 @@ public class Tank extends MultiSpriteBody {
 			setTurretRotation(m_turretRotationRad);
 		}
 	}
-	
-/*
-	private void AIMovement_old(long deltaMs) {
-		if (target == null || !target.isActive()) {
-			stopMoving();
-			stopTurning();
-			return;
-		}
 
-		Vector2D tp = target.getCenterPosition();
-		Vector2D sp = getCenterPosition();
-		double dist = Math.sqrt(tp.distance2(sp));
-		double target_angle = sp.angleTo(tp);
-		if (dist <= 1.25 * bulletRange) { // close enough start firing
-			stopMoving();
-			stopTurning();
-			setTurretRotation(target_angle + Math.toRadians(90));
-			fire();
-		} else if (dist <= 2 * bulletRange) { // go towards the target
-			curSpeed = SPEED;
-			setRotation(target_angle + Math.toRadians(90));
-			setTurretRotation(getRotation()); // fix sTurret
-		} else {
-			stopMoving();
-			stopTurning();
-		}
-	}
-*/
-	
 	private void AIMovement(long deltaMs) {
 		double dist = 0.0;
 		double target_angle = 0.0;

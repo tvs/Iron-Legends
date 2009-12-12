@@ -107,6 +107,7 @@ public class RadarHUD extends MultiSpriteBody
 		}		
 	}
 
+	@SuppressWarnings("unused")
 	private void miniMapRender(RenderingContext rc) {
 		double sx = 1;
 		double sy = 1;
