@@ -145,7 +145,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_mapCalc = new MapCalc(SCREEN_WIDTH, SCREEN_HEIGHT);
 		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
-
+		
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
 				+ "IronLegends.class", "IronLegends.jar");
 
@@ -195,6 +195,7 @@ public class IronLegends extends ScrollingScreenGame {
 		resourceFactory.loadResources(RESOURCE_ROOT, MY_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_SCREEN, SCREEN_RESOURCES);
 		resourceFactory.loadResources(RESOURCE_AUDIO, AUDIO_RESOURCES);
+		
 		m_fonts.create(resourceFactory);
 		
 		m_availableMaps = MapLoader.listMaps(m_sInstallDir, "IronLegends.jar");
@@ -204,10 +205,12 @@ public class IronLegends extends ScrollingScreenGame {
 		
 		// Load Sound Effects
 		m_soundFx.addSfx("bullet", "Light_ta-Diode111-8758.wav");
-		m_soundFx.addSfx("explosion", "18403__inferno__xplosm.wav");
+		m_soundFx.addSfx("tankExplosion", "2512__funhouse__tro_bassPan.wav");
+		m_soundFx.addSfx("bulletWall", "81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_short1.wav");
+		m_soundFx.addSfx("bulletHitTank", "81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_hitTank_short.wav");
 		
 		// Load Special Effects
-		m_sfx.add("tankExplosion", "explosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
+		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
 		/*
 		 testing an animated sprite
 		m_sfx.add("tankExplosion", "explosion", IronLegends.SPRITE_SHEET + "#wall", 1500, 2);
@@ -228,8 +231,9 @@ public class IronLegends extends ScrollingScreenGame {
 		MapLoader.loadLayer(sink, sMapFile, m_rr);
 	}
 
-	public void loadLevel() {
-		loadMap("maps/mapitems.txt");
+	public void loadLevel(String mapFile) {
+		//loadMap("maps/mapitems.txt");
+		loadMap(mapFile);
 
 		populateGameLayers();
 		m_levelProgress.setIntro(2999);
@@ -401,7 +405,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public void newGame() {
 		m_bGameOver = false;
 		m_gameProgress.reset();
-		loadLevel();
+		String mapFile = "maps/mapitems.txt";
+		loadLevel(mapFile);
 	}
 
 	public Bullet getBullet() {
