@@ -19,6 +19,7 @@ public abstract class ILPacket {
 	public static final byte ACK_HEADER = 0x6A;
 	public static final byte PING_HEADER = 0x69;
 	
+	public static final byte IL_START_GAME_HEADER = 0x67; // 'g'
 	public static final byte IL_GAME_DATA_HEADER = 0x47; // 'G'
 	public static final byte IL_CONNECT_HEADER = 0x43; // 'C'
 	public static final byte IL_EVENT_HEADER = 0x45; // 'E'

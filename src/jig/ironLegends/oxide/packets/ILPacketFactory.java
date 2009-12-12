@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import jig.ironLegends.CommandState;
 import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.exceptions.IncompletePacketException;
 import jig.ironLegends.oxide.exceptions.IronOxideException;
@@ -44,8 +45,6 @@ public class ILPacketFactory {
 			return new ILLobbyPacket(protocolData, contentData);
 		case ILPacket.IL_EVENT_HEADER:
 			return new ILEventPacket(protocolData, contentData);
-		case ILPacket.IL_CONNECT_HEADER:
-			return new ILConnectPacket(protocolData, contentData);
 		case ILPacket.IL_READY_HEADER:
 			return new ILReadyPacket(protocolData);
 		case ILPacket.IL_LOBBY_EVENT_HEADER:
@@ -120,6 +119,22 @@ public class ILPacketFactory {
 		
 		try {
 			return new ILLobbyPacket(protocolData, numberOfPlayers, map, clients);
+		} catch (IOException e) {
+			Logger.getLogger("global").warning(e.toString());
+			return null;
+		}
+	}
+	
+	public static ILEventPacket newEventPacket(int packetID, CommandState event) {
+		byte[] protocolData = null;
+		try {
+			protocolData = getProtocolData(packetID);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			return new ILEventPacket(protocolData, event);
 		} catch (IOException e) {
 			Logger.getLogger("global").warning(e.toString());
 			return null;
