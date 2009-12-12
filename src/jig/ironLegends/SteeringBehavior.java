@@ -312,45 +312,58 @@ public class SteeringBehavior {
 		vel = vel.scale(deltaMs / 1000.0);
 		agent.setVelocity(vel);
 
+		if (obstacleAvoidance) { // check for potential obstacle collision 
+			Vector2D avoid = avoidObstacle();
+			if (!avoid.epsilonEquals(Vector2D.ZERO, 0.001)) {
+				vel = vel.translate(avoid);
+				vel = limitVector(vel, getMaxSpeed());
+				vel = vel.scale(deltaMs / 1000.0);
+				resetVelocity(vel);
+			}
+		}
+
 		// System.out.printf("Steering: %s Velocity: %s\n", steerForce, vel);
 		steerForce = Vector2D.ZERO; // reset the force to zero
 	}
 
 	/**
 	 * Avoid Obstacles
-	 * TODO: not working properly, need to check logic
 	 * @return Vector2D
-	 */
+	 */	
 	public Vector2D avoidObstacle() {
 		Vector2D avoid = Vector2D.ZERO;
 		Vector2D uv = agent.getVelocity().unitVector();
-		double closest = agent.getVelocity().magnitude2();
-
-		for (Body b : obstacles) {
-			if (!b.equals(agent)) {
-				Vector2D dv = b.getCenterPosition().difference(
-						agent.getCenterPosition());
-
-				// Point at which the obstacle would intersect with the agent
-				Vector2D projection = uv.scale(dv.dot(uv));
-				Vector2D ortho = b.getCenterPosition().difference(
-						agent.getCenterPosition().translate(projection));
-				double pmag = projection.magnitude2();
-
-				// check for intersection and that its the closest
-				if (ortho.magnitude2() < avoidDistance * avoidDistance
-						&& pmag < closest) {
-					closest = pmag;
+		Vector2D futurePos = agent.getCenterPosition().translate(agent.getVelocity());
+		double distBetweenObjects = 0.0;
+		double distToKeep = 0.0;
+		
+		for(Body b : obstacles) {
+			if (!b.equals(agent)) {				
+				Vector2D dv = b.getCenterPosition().difference(futurePos);				
+				distBetweenObjects = dv.magnitude2();
+				distToKeep = (avoidDistance * avoidDistance) + Math.pow(Math.max(b.getWidth(), b.getHeight()), 2);
+				if (distBetweenObjects <= distToKeep) {
+					Vector2D projection = uv.scale(dv.dot(uv));					
+					Vector2D ortho = b.getCenterPosition().difference(futurePos.translate(projection));					
 					// to avoid, move perpendicularly away from the obstacle
-					avoid = ortho.unitVector().scale(agent.getVelocity())
-							.scale(-1.0);
+					avoid = ortho.unitVector().scale(Math.sqrt(agent.getVelocity().magnitude2()) * -1.0);
+					// System.out.printf("dv: %s distBetweenObjects: %.2f, distToKeep: %.2f avoid: %s\n", dv, Math.sqrt(distBetweenObjects), Math.sqrt(distToKeep), avoid);
 				}
 			}
 		}
-
+		
 		return avoid;
 	}
 
+	/**
+	 * Reset Agent's Velocity
+	 * @param vel
+	 */
+	public void resetVelocity(Vector2D vel) {
+		agent.setVelocity(vel);
+		wanderTheta = getVectorAngle(vel);		
+	}
+	
 	/**
 	 * Simple distance check to see if two Body are in collision
 	 * 
