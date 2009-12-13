@@ -114,7 +114,7 @@ public class Tank extends MultiSpriteBody {
 
 	// AI Tank
 	public Tank(IronLegends game, int iTeam, Team team, Type type, int entityNumber, boolean AI) {
-		this(game, iTeam, team, entityNumber);
+		this(game, iTeam, team, type, entityNumber);
 		setPlayerControlled(false);
 		allowRespawn(false);
 		setSteering();
@@ -390,7 +390,7 @@ public class Tank extends MultiSpriteBody {
 			return;
 		}
 		
-		health -= damage;
+		health -= (type == Type.ARMORED ? (int) damage / 2 : damage);
 		if (health <= 0) {
 			explode();
 		}
