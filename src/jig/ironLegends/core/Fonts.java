@@ -21,6 +21,7 @@ public class Fonts
 		titleFont = null;
 		gameInfoFont = null;
 		textFont = null;
+		lgTextFont = null;
 	}
 	public void create(ResourceFactory resourceFactory)
 	{
@@ -43,11 +44,13 @@ public class Fonts
 		try {
 			URL url = this.getClass().getResource("/fonts/FFFATLAN.TTF");			
 			InputStream is = (url == null ? new BufferedInputStream(new FileInputStream("fonts/FFFATLAN.TTF")) : url.openStream());
-			Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 8f);
-			textFont = resourceFactory.getFontResource(font, Color.WHITE, null);
+			Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+			textFont = resourceFactory.getFontResource(font.deriveFont(Font.PLAIN, 8f), Color.WHITE, null);
+			lgTextFont = resourceFactory.getFontResource(font.deriveFont(Font.PLAIN, 10f), Color.WHITE, null);
 		} catch (Exception e) {
 			System.err.println("Error: Loading stock font FFFATLAN.TTF");
 			textFont = resourceFactory.getFontResource(new Font("Sans Serif", Font.PLAIN, 12), Color.WHITE, null);
+			lgTextFont = resourceFactory.getFontResource(new Font("Sans Serif", Font.PLAIN, 14), Color.WHITE, null);
 		}
 	}
 	
@@ -58,4 +61,5 @@ public class Fonts
 	public FontResource inYourFaceFont;
 	public FontResource titleFont;
 	public FontResource textFont;
+	public FontResource lgTextFont;
 }

@@ -8,13 +8,4 @@
 	<image>
 		<src>background.png</src>
 	</image>
-    <audioclip>
-        <src>audio/2512__funhouse__tro_bassPan.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>audio/81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_short1.wav</src>
-    </audioclip>
-    <audioclip>
-        <src>audio/81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_hitTank_short.wav</src>
-     </audioclip>
 </resources>

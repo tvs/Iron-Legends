@@ -1,0 +1,17 @@
+<resources>
+    <audioclip>
+        <src>Light_ta-Diode111-8758.wav</src>
+    </audioclip>
+    <audioclip>
+        <src>Tank-Diode111-8759.wav</src>
+    </audioclip>
+    <audioclip>
+        <src>2512__funhouse__tro_bassPan.wav</src>
+    </audioclip>
+    <audioclip>
+        <src>81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_short1.wav</src>
+    </audioclip>
+    <audioclip>
+        <src>81045__Rock_Savage__Pistol_or_Hand_Gun_Firing_at_wood_hitTank_short.wav</src>
+     </audioclip>    
+</resources>
