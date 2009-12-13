@@ -10,6 +10,7 @@ import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
+import jig.ironLegends.core.ui.TextEditBox;
 
 /**
  * @author Travis Hall
@@ -29,6 +30,8 @@ public class LobbyScreen extends GameScreen {
 	protected Sprite oText;
 	protected RolloverButton bbutton;
 	
+	protected TextEditBox serverNameBox;
+	
 	/**
 	 * @param name
 	 */
@@ -37,6 +40,8 @@ public class LobbyScreen extends GameScreen {
 		
 		this.fonts = fonts;
 		this.game = game;
+		
+		this.serverNameBox = new TextEditBox(this.fonts.textFont, -1, 574, 268, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -86,14 +91,17 @@ public class LobbyScreen extends GameScreen {
 		text.setLineStart(498);
 		
 		text.setFont(fonts.textFont);
-		text.println("Server Name:");
+		text.print("Server Name: ");
 		
 		if (!this.game.createdServer) {
 			if (this.game.client.lobbyState != null) {
 				synchronized(this.game.client.lobbyState) {
+					text.setLineStart(574);
 					text.println(this.game.client.lobbyState.serverName);
 				}
 			}
+		} else {
+			this.serverNameBox.render(rc);
 		}
 	}
 	
@@ -105,6 +113,16 @@ public class LobbyScreen extends GameScreen {
 			if (this.game.createdServer) this.game.createdServer = false;
 			return IronLegends.SERVER_SCREEN;
 		}
+		
+		if (this.game.createdServer){ 
+			this.serverNameBox.update(mouse, deltaMs);
+			if (this.serverNameBox.isActive())
+			{
+				serverNameBox.processInput(keyCmds);
+				this.game.server.setServerName(serverNameBox.getText().toUpperCase());
+			}
+		}
+		
 		return name();		
 	}
 

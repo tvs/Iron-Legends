@@ -59,7 +59,7 @@ public class SplashScreen extends GameScreen {
 		mbutton = new RolloverButton(-2, 0, 491,IronLegends.SCREEN_SPRITE_SHEET + "#mp-button");
 		hbutton = new RolloverButton(-1, 0, 535,IronLegends.SCREEN_SPRITE_SHEET + "#help-button");
 		
-		csEntryBox = new TextEditBox(fonts.textFont, -2, 292, 360, 
+		csEntryBox = new TextEditBox(fonts.textFont, -4, 292, 360, 
 				IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
 		csEntryBox.setText(playerInfo.getName().toUpperCase());
 	}

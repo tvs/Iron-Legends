@@ -361,14 +361,12 @@ public class ILServerThread implements Runnable {
 		for (Iterator<ClientInfo> it = this.clients.values().iterator(); it.hasNext();) {
 			ClientInfo c = it.next();
 			try {
-				System.out.println("Writing lobby packet to channel: "+ c.toString());
 				c.channel.write(this.lobbyPacket.getByteBuffer());
 			} catch (IOException e) {
 				// Remote closed the connection -- scrag him
 				try {
 					c.channel.close();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				it.remove();

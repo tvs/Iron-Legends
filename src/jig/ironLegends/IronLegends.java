@@ -94,6 +94,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public static final int GAMEPLAY_SCREEN = 5;
 
 	public static final int START_LIVES = 2;
+	public static final int PORT = 2555;
 	public VanillaPhysicsEngine m_physicsEngine;
 	public PolygonFactory m_polygonFactory;
 	public ResourceIO m_rr;
@@ -197,9 +198,9 @@ public class IronLegends extends ScrollingScreenGame {
 			this.cThread = new Thread(this.client);
 			this.cThread.start();
 			
-//			this.server = new ILServerThread(2555, 33);
-//			this.sThread = new Thread(this.server);
-//			this.sThread.start();
+			this.server = new ILServerThread(IronLegends.PORT, 33);
+			this.sThread = new Thread(this.server);
+			this.sThread.start();
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

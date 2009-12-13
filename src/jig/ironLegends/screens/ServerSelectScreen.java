@@ -171,7 +171,8 @@ public class ServerSelectScreen extends GameScreen {
 		if (connect_button.wasLeftClicked()) {
 			if (this.activeButton != null) {
 				try {
-					this.game.client.connectTo(InetAddress.getByName("localhost"), 2555);
+					this.game.client.connectTo(this.activeButton.socketAddress.getAddress(), 
+							IronLegends.PORT);
 					return IronLegends.LOBBY_SCREEN;
 				} catch (IOException e) {
 					System.err.println("Unable to connect");
