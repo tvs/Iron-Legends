@@ -146,4 +146,8 @@ public class ButtonToolbar <B extends Button>
 		return null;
 	}
 
+	public void clear() {
+		m_nextsy = 0;
+		this.m_buttons.clear();
+	}
 }

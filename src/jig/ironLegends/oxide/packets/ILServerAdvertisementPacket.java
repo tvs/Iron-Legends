@@ -3,19 +3,19 @@ package jig.ironLegends.oxide.packets;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 
 /**
  * @author Travis Hall
  */
 public class ILServerAdvertisementPacket extends ILPacket {
 
-	public SocketAddress address;
-	protected byte numberOfPlayers;
-	protected byte maxPlayers;
-	protected String serverName;
-	protected String map;
-	protected String gameVersion;
+	public InetSocketAddress address;
+	public byte numberOfPlayers;
+	public byte maxPlayers;
+	public String serverName;
+	public String map;
+	public String gameVersion;
 	
 	/**
 	 * @param headerData

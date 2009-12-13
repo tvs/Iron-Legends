@@ -82,8 +82,11 @@ public class SplashScreen extends GameScreen {
 		if (hbutton.wasLeftClicked())
 			return IronLegends.HELP_SCREEN;
 		mbutton.update(mouse, deltaMs);
-		if (mbutton.wasLeftClicked())
+		if (mbutton.wasLeftClicked()) {
+			this.m_game.client.setActive(true);
+			this.m_game.client.setLookingForServers(true);
 			return IronLegends.SERVER_SCREEN;
+		}
 		sbutton.update(mouse, deltaMs);
 		if (sbutton.wasLeftClicked())
 		{

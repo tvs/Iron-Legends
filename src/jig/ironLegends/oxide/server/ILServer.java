@@ -1,7 +1,6 @@
 package jig.ironLegends.oxide.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 /**
  * A testing class for running the server thread
@@ -10,9 +9,9 @@ import java.net.InetAddress;
 public class ILServer {
 	public static void main(String[] args) throws IOException {
 		try {
-			InetAddress addr = InetAddress.getByName("localhost");
+//			InetAddress addr = InetAddress.getByName("localhost");
 			
-			ILServerThread sThread = new ILServerThread(addr, 2555, 33);
+			ILServerThread sThread = new ILServerThread(2555, 33);
 			sThread.setActive(true);
 			sThread.setServerName("Doggles house of dogs\0");
 			sThread.setMapName("Badlands\0");

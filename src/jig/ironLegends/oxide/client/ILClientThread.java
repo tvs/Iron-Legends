@@ -3,7 +3,6 @@ package jig.ironLegends.oxide.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -44,7 +43,7 @@ public class ILClientThread implements Runnable {
 	ILAdvertisementSocket advertSocket;
 	
 	// A map of servers discovered by the aSocket
-	public Map<SocketAddress, ILServerAdvertisementPacket> servers;
+	public Map<InetSocketAddress, ILServerAdvertisementPacket> servers;
 	
 	private List<ChangeRequest> pendingChanges;
 	
@@ -52,8 +51,8 @@ public class ILClientThread implements Runnable {
 	public List<ILPacket> outgoingData;
 	public List<ILLobbyPacket> lobbyUpdates;
 	
-	public boolean lookingForServers;
-	public boolean active;
+	private boolean lookingForServers;
+	private boolean active;
 	
 	public boolean receivedStartGame = false;
 	public ILStartGamePacket startGamePacket;
@@ -72,9 +71,9 @@ public class ILClientThread implements Runnable {
 		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5000);
 		this.selector = this.initSelector();
 		this.lookingForServers = false;
-		this.active = true;
+		this.active = false;
 		
-		this.servers = new HashMap<SocketAddress, ILServerAdvertisementPacket>();
+		this.servers = new HashMap<InetSocketAddress, ILServerAdvertisementPacket>();
 		this.pendingChanges = new LinkedList<ChangeRequest>();
 		this.stateUpdates = new LinkedList<ILGameStatePacket>();
 		this.outgoingData = new LinkedList<ILPacket>();
@@ -119,6 +118,15 @@ public class ILClientThread implements Runnable {
 	 */
 	public void run() {
 		while(true) {
+			if (!active) {
+				try {
+					// Apparently need this or else everything breaks? What the hell?
+					Thread.sleep(50L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				continue;
+			}
 			try {
 				// Process any pending changes
 				synchronized(this.pendingChanges) {
@@ -144,7 +152,7 @@ public class ILClientThread implements Runnable {
 				}
  				
 				// Wait for an event on one of the registered channels
-				this.selector.select();
+				this.selector.selectNow();
 				
 				// Iterate over the set of keys for which events are available
 				Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
@@ -285,6 +293,17 @@ public class ILClientThread implements Runnable {
 	
 	private Selector initSelector() throws IOException {
 		return SelectorProvider.provider().openSelector();
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setActive(boolean b) {
+		this.active = b;
+	}
+	
+	public void setLookingForServers(boolean b) {
+		this.lookingForServers = b;
 	}
 	
 }

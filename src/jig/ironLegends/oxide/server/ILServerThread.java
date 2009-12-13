@@ -75,10 +75,10 @@ public class ILServerThread implements Runnable {
 	
 	public long packetID = 0;
 
-	public ILServerThread(InetAddress hostAddress, int port, int tickrate) 
+	public ILServerThread(int port, int tickrate) 
 			throws IOException 
 	{
-		this.hostAddress = hostAddress;
+		this.hostAddress = InetAddress.getLocalHost();
 		this.port = port;
 		this.tickrate = tickrate; // Ticks per second
 		
@@ -86,7 +86,7 @@ public class ILServerThread implements Runnable {
 		this.selector = this.initSelector();
 		this.advertise = true;
 		this.lobby = true;
-		this.active = true;
+		this.active = false;
 		this.receivedData = new LinkedList<CommandState>();
 		this.outgoingData = new LinkedList<ILPacket>();
 		this.clients = new HashMap<SelectionKey, ClientInfo>();
@@ -116,7 +116,16 @@ public class ILServerThread implements Runnable {
 	}
 	
 	public void run() {
-		while(active) {
+		while(true) {
+			if (!active) {
+				try {
+					// Apparently need this or else everything breaks? What the hell?
+					Thread.sleep(50L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				continue;
+			}
 			try {
 				// Advertise the server over the LAN (multicast)
 				if (advertise) {

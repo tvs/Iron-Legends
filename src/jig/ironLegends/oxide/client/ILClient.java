@@ -19,7 +19,7 @@ public class ILClient {
 			
 			ILClientThread cThread = new ILClientThread(20);
 			cThread.connectTo(addr, 2555);
-			cThread.lookingForServers = true;
+			cThread.setLookingForServers(true);
 			
 			new Thread(cThread).start();
 			boolean cont = true;

@@ -3,6 +3,8 @@ package jig.ironLegends;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.SortedMap;
@@ -40,6 +42,8 @@ import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.messages.Message;
 import jig.ironLegends.messages.SPStartGame;
+import jig.ironLegends.oxide.client.ILClientThread;
+import jig.ironLegends.oxide.server.ILServerThread;
 import jig.ironLegends.router.ClientContext;
 import jig.ironLegends.router.IMsgTransport;
 import jig.ironLegends.router.ServerContext;
@@ -136,6 +140,11 @@ public class IronLegends extends ScrollingScreenGame {
 	public IMsgTransport m_clientMsgTransport = null;
 	public IMsgTransport m_serverMsgTransport = null;
 	public Vector<String> m_availableMaps;
+	
+	public ILClientThread client;
+	public Thread cThread;
+	public ILServerThread server;
+	public Thread sThread;
 
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -190,6 +199,22 @@ public class IronLegends extends ScrollingScreenGame {
 
 		m_obstacles = new TreeMap<Integer, Obstacle>();
 		
+		// Server/Client
+		try {
+			// TODO: Remove magic numbers
+			this.client = new ILClientThread(20);
+			this.cThread = new Thread(this.client);
+			this.cThread.start();
+			
+//			this.server = new ILServerThread(2555, 33);
+//			this.sThread = new Thread(this.server);
+//			this.sThread.start();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		// Commands
 		configureCommands();
 
@@ -198,6 +223,7 @@ public class IronLegends extends ScrollingScreenGame {
 
 		// Load Layers
 		populateGameLayers();
+		
 	}
 
 	public void loadResources() {
@@ -307,7 +333,7 @@ public class IronLegends extends ScrollingScreenGame {
 				m_playerInfo, this));
 		
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
-		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts));
+		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts, this.client));
 		
 		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
 
