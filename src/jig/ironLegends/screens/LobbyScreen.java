@@ -44,6 +44,8 @@ public class LobbyScreen extends GameScreen {
 	protected TextEditBox serverNameBox;
 	
 	private int mapSelected = 0;
+	
+	private ClientInfo playerClient;
 
 	
 	/**
@@ -86,6 +88,9 @@ public class LobbyScreen extends GameScreen {
 		
 		mLButton = new RolloverButton(-4, 490, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
 		mRButton = new RolloverButton(-5, 690, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
+		
+		tLButton = new RolloverButton(-6, 490, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
+		tRButton = new RolloverButton(-7, 690, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
 	}
 	
 	@Override
@@ -146,6 +151,15 @@ public class LobbyScreen extends GameScreen {
 						// Setline doesn't seem to work here -- spaced it out manually
 //						text.setLineStart(300);
 //						text.print("              Team:   ");
+						
+						if (c.name.compareTo(this.game.m_playerInfo.getName()) == 0) {
+							this.playerClient = c;
+							tLButton.setPosition(new Vector2D(315, ypos+5));
+							tLButton.render(rc);
+							tRButton.setPosition(new Vector2D(350, ypos+5));
+							tRButton.render(rc);
+						}
+						
 						text.print("Team: ", 270, ypos);
 //						text.setLineStart(315);
 						String txt = "NIL";
@@ -169,15 +183,6 @@ public class LobbyScreen extends GameScreen {
 			}
 		}
 		
-		
-		try {
-			this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
-					this.game.m_playerInfo.getName(),
-					ClientInfo.RED_TEAM));
-		} catch (IOException e) {
-			Logger.getLogger("global").warning(e.toString());
-		}
-		
 	}
 	
 	@Override
@@ -189,6 +194,13 @@ public class LobbyScreen extends GameScreen {
 		if (bbutton.wasLeftClicked()) {
 			if (this.game.createdServer) this.game.createdServer = false;
 			return IronLegends.SERVER_SCREEN;
+		}
+		
+		tLButton.update(mouse, deltaMs);
+		tRButton.update(mouse, deltaMs);
+		
+		if (tLButton.wasLeftClicked() || tRButton.wasLeftClicked()) {
+			this.nextTeam();
 		}
 		
 		if (this.game.createdServer){ 
@@ -212,6 +224,21 @@ public class LobbyScreen extends GameScreen {
 			this.game.server.setMapName(this.game.getMapName());
 		}
 		
+		try {
+			// Send our identification
+			if (this.playerClient == null) {
+				this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+					this.game.m_playerInfo.getName(),
+					ClientInfo.RED_TEAM));
+			} else {
+				// Send our current state
+				this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+						this.playerClient.name, this.playerClient.team));
+			}
+		} catch (IOException e) {
+			Logger.getLogger("global").warning(e.toString());
+		}
+		
 		return name();		
 	}
 	
@@ -223,6 +250,14 @@ public class LobbyScreen extends GameScreen {
 	private void getPreviousMap() {
 		this.mapSelected = (this.mapSelected-1)%(this.game.m_availableMaps.size());
 		this.game.setMapName(this.game.m_availableMaps.get(this.mapSelected));
+	}
+	
+	private void nextTeam() {
+		if (this.playerClient.team == ClientInfo.RED_TEAM) {
+			this.playerClient.team = ClientInfo.BLU_TEAM;
+		} else {
+			this.playerClient.team = ClientInfo.RED_TEAM;
+		}
 	}
 
 }

@@ -188,11 +188,11 @@ public class ILServerThread implements Runnable {
 	}
 	
 	public void setServerName(String serverName) {
-		this.serverName = serverName;
+		this.serverName = serverName + "\0";
 	}
 	
 	public void setMapName(String map) {
-		this.map = map;
+		this.map = map + "\0";
 	}
 	
 	/**

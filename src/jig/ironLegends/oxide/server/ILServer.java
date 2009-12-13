@@ -13,8 +13,8 @@ public class ILServer {
 			
 			ILServerThread sThread = new ILServerThread(2555, 33);
 			sThread.setActive(true);
-			sThread.setServerName("Doggles house of dogs\0");
-			sThread.setMapName("Badlands\0");
+			sThread.setServerName("Doggles house of dogs");
+			sThread.setMapName("Badlands");
 			new Thread(sThread).start();
 			
 			//sThread.setServerPacket((byte) 4, (byte) 4, "Doggles house of dogs\0", "Badlands\0", "1.0.1\0");

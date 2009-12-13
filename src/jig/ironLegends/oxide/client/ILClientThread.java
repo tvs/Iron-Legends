@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -181,8 +182,10 @@ public class ILClientThread implements Runnable {
 						this.write(key);
 					}
 				} 
-			} catch (Exception e) {
-					Logger.getLogger("global").info(e.toString());
+			} catch (SocketTimeoutException e) {
+				;
+			} catch (Exception e1) {
+				Logger.getLogger("global").warning(e1.toString());
 			}
 		}
 	}

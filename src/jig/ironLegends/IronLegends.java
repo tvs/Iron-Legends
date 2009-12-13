@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.imageio.spi.ServiceRegistry;
 
@@ -203,7 +204,7 @@ public class IronLegends extends ScrollingScreenGame {
 			this.sThread = new Thread(this.server);
 			this.sThread.start();
 		} catch (SocketException e) {
-			e.printStackTrace();
+			Logger.getLogger("global").warning("Host port already in use -- unable to host: "+ e.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
