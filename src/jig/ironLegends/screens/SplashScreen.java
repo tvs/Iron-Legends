@@ -9,6 +9,7 @@ import jig.ironLegends.PlayerInfo;
 import jig.ironLegends.core.Fonts;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
+import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.messages.SPStartGame;
@@ -33,13 +34,15 @@ public class SplashScreen extends GameScreen {
 	
 	protected TextEditBox csEntryBox;
 	protected IronLegends m_game;
-		
+	protected Fonts m_fonts;
+	
 	public SplashScreen(int name, Fonts fonts, PlayerInfo playerInfo, IronLegends game) {
 		super(name);
 		
 		m_playerInfo = playerInfo;
 		m_game = game;
-
+		m_fonts = fonts;
+		
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
 		
@@ -73,6 +76,21 @@ public class SplashScreen extends GameScreen {
 		hbutton.render(rc);
 		
 		csEntryBox.render(rc);
+		
+		TextWriter text = new TextWriter(rc);
+		text.setFont(m_fonts.textFont);
+		text.setY(IronLegends.SCREEN_HEIGHT - 100);
+		text.setLineStart(-1);
+		text.println("by");
+		
+		text.setFont(m_fonts.lgTextFont);
+		text.println("Travis Hall");
+		text.println("Bhadresh Patel");
+		text.println("Michael Persons");
+		
+		text.setFont(m_fonts.textFont);
+		text.setY(IronLegends.SCREEN_HEIGHT - 25);
+		text.println("Washington State University Vancouver");
 	}
 	
 	@Override
