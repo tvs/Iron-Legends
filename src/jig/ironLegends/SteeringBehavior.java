@@ -421,8 +421,7 @@ public class SteeringBehavior {
 		}
 
 		if (changed) {
-			agent.setVelocity(new Vector2D(vx, vy));
-			wanderTheta = Math.atan2(vy, vx);
+			resetVelocity(new Vector2D(vx, vy));
 		}
 		return changed;
 	}

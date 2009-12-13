@@ -62,9 +62,7 @@ public class GamePlay_GS extends GameScreen {
 			game.m_tank = null;
 			// Main player
 			int entityNumber = 0;
-			game.m_tank = new Tank(game, 0, Tank.Team.WHITE, new Vector2D(100, 250), entityNumber);
-			entityNumber++;
-			
+			game.m_tank = new Tank(game, 0, Tank.Team.WHITE, entityNumber++);		
 			// set position of tank to one of "bluespawn" locations/orientations
 			game.setSpawn(game.m_tank, "bluespawn");
 
@@ -73,10 +71,9 @@ public class GamePlay_GS extends GameScreen {
 			game.m_tankLayer.add(game.m_tank);
 			game.m_entityLayer.add(game.m_tank);
 			
-			// Temporary: add random 10 AI tanks
+			// Add initial 4 AI Tank
 			while (game.m_tankLayer.size() < 5) {
-				game.addAITank(entityNumber);
-				entityNumber++;
+				game.addAITank(entityNumber++);
 			}
 		}
 		
@@ -89,7 +86,7 @@ public class GamePlay_GS extends GameScreen {
 			
 			
 		}
-		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_numTanks);
+		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.getNumAITanks());
 		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
 		game.m_gameProgress.setBasesRemaining(2);
 		
@@ -113,6 +110,7 @@ public class GamePlay_GS extends GameScreen {
 					ConvexPolyBody other, Vector2D vCorrection) {
 				if (!main.equals(other)) {
 					Tank t = (Tank) main;
+					t.setVelocity(Vector2D.ZERO);
 					t.setPosition(t.getPosition().translate(vCorrection));
 					t.stopMoving();
 					t.stopTurning();
@@ -151,11 +149,10 @@ public class GamePlay_GS extends GameScreen {
 								// in capture base mode, tank death->respawn
 								
 							} else {								
-								if (game.m_levelProgress.getTanksRemaining() > 0) {
-									game.addPowerUp(t);
-									
+								if (game.m_tankLayer.size() <= game.getNumAITanks()) {
+									game.addPowerUp(t);									
 									// add new AI Tank
-									//game.addAITank(game.m_tankLayer.size());
+									game.m_levelProgress.setAddNewTank(true);
 								}								
 							}
 						}		
@@ -384,6 +381,12 @@ public class GamePlay_GS extends GameScreen {
 			}
 			
 			game.screenTransition(name(), IronLegends.GAMEOVER_SCREEN);
+		} else {
+			if (game.m_levelProgress.isAddNewTank()) {
+				// add new AI Tank
+				game.addAITank(game.m_tankLayer.size());
+				game.m_levelProgress.setAddNewTank(false);
+			}
 		}
 		game.m_radarHUD.update(deltaMs);
 	}
