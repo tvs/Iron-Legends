@@ -129,7 +129,8 @@ public class IronLegends extends ScrollingScreenGame {
 	
 	public SortedMap<Integer, Obstacle> m_obstacles;
 
-	public int m_numTanks = 20;
+	public int m_numAITanks = 20;
+	public int[] m_AITankProb = {65, 15, 20}; // BASIC, SPEEDY, ARMORED
 	public boolean m_bGameOver = false;
 	public boolean m_bFirstLevelUpdate = false;
 	public boolean m_paused = false;
@@ -430,6 +431,13 @@ public class IronLegends extends ScrollingScreenGame {
 			if (m_keyCmds.wasPressed("doublecannon")) {
 				m_tank.setWeapon(Tank.Weapon.DOUBLECANNON);
 			}
+			
+			// Update Spawn locations
+			Iterator<SpawnInfo> iter = m_spawnInfo.iterator();
+			while (iter.hasNext()) {
+				SpawnInfo s = iter.next();
+				s.update();
+			}
 		}
 	}
 
@@ -604,17 +612,15 @@ public class IronLegends extends ScrollingScreenGame {
 			if (!s.isOccupied() && s.name().equals(spawnColor))
 			{
 				tank.setSpawn(s);
-				s.setOccupied(true);
+				s.setOccupied(tank);
 				break;
-			}				
+			}
 		}
 	}
 	
 	public void addAITank(int entityNumber) {
-		Vector2D pos = Vector2D.getRandomXY(VISIBLE_BOUNDS.getMinX(),
-				VISIBLE_BOUNDS.getMaxX(), VISIBLE_BOUNDS.getMinY(),
-				VISIBLE_BOUNDS.getMaxY());
-		Tank t = new Tank(this, 1, Tank.Team.RED, pos, true, entityNumber);
+		int c = getRandomChoice(m_AITankProb);
+		Tank t = new Tank(this, 1, Tank.Team.RED, Tank.getType(c), entityNumber, true);
 		t.setTarget(m_tank);
 		setSpawn(t, "redspawn");
 		
@@ -669,5 +675,13 @@ public class IronLegends extends ScrollingScreenGame {
 		
 		java.util.Collections.shuffle(Arrays.asList(choices));
 		return choices[(int) (Math.random() * 100)];
+	}
+
+	public void setNumAITanks(int m_numAITanks) {
+		this.m_numAITanks = m_numAITanks;		
+	}
+
+	public int getNumAITanks() {
+		return m_numAITanks;
 	}
 }

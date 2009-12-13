@@ -72,8 +72,8 @@ public class Tank extends MultiSpriteBody {
 	private boolean fireSecondBullet = false;
 	private double m_turretRotationRad;
 
-	public Tank(IronLegends game, int iTeam, Team team, Vector2D pos, Type type, int entityNumber) {
-		super(game.m_polygonFactory.createRectangle(pos, 85, 101),
+	public Tank(IronLegends game, int iTeam, Team team, Type type, int entityNumber) {
+		super(game.m_polygonFactory.createRectangle(Vector2D.ZERO, 85, 101),
 				IronLegends.SPRITE_SHEET + "#tank");
 		
 		setGame(game);
@@ -102,19 +102,19 @@ public class Tank extends MultiSpriteBody {
 		m_steering = null;
 		m_healthBar = new HealthBar();
 		m_animator = new Animator(2, 75, 0);
-		initialPosition = pos;
+		initialPosition = Vector2D.ZERO;
 		setTeam(team);
 		setType(type);
 		respawn();
 	}
 
-	public Tank(IronLegends game, int iTeam, Team team, Vector2D pos, int entityNumber) {
-		this(game, iTeam, team, pos, Type.BASIC, entityNumber);
+	public Tank(IronLegends game, int iTeam, Team team, int entityNumber) {
+		this(game, iTeam, team, Type.BASIC, entityNumber);
 	}
 
 	// AI Tank
-	public Tank(IronLegends game, int iTeam, Team team, Vector2D pos, boolean AI, int entityNumber) {
-		this(game, iTeam, team, pos, entityNumber);
+	public Tank(IronLegends game, int iTeam, Team team, Type type, int entityNumber, boolean AI) {
+		this(game, iTeam, team, entityNumber);
 		setPlayerControlled(false);
 		allowRespawn(false);
 		setSteering();
@@ -353,11 +353,8 @@ public class Tank extends MultiSpriteBody {
 		stopMoving();
 		stopTurning();
 		setCenterPosition(initialPosition);
-		//double rotRad =Math.toRadians(90);
-		double rotRad = initialRotDeg;
-		
-		setRotation(rotRad);
-		setTurretRotation(rotRad);
+		setRotation(initialRotDeg);
+		setTurretRotation(initialRotDeg);
 		setHealth(MAX_HEALTH);
 		setWeapon(Weapon.CANNON);
 		setActivation(true);
@@ -544,6 +541,11 @@ public class Tank extends MultiSpriteBody {
 		return type;
 	}
 
+	public static Type getType(int t) {
+		Type[] types = Type.values();
+		return types[t];
+	}
+	
 	public void setScore(int score) {
 		this.score = score;
 	}
@@ -587,12 +589,9 @@ public class Tank extends MultiSpriteBody {
 	public void setSpawn(SpawnInfo s) {
 		initialPosition = s.centerPosition();
 		initialRotDeg  = s.rotDeg();
-		/*
-		initialRotDeg  = s.rotDeg()+90;
-		if (initialRotDeg >= 360)
-			initialRotDeg -= 360;
-		*/		
-		respawn();
+		setCenterPosition(initialPosition);
+		setRotation(initialRotDeg);
+		setTurretRotation(initialRotDeg);		
 	}
 
 	public boolean isPowerUpActive(int name) {
@@ -633,6 +632,7 @@ public class Tank extends MultiSpriteBody {
 
 	public void setSteering() {
 		m_steering = new SteeringBehavior(this);
+		m_steering.setWorldbounds(game.m_mapCalc.getWorldBounds());
 		m_steering.setMaxSpeed(SPEED);
 	}
 	
