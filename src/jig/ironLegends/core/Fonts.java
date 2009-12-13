@@ -26,7 +26,7 @@ public class Fonts
 	public void create(ResourceFactory resourceFactory)
 	{
 		scoreboardFont = resourceFactory.getFontResource(new Font("Sans Serif",
-				Font.PLAIN, 12), Color.black, null);
+				Font.PLAIN, 12), Color.white, null);
 		instructionalFont = resourceFactory.getFontResource(new Font(
 				"Sans Serif", Font.BOLD, 36), Color.white, null);
 		smInstructionalFont = resourceFactory.getFontResource(new Font(
