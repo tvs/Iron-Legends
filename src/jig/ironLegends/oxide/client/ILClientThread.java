@@ -49,7 +49,7 @@ public class ILClientThread implements Runnable {
 	
 	public List<ILGameStatePacket> stateUpdates;
 	public List<ILPacket> outgoingData;
-	public List<ILLobbyPacket> lobbyUpdates;
+	public ILLobbyPacket lobbyState;
 	
 	private boolean lookingForServers;
 	private boolean active;
@@ -77,7 +77,6 @@ public class ILClientThread implements Runnable {
 		this.pendingChanges = new LinkedList<ChangeRequest>();
 		this.stateUpdates = new LinkedList<ILGameStatePacket>();
 		this.outgoingData = new LinkedList<ILPacket>();
-		this.lobbyUpdates = new LinkedList<ILLobbyPacket>();
 	}
 	
 	public long packetID() {
@@ -101,15 +100,22 @@ public class ILClientThread implements Runnable {
 		socketChannel.configureBlocking(false);
 		
 		// Kick off our connection establishment
-		socketChannel.connect(new InetSocketAddress(this.hostAddress, this.port));
+		boolean ic = socketChannel.connect(new InetSocketAddress(this.hostAddress, this.port));
 		
 		// Queue a channel registration since the caller is not the selecting
 		// thread. As part of the registration, we'll register an interest in 
 		// connection events. These are raised when a channel is ready to
 		// complete connection establishment.
+		// If we connected immediately (as we would with a local host)
+		// we can immediately change the key to read interest
 		synchronized (this.pendingChanges) {
-			this.pendingChanges.add(new ChangeRequest(socketChannel, 
+			if (ic) {
+				this.pendingChanges.add(new ChangeRequest(socketChannel, 
+						ChangeRequest.CHANGEOPS, SelectionKey.OP_READ));
+			} else {
+				this.pendingChanges.add(new ChangeRequest(socketChannel, 
 					ChangeRequest.REGISTER, SelectionKey.OP_CONNECT));
+			}
 		}
 	}
 	
@@ -152,7 +158,7 @@ public class ILClientThread implements Runnable {
 				}
  				
 				// Wait for an event on one of the registered channels
-				this.selector.selectNow();
+				this.selector.select(1);
 				
 				// Iterate over the set of keys for which events are available
 				Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
@@ -174,7 +180,7 @@ public class ILClientThread implements Runnable {
 					}
 				} 
 			} catch (Exception e) {
-					e.printStackTrace();
+					Logger.getLogger("global").info(e.toString());
 			}
 		}
 	}
@@ -243,8 +249,11 @@ public class ILClientThread implements Runnable {
 				this.stateUpdates.add((ILGameStatePacket) p);
 			}
 		} else if (p instanceof ILLobbyPacket) {
-			synchronized(this.lobbyUpdates) {
-				this.lobbyUpdates.add((ILLobbyPacket) p);
+			if (this.lobbyState == null) this.lobbyState = (ILLobbyPacket) p;
+			else {
+				synchronized(this.lobbyState) {
+					this.lobbyState = (ILLobbyPacket) p;
+				}
 			}
 		} else if (p instanceof ILStartGamePacket) {
 			this.receivedStartGame = true;
@@ -284,6 +293,7 @@ public class ILClientThread implements Runnable {
 		} catch (IOException e) {
 			// Cancel the chanel's registration with our selector
 			key.cancel();
+			e.printStackTrace();
 			return;
 		}
 		

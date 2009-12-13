@@ -141,13 +141,14 @@ public class ILServerThread implements Runnable {
 				if (lobby) {
 					synchronized(this.lobbyPacket) {
 						this.updateLobbyPacket();
-						if (this.tickExpired())
+						if (this.tickExpired()) {
 							this.sendLobbyState();
+						}
 					}
 				}
 				
 				// Do a non-blocking select to find if there were any new key updates since last time
-				int count = this.selector.selectNow();
+				int count = this.selector.select(1);
 				
 				if (count > 0) {
 					// Iterate over the set of keys for which we have available events
@@ -222,7 +223,7 @@ public class ILServerThread implements Runnable {
 	}
 	
 	private void updateLobbyPacket() {
-		this.lobbyPacket = ILPacketFactory.newLobbyPacket((int) this.packetID(), this.numberOfPlayers, this.map, this.clients.values());
+		this.lobbyPacket = ILPacketFactory.newLobbyPacket((int) this.packetID(), this.numberOfPlayers, this.serverName, this.map, this.clients.values());
 	}
 	
 	private Selector initSelector() throws IOException {
@@ -360,6 +361,7 @@ public class ILServerThread implements Runnable {
 		for (Iterator<ClientInfo> it = this.clients.values().iterator(); it.hasNext();) {
 			ClientInfo c = it.next();
 			try {
+				System.out.println("Writing lobby packet to channel: "+ c.toString());
 				c.channel.write(this.lobbyPacket.getByteBuffer());
 			} catch (IOException e) {
 				// Remote closed the connection -- scrag him

@@ -15,6 +15,7 @@ import jig.ironLegends.oxide.util.PacketBuffer;
 public class ILLobbyPacket extends ILPacket {
 
 	public String map;
+	public String serverName;
 	public byte numClients;
 	public Collection<ClientInfo> clients;
 
@@ -23,14 +24,15 @@ public class ILLobbyPacket extends ILPacket {
 	 * @param protocolData
 	 * @throws IOException 
 	 */
-	protected ILLobbyPacket(byte[] protocolData, byte numClients, String map, Collection<ClientInfo> clients) 
+	protected ILLobbyPacket(byte[] protocolData, byte numClients, String name, String map, Collection<ClientInfo> clients) 
 			throws IOException 
 	{
 		super(ILPacket.IL_LOBBY_DATA_HEADER, protocolData);
+		this.serverName = name;
 		this.map = map;
 		this.numClients = numClients;
 		this.clients = clients;
-		this.contentData = new PacketBuffer(createContentBytes(map, numClients, clients));
+		this.contentData = new PacketBuffer(createContentBytes(name, map, numClients, clients));
 	}
 	
 	/**
@@ -41,6 +43,7 @@ public class ILLobbyPacket extends ILPacket {
 		super(ILPacket.IL_LOBBY_DATA_HEADER, protocolData);
 		this.contentData = new PacketBuffer(contentData);
 		
+		this.serverName = this.contentData.getString();
 		this.map = this.contentData.getString();
 		this.numClients = this.contentData.getByte();
 		// Reconstruct client list
@@ -56,12 +59,13 @@ public class ILLobbyPacket extends ILPacket {
 		this.contentData.rewind();
 	}
 
-	public static byte[] createContentBytes(String map, byte numClients, Collection<ClientInfo> clients) 
+	public static byte[] createContentBytes(String serverName, String map, byte numClients, Collection<ClientInfo> clients) 
 			throws IOException 
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		
+		dos.writeBytes(serverName);
 		dos.writeBytes(map);
 		dos.writeByte(numClients);
 		

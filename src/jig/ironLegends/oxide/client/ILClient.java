@@ -19,6 +19,7 @@ public class ILClient {
 			
 			ILClientThread cThread = new ILClientThread(20);
 			cThread.connectTo(addr, 2555);
+			cThread.setActive(true);
 			cThread.setLookingForServers(true);
 			
 			new Thread(cThread).start();
@@ -36,18 +37,18 @@ public class ILClient {
 				}
 				
 				if (lobby) {
-					synchronized (cThread.lobbyUpdates) {
-						for (ILLobbyPacket p : cThread.lobbyUpdates) {
-							System.out.println(p);
+					if (cThread.lobbyState != null) {
+						synchronized (cThread.lobbyState) {
+							System.out.println(cThread.lobbyState);
 							lobby = false;
 						}
 					}
 				}
-				if (lobby == false && advert == false) {
-					cont = false;
-				}
 			}
+			if (lobby == false && advert == false) {
+				cont = false;
 			
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

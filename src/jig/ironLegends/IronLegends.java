@@ -53,6 +53,7 @@ import jig.ironLegends.screens.GameOver_GS;
 import jig.ironLegends.screens.GamePlayTextLayer;
 import jig.ironLegends.screens.GamePlay_GS;
 import jig.ironLegends.screens.HelpScreen;
+import jig.ironLegends.screens.LobbyScreen;
 import jig.ironLegends.screens.ServerSelectScreen;
 import jig.ironLegends.screens.SplashScreen;
 import jig.misc.sat.PolygonFactory;
@@ -147,6 +148,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public Thread cThread;
 	public ILServerThread server;
 	public Thread sThread;
+	public boolean createdServer = false;
 
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -337,7 +339,9 @@ public class IronLegends extends ScrollingScreenGame {
 				m_playerInfo, this));
 		
 		m_screens.addScreen(new HelpScreen(HELP_SCREEN, m_fonts));
-		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts, this.client));
+		m_screens.addScreen(new ServerSelectScreen(SERVER_SCREEN, m_fonts, this));
+		
+		m_screens.addScreen(new LobbyScreen(LOBBY_SCREEN, m_fonts, this));
 		
 		m_screens.addScreen(new GamePlay_GS(GAMEPLAY_SCREEN, this));
 

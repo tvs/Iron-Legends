@@ -1,6 +1,7 @@
 package jig.ironLegends.screens;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,8 +20,6 @@ import jig.ironLegends.core.ui.Button;
 import jig.ironLegends.core.ui.ButtonToolbar;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.ServerButton;
-import jig.ironLegends.mapEditor.TileButton;
-import jig.ironLegends.oxide.client.ILClientThread;
 import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 
 
@@ -47,7 +46,7 @@ public class ServerSelectScreen extends GameScreen {
 	protected RolloverButton bbutton;
 	
 	protected Fonts fonts;
-	protected ILClientThread client;
+	protected IronLegends game;
 	
 	protected int offset;
 	protected int buttonID = 0;
@@ -57,11 +56,11 @@ public class ServerSelectScreen extends GameScreen {
 	
 	protected ServerButton activeButton;
 		
-	public ServerSelectScreen(int name, Fonts fonts, ILClientThread client) {
+	public ServerSelectScreen(int name, Fonts fonts, IronLegends game) {
 		super(name);
 		
 		this.fonts = fonts;
-		this.client = client;
+		this.game = game;
 		
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -118,15 +117,15 @@ public class ServerSelectScreen extends GameScreen {
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs)
 	{
-		if (this.client.servers != null) {
-			synchronized(this.client.servers) {
-				Set<InetSocketAddress> addr = this.client.servers.keySet();
+		if (this.game.client.servers != null) {
+			synchronized(this.game.client.servers) {
+				Set<InetSocketAddress> addr = this.game.client.servers.keySet();
 				
 				Iterator<InetSocketAddress> itr = addr.iterator();
 				
 				while(itr.hasNext()) {
 					InetSocketAddress sa = itr.next();
-					ILServerAdvertisementPacket p = this.client.servers.get(sa);
+					ILServerAdvertisementPacket p = this.game.client.servers.get(sa);
 					
 					if(!this.servers.containsKey(sa)) {
 						ServerButton b = new ServerButton(this.buttonID++, 0, 0, IronLegends.SCREEN_SPRITE_SHEET + "#csshader", sa);
@@ -156,26 +155,30 @@ public class ServerSelectScreen extends GameScreen {
 		
 		bbutton.update(mouse, deltaMs);
 		if (bbutton.wasLeftClicked()) {
-			this.client.setActive(false);
-			this.client.setLookingForServers(false);
+			this.game.client.setActive(false);
+			this.game.client.setLookingForServers(false);
 			return IronLegends.SPLASH_SCREEN;
 		}
 		
 		create_button.update(mouse, deltaMs);
-		if (create_button.wasLeftClicked())
-			System.out.println("Woah woah woah, not yet implemented. Settle down!");
+		if (create_button.wasLeftClicked()) {
+			this.game.createdServer = true;
+			this.game.server.setActive(true);
+			return IronLegends.LOBBY_SCREEN;
+		}
 		
 		connect_button.update(mouse, deltaMs);
 		if (connect_button.wasLeftClicked()) {
 			if (this.activeButton != null) {
 				try {
-					this.client.connectTo(this.activeButton.socketAddress.getAddress(),
-										  this.activeButton.socketAddress.getPort());
-					return IronLegends.GAMEPLAY_SCREEN;
+					this.game.client.connectTo(InetAddress.getByName("localhost"), 2555);
+					return IronLegends.LOBBY_SCREEN;
 				} catch (IOException e) {
 					System.err.println("Unable to connect");
 				}
 			}
+			// TODO: pull this out
+			return IronLegends.LOBBY_SCREEN;
 		}
 		
 		up_button.update(mouse, deltaMs);

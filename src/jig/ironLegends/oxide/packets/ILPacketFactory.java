@@ -113,7 +113,7 @@ public class ILPacketFactory {
 		return new ILServerAdvertisementPacket(protocolData, contentBytes);
 	}
 
-	public static ILLobbyPacket newLobbyPacket(int packetID, byte numberOfPlayers, String map, Collection<ClientInfo> clients) {
+	public static ILLobbyPacket newLobbyPacket(int packetID, byte numberOfPlayers, String serverName, String map, Collection<ClientInfo> clients) {
 		byte[] protocolData = null;
 		try {
 			protocolData = getProtocolData(packetID);
@@ -122,7 +122,7 @@ public class ILPacketFactory {
 		}
 		
 		try {
-			return new ILLobbyPacket(protocolData, numberOfPlayers, map, clients);
+			return new ILLobbyPacket(protocolData, numberOfPlayers, serverName, map, clients);
 		} catch (IOException e) {
 			Logger.getLogger("global").warning(e.toString());
 			return null;
