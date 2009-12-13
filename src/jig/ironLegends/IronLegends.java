@@ -479,6 +479,16 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 		if (m_server != null)
 		{
+			//this.client.send(event)
+			//this.client.stateUpdates
+			/*
+			 * client
+			 * startGame received
+			 * stateUpdates
+			 * 
+			 * lobby,ready
+			 * server rx commandState
+			 */
 			// process client msgs
 			while (m_serverMsgTransport.hasRxMsg())
 			{

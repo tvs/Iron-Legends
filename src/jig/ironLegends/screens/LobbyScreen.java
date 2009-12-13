@@ -130,6 +130,14 @@ public class LobbyScreen extends GameScreen {
 			}
 		} else {
 			this.serverNameBox.render(rc);
+
+			/*
+			int iCurMap = 0;
+			if (this.game.m_availableMaps
+			Iterator<String> mapIter = this.game.m_availableMaps.iterator();
+			while (mapIter.hasNext()
+			*/
+			
 		}
 		
 		
