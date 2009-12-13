@@ -89,7 +89,7 @@ public class GamePlay_GS extends GameScreen {
 			
 			
 		}
-		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_tankLayer.size()-1);
+		game.m_gameProgress.m_levelProgress.setTanksToDestroy(game.m_numTanks);
 		game.m_gameProgress.m_levelProgress.setTanksDestroyed(0);
 		game.m_gameProgress.setBasesRemaining(2);
 		
@@ -145,11 +145,20 @@ public class GamePlay_GS extends GameScreen {
 						if (t.getHealth() <= 0)
 						{
 							game.m_gameProgress.tankDestroyed(t);
-							game.addPowerUp(t);
+							if (t.isPlayerControlled()) {
+								// TODO? if death match vs capture do different behavior
+								// in death match if only single tank remaining game over, winner is last tank
+								// in capture base mode, tank death->respawn
+								
+							} else {								
+								if (game.m_levelProgress.getTanksRemaining() > 0) {
+									game.addPowerUp(t);
+									
+									// add new AI Tank
+									//game.addAITank(game.m_tankLayer.size());
+								}								
+							}
 						}		
-						// TODO? if death match vs capture do different behavior
-						// in death match if only single tank remaining game over, winner is last tank
-						// in capture base mode, tank death->respawn
 					}
 					
 					b.setActivation(false);

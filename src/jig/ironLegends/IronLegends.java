@@ -129,7 +129,7 @@ public class IronLegends extends ScrollingScreenGame {
 	
 	public SortedMap<Integer, Obstacle> m_obstacles;
 
-
+	public int m_numTanks = 20;
 	public boolean m_bGameOver = false;
 	public boolean m_bFirstLevelUpdate = false;
 	public boolean m_paused = false;
