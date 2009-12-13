@@ -15,13 +15,15 @@ public class PowerUpHUD extends Body
 	IronLegends m_game;
 	
 	public PowerUpHUD(int sx, int sy, IronLegends game) {
-		super(IronLegends.SPRITE_SHEET + "#shield-indicator");
+		super(IronLegends.SPRITE_SHEET + "#powerup-shader");		
+		
 		m_powerUps = new Vector<Sprite>();
 		m_powerUpNames = new Vector<Integer>();
 		m_game = game;
 		
-		int x = sx;
-		int y = sy;
+		int x = sx + 1;
+		int y = sy - getHeight();
+		setPosition(new Vector2D(sx, y));
 		
 		String indicators[] = 
 		{
@@ -38,17 +40,18 @@ public class PowerUpHUD extends Body
 		for (int i = 0; i < indicators.length; ++i)
 		{
 			s = new Sprite(IronLegends.SPRITE_SHEET + "#" + indicators[i] + "-indicator");
-			s.setPosition(new Vector2D(x,y-s.getHeight()));
+			s.setCenterPosition(new Vector2D(x + 15, y + 15));
 			s.setFrame(1);
 			m_powerUps.add(s);
 			m_powerUpNames.add(i);
-			x += s.getWidth();
+			x += 30;
 		}		
 	}
 	
 	@Override
 	public void render(RenderingContext rc)
 	{
+		super.render(rc);
 		Sprite s = null;
 		int name = 0;
 		

@@ -14,7 +14,7 @@ public class LifeHUD extends Body
 		super(IronLegends.SPRITE_SHEET + "#hud-tank");
 
 		int healthBarWidth = 4;
-		Vector2D sPos =new Vector2D(sx - getWidth()-healthBarWidth, sy - getHeight()); 
+		Vector2D sPos =new Vector2D(sx - getWidth() - healthBarWidth - 2, sy - getHeight()); 
 		setPosition(sPos);
 
 		m_game = game;
@@ -30,7 +30,7 @@ public class LifeHUD extends Body
 	public void render(RenderingContext rc)
 	{
 		super.render(rc);
-		m_healthBar.render(rc, getPosition().getX()+getWidth(), getPosition().getY()+15
+		m_healthBar.render(rc, getPosition().getX()+getWidth()+1, getPosition().getY()+15
 				, m_game.m_tank.getHealth()
 				, m_game.m_tank.getMaxHealth()
 				, 15
