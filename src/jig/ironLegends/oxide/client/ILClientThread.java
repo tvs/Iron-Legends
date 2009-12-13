@@ -156,8 +156,12 @@ public class ILClientThread implements Runnable {
 				}
 				
 				if (lookingForServers) {
-					ILServerAdvertisementPacket aPacket = (ILServerAdvertisementPacket) advertSocket.getMessage();
-					servers.put(aPacket.address, aPacket);
+					try{
+						ILServerAdvertisementPacket aPacket = (ILServerAdvertisementPacket) advertSocket.getMessage();
+						servers.put(aPacket.address, aPacket);
+					} catch (SocketTimeoutException e) {
+						;
+					}
 				}
  				
 				// Wait for an event on one of the registered channels
@@ -182,8 +186,6 @@ public class ILClientThread implements Runnable {
 						this.write(key);
 					}
 				} 
-			} catch (SocketTimeoutException e) {
-				;
 			} catch (Exception e1) {
 				Logger.getLogger("global").warning(e1.toString());
 			}
