@@ -126,7 +126,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public BodyLayer<Body> m_powerUpLayer;
 	public StaticBodyLayer<Body> m_hudLayer;
 	public Vector<SpawnInfo> m_spawnInfo;
-	
+	public int _lastSpawnIndex = 0;
 	public SortedMap<Integer, Obstacle> m_obstacles;
 
 	public int m_numAITanks = 20;
@@ -622,7 +622,24 @@ public class IronLegends extends ScrollingScreenGame {
 		int c = getRandomChoice(m_AITankProb);
 		Tank t = new Tank(this, 1, Tank.Team.RED, Tank.getType(c), entityNumber, true);
 		t.setTarget(m_tank);
-		setSpawn(t, "redspawn");
+		
+		// try to do round robin spawn selection
+		boolean found = false;
+		Iterator<SpawnInfo> iter = m_spawnInfo.iterator();
+		while (iter.hasNext()) {
+			SpawnInfo s = iter.next();
+			if (s.name().equals("redspawn") && s.getSequence() == _lastSpawnIndex && !s.isOccupied()) {
+				t.setSpawn(s);
+				s.setOccupied(t);
+				_lastSpawnIndex = ((_lastSpawnIndex == 3) ? 0 : _lastSpawnIndex + 1);
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			setSpawn(t, "redspawn");
+		}
 		
 		m_tankLayer.add(t);
 		m_entityLayer.add(t);

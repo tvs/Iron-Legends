@@ -149,7 +149,7 @@ public class GamePlay_GS extends GameScreen {
 								// in capture base mode, tank death->respawn
 								
 							} else {								
-								if (game.m_levelProgress.getTanksRemaining() > 0) {
+								if (game.m_tankLayer.size() <= game.getNumAITanks()) {
 									game.addPowerUp(t);									
 									// add new AI Tank
 									game.m_levelProgress.setAddNewTank(true);
