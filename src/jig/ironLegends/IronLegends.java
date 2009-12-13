@@ -152,7 +152,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public ILServerThread server;
 	public Thread sThread;
 	public boolean createdServer = false;
-
+	public boolean multiPlayerMode = false;
+	
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
 		gameframe.setTitle("Iron Legends");
@@ -701,5 +702,13 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public int getNumAITanks() {
 		return m_numAITanks;
+	}
+
+	public void setMultiPlayerMode(boolean multiPlayerMode) {
+		this.multiPlayerMode = multiPlayerMode;
+	}
+
+	public boolean isMultiPlayerMode() {
+		return multiPlayerMode;
 	}
 }

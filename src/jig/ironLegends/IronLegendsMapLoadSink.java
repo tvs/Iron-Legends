@@ -67,6 +67,9 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 		else if (mapItem.name().equals("redbase"))
 		{
 			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			if (!m_ironLegends.isMultiPlayerMode()) {
+				ob.setActivation(false);
+			}
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 			m_ironLegends.m_redBase = ob;
@@ -74,6 +77,9 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 		else if (mapItem.name().equals("bluebase"))
 		{
 			ob = new Obstacle(line, m_ironLegends.m_polygonFactory, m_mapItemSeq);
+			if (!m_ironLegends.isMultiPlayerMode()) {
+				ob.setActivation(false);
+			}
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 			m_ironLegends.m_blueBase = ob;
