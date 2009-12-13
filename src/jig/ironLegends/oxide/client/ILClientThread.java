@@ -138,9 +138,26 @@ public class ILClientThread implements Runnable {
 			}
 			try {
 				// Process any pending changes
+//				synchronized(this.pendingChanges) {
+//					Iterator<ChangeRequest> changes = this.pendingChanges.iterator();
+//					while (changes.hasNext()) {
+//						ChangeRequest change = changes.next();
+//						switch (change.type){
+//						case ChangeRequest.CHANGEOPS:
+//							SelectionKey key = change.socket.keyFor(this.selector);
+//							key.interestOps(change.ops);
+//							break;
+//						case ChangeRequest.REGISTER:
+//							change.socket.register(this.selector, change.ops);
+//							break;
+//						}
+//					}
+//					this.pendingChanges.clear();
+//				}
+				
 				synchronized(this.pendingChanges) {
 					Iterator<ChangeRequest> changes = this.pendingChanges.iterator();
-					while (changes.hasNext()) {
+					if(changes.hasNext()) {
 						ChangeRequest change = changes.next();
 						switch (change.type){
 						case ChangeRequest.CHANGEOPS:
@@ -151,8 +168,8 @@ public class ILClientThread implements Runnable {
 							change.socket.register(this.selector, change.ops);
 							break;
 						}
+						changes.remove();
 					}
-					this.pendingChanges.clear();
 				}
 				
 				if (lookingForServers) {
