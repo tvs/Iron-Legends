@@ -58,6 +58,7 @@ public class LobbyScreen extends GameScreen {
 		this.game = game;
 		
 		this.serverNameBox = new TextEditBox(this.fonts.textFont, -1, 574, 268, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
+		this.serverNameBox.setText("Server");
 		
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
 		bg.setPosition(new Vector2D(0, 0));
@@ -89,8 +90,8 @@ public class LobbyScreen extends GameScreen {
 		mLButton = new RolloverButton(-4, 490, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
 		mRButton = new RolloverButton(-5, 690, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
 		
-		tLButton = new RolloverButton(-6, 490, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
-		tRButton = new RolloverButton(-7, 690, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
+		tLButton = new RolloverButton(-6, 90, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
+		tRButton = new RolloverButton(-7, 90, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
 	}
 	
 	@Override
@@ -154,9 +155,9 @@ public class LobbyScreen extends GameScreen {
 						
 						if (c.name.compareTo(this.game.m_playerInfo.getName()) == 0) {
 							this.playerClient = c;
-							tLButton.setPosition(new Vector2D(315, ypos+5));
+							tLButton.setPosition(new Vector2D(305, ypos));
 							tLButton.render(rc);
-							tRButton.setPosition(new Vector2D(350, ypos+5));
+							tRButton.setPosition(new Vector2D(350, ypos));
 							tRButton.render(rc);
 						}
 						
@@ -178,10 +179,16 @@ public class LobbyScreen extends GameScreen {
 //				text.setY(120);
 //				text.setLineStart(580);
 //				text.println(this.game.client.lobbyState.map);
-				text.print(this.game.client.lobbyState.map, 580, 120);
-				
+				text.print(this.game.client.lobbyState.map, 580, 120);	
 			}
 		}
+		
+		if (this.game.createdServer) {
+			int ind = this.game.getMapName().lastIndexOf('/');
+			int fin = this.game.getMapName().length();
+			text.print(this.game.getMapName().substring(ind+1, fin - 4), 580, 120);
+		}
+		
 		
 	}
 	
@@ -243,12 +250,15 @@ public class LobbyScreen extends GameScreen {
 	}
 	
 	private void getNextMap() {
-		this.mapSelected = (this.mapSelected+1)%(this.game.m_availableMaps.size());
+		this.mapSelected = (this.mapSelected+1) % (this.game.m_availableMaps.size());
 		this.game.setMapName(this.game.m_availableMaps.get(this.mapSelected));
 	}
 	
 	private void getPreviousMap() {
-		this.mapSelected = (this.mapSelected-1)%(this.game.m_availableMaps.size());
+		if (this.mapSelected == 0) 
+			this.mapSelected = this.game.m_availableMaps.size() - 1;
+		else 
+			this.mapSelected = (this.mapSelected-1) % (this.game.m_availableMaps.size());
 		this.game.setMapName(this.game.m_availableMaps.get(this.mapSelected));
 	}
 	

@@ -108,7 +108,7 @@ public class MapLoader
 		for (int i = 0; i < list.length; i++)  {
 			if (list[i].endsWith(".txt"))
 			{
-				maps.add(sDir + "\\" + list[i]);
+				maps.add(sDir + "/" + list[i]);
 				output += list[i]+"\n";
 			}
 		}
@@ -144,8 +144,10 @@ public class MapLoader
 			}
 		}
 		
-		String sMapDevJarLocation = sInstallDir + "\\bin\\jig\\ironLegends\\maps";
-		String sMapExtLocation = sInstallDir + "\\maps";
+//		String sMapDevJarLocation = sInstallDir + "\\bin\\jig\\ironLegends\\maps";
+//		String sMapExtLocation = sInstallDir + "\\maps";
+		String sMapDevJarLocation = sInstallDir + "/bin/jig/ironLegends/maps";
+		String sMapExtLocation = sInstallDir + "/maps";
 		
 		System.out.println(sMapJarLocation);
 		addMaps(maps, sMapJarLocation);
