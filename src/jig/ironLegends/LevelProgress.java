@@ -7,7 +7,8 @@ public class LevelProgress {
 	protected int m_levelScore;
 	protected int m_tanksDestroyed = 0;
 	protected int m_tanksToDestroy = 0;
-
+	protected boolean m_addNewTank = false;
+	
 	public LevelProgress() {
 		reset();
 	}
@@ -66,6 +67,7 @@ public class LevelProgress {
 		m_bExitComplete = false;
 		m_tanksDestroyed = 0;
 		m_tanksToDestroy = 0;
+		setAddNewTank(false);
 	}
 
 	public int getScore() {
@@ -92,6 +94,14 @@ public class LevelProgress {
 
 	public void setTanksDestroyed(int i) {
 		m_tanksDestroyed = i;		
+	}
+
+	public void setAddNewTank(boolean m_addNewTank) {
+		this.m_addNewTank = m_addNewTank;
+	}
+
+	public boolean isAddNewTank() {
+		return m_addNewTank;
 	}
 	
 }

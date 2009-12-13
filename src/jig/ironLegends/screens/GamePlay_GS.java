@@ -152,10 +152,9 @@ public class GamePlay_GS extends GameScreen {
 								
 							} else {								
 								if (game.m_levelProgress.getTanksRemaining() > 0) {
-									game.addPowerUp(t);
-									
+									game.addPowerUp(t);									
 									// add new AI Tank
-									//game.addAITank(game.m_tankLayer.size());
+									game.m_levelProgress.setAddNewTank(true);
 								}								
 							}
 						}		
@@ -384,6 +383,12 @@ public class GamePlay_GS extends GameScreen {
 			}
 			
 			game.screenTransition(name(), IronLegends.GAMEOVER_SCREEN);
+		} else {
+			if (game.m_levelProgress.isAddNewTank()) {
+				// add new AI Tank
+				game.addAITank(game.m_tankLayer.size());
+				game.m_levelProgress.setAddNewTank(false);
+			}
 		}
 		game.m_radarHUD.update(deltaMs);
 	}
