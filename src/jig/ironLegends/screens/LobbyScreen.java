@@ -16,13 +16,13 @@ import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.oxide.client.ClientInfo;
-import jig.ironLegends.oxide.packets.ILLobbyEventPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 
 /**
  * @author Travis Hall
  */
 public class LobbyScreen extends GameScreen {
+	private static int VERT_OFFSET = 10;
 	
 	protected IronLegends game;
 	protected Fonts fonts;
@@ -36,10 +36,15 @@ public class LobbyScreen extends GameScreen {
 	protected Sprite oShader;
 	protected Sprite oText;
 	protected RolloverButton bbutton;
+	protected RolloverButton mLButton;
+	protected RolloverButton mRButton;
+	protected RolloverButton tLButton;
+	protected RolloverButton tRButton;
 	
 	protected TextEditBox serverNameBox;
 	
-	private static int VERT_OFFSET = 10;
+	private int mapSelected = 0;
+
 	
 	/**
 	 * @param name
@@ -78,6 +83,9 @@ public class LobbyScreen extends GameScreen {
 		
 		bbutton = new RolloverButton(-3, 0, 535,
 				IronLegends.SCREEN_SPRITE_SHEET + "#back-button");
+		
+		mLButton = new RolloverButton(-4, 490, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
+		mRButton = new RolloverButton(-5, 690, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
 	}
 	
 	@Override
@@ -93,6 +101,12 @@ public class LobbyScreen extends GameScreen {
 		
 		oShader.render(rc);
 		oText.render(rc);
+		
+		
+		if (this.game.createdServer) {
+			mLButton.render(rc);
+			mRButton.render(rc);
+		}
 		
 		TextWriter text = new TextWriter(rc);
 		
@@ -123,24 +137,34 @@ public class LobbyScreen extends GameScreen {
 					while(itr.hasNext()) {
 						ClientInfo c = itr.next();
 						
-						text.setY(ypos);
-						text.setLineStart(110);
-						text.print(c.name);
+//						text.setY(ypos);
+//						text.setLineStart(110);
+//						text.print(c.name);
+						text.print(c.name, 110, ypos);
+						// Using the other method of manually setting the spacing breaks everything
+						// who the hell knows why
 						// Setline doesn't seem to work here -- spaced it out manually
-						text.setLineStart(300);
-						text.print("              Team:   ");
-						text.setLineStart(315);
+//						text.setLineStart(300);
+//						text.print("              Team:   ");
+						text.print("Team: ", 270, ypos);
+//						text.setLineStart(315);
 						String txt = "NIL";
 						if (c.team == ClientInfo.RED_TEAM) {
 							txt = "RED";
 						} else if (c.team == ClientInfo.BLU_TEAM) {
 							txt = "BLU";
 						}
-						text.println(txt);
+//						text.println(txt);
+						text.print(txt, 315, ypos);
 						
 						ypos += VERT_OFFSET;
 					}
 				}
+				
+//				text.setY(120);
+//				text.setLineStart(580);
+//				text.println(this.game.client.lobbyState.map);
+				text.print(this.game.client.lobbyState.map, 580, 120);
 				
 			}
 		}
@@ -174,9 +198,31 @@ public class LobbyScreen extends GameScreen {
 				serverNameBox.processInput(keyCmds);
 				this.game.server.setServerName(serverNameBox.getText().toUpperCase());
 			}
+			
+			this.mRButton.update(mouse, deltaMs);
+			if (this.mRButton.wasLeftClicked()) {
+				this.getNextMap();
+			}
+			
+			this.mLButton.update(mouse, deltaMs);
+			if (this.mLButton.wasLeftClicked()) {
+				this.getPreviousMap();
+			}
+			
+			this.game.server.setMapName(this.game.getMapName());
 		}
 		
 		return name();		
+	}
+	
+	private void getNextMap() {
+		this.mapSelected = (this.mapSelected+1)%(this.game.m_availableMaps.size());
+		this.game.setMapName(this.game.m_availableMaps.get(this.mapSelected));
+	}
+	
+	private void getPreviousMap() {
+		this.mapSelected = (this.mapSelected-1)%(this.game.m_availableMaps.size());
+		this.game.setMapName(this.game.m_availableMaps.get(this.mapSelected));
 	}
 
 }

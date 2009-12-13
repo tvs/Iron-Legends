@@ -224,6 +224,7 @@ public class ILClientThread implements Runnable {
 		} catch (IOException e) {
 			// The remote forcibly closed the connection. Cancel the selection key
 			// and close the channel
+			Logger.getLogger("global").severe("Remote server forcibly closed a connection on socket: " + socketChannel.toString());
 			key.cancel();
 			socketChannel.close();
 			return;

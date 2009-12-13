@@ -4,7 +4,6 @@ package jig.ironLegends.oxide.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 
 /**

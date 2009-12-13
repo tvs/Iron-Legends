@@ -1,7 +1,6 @@
 package jig.ironLegends.screens;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +22,6 @@ import jig.ironLegends.core.ui.ServerButton;
 import jig.ironLegends.oxide.packets.ILServerAdvertisementPacket;
 
 
-// TODO Scrolling server selector!
 /**
  * A menu screen for handling the server selection and joining
  *  
@@ -162,6 +160,14 @@ public class ServerSelectScreen extends GameScreen {
 		
 		create_button.update(mouse, deltaMs);
 		if (create_button.wasLeftClicked()) {
+			this.game.client.setActive(false);
+			this.game.client.setLookingForServers(false);
+			
+			this.game.setMapName(this.game.m_availableMaps.get(0));
+			
+			this.game.server.setServerName("Server");
+			this.game.server.setMapName(this.game.getMapName());
+			
 			this.game.createdServer = true;
 			this.game.server.setActive(true);
 			return IronLegends.LOBBY_SCREEN;
@@ -178,8 +184,6 @@ public class ServerSelectScreen extends GameScreen {
 					System.err.println("Unable to connect");
 				}
 			}
-			// TODO: pull this out
-			return IronLegends.LOBBY_SCREEN;
 		}
 		
 		up_button.update(mouse, deltaMs);
