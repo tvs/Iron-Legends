@@ -9,11 +9,9 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import jig.ironLegends.CommandState;
 import jig.ironLegends.oxide.client.ClientInfo;
@@ -56,8 +54,7 @@ public class ILServerThread implements Runnable {
 	
 	private List<CommandState> receivedData;
 	private List<ILPacket> outgoingData;
-	
-	private Map<SelectionKey, ClientInfo> clients;
+	private List<ClientInfo> clients;
 	
 	protected boolean advertise;
 	protected boolean active;
@@ -87,9 +84,9 @@ public class ILServerThread implements Runnable {
 		this.advertise = true;
 		this.lobby = true;
 		this.active = false;
+		this.clients = new LinkedList<ClientInfo>();
 		this.receivedData = new LinkedList<CommandState>();
 		this.outgoingData = new LinkedList<ILPacket>();
-		this.clients = new HashMap<SelectionKey, ClientInfo>();
 		
 		this.serverName = "Server\0";
 		this.map = "Map\0";
@@ -164,7 +161,7 @@ public class ILServerThread implements Runnable {
 						if (key.isAcceptable()) {
 							this.accept(key);
 						} else if (key.isReadable()) {
-							this.read(key, this.clients.get(key));
+							this.read(key);
 						}
 					}
 				}
@@ -223,7 +220,7 @@ public class ILServerThread implements Runnable {
 	}
 	
 	private void updateLobbyPacket() {
-		this.lobbyPacket = ILPacketFactory.newLobbyPacket((int) this.packetID(), this.numberOfPlayers, this.serverName, this.map, this.clients.values());
+		this.lobbyPacket = ILPacketFactory.newLobbyPacket((int) this.packetID(), this.numberOfPlayers, this.serverName, this.map, this.clients);
 	}
 	
 	private Selector initSelector() throws IOException {
@@ -259,10 +256,11 @@ public class ILServerThread implements Runnable {
 				// Socket socket = socketChannnel.socket();
 				socketChannel.configureBlocking(false);
 				// Register the socket with the selector and an interest on reading
-				socketChannel.register(this.selector, SelectionKey.OP_READ);
-				// Load the client into our map of key->clients
-				this.clients.put(key, new ClientInfo(this.numberOfPlayers, socketChannel));
+				// Load the client into our list of clients and attach it to the key
+				ClientInfo c = new ClientInfo(this.numberOfPlayers, socketChannel);
 				this.numberOfPlayers++;
+				this.clients.add(c);
+				socketChannel.register(this.selector, SelectionKey.OP_READ, c);
 				
 				this.updateAdvertisementPacket();
 			} catch (IOException e) {
@@ -279,7 +277,8 @@ public class ILServerThread implements Runnable {
 	 * @param client
 	 * @throws IOException
 	 */
-	private void read(SelectionKey key, ClientInfo client) throws IOException {
+	private void read(SelectionKey key) throws IOException {
+		ClientInfo client = (ClientInfo) key.attachment();
 		if (client == null) return;
 		int numRead;
 		try {
@@ -323,12 +322,13 @@ public class ILServerThread implements Runnable {
 	/**
 	 * Cancel the key, close the channel, and remove it from the clients map
 	 * @param key The key to cancel
+	 * @param channel 
 	 * @throws IOException
 	 */
 	private void close(SelectionKey key) throws IOException {
 		key.cancel();
 		key.channel().close();
-		this.clients.remove(key);
+		this.clients.remove((ClientInfo) key.attachment());
 	}
 	
 	/**
@@ -339,7 +339,7 @@ public class ILServerThread implements Runnable {
 		synchronized(this.outgoingData) {
 			while(!outgoingData.isEmpty()) {
 				ILPacket p = outgoingData.get(0);
-				for (ClientInfo c : this.clients.values()) {
+				for (ClientInfo c : this.clients) {
 					try {
 						c.channel.write(p.getByteBuffer());
 					} catch (IOException e) {
@@ -358,7 +358,7 @@ public class ILServerThread implements Runnable {
 	}
 	
 	private void sendLobbyState() {
-		for (Iterator<ClientInfo> it = this.clients.values().iterator(); it.hasNext();) {
+		for (Iterator<ClientInfo> it = this.clients.iterator(); it.hasNext();) {
 			ClientInfo c = it.next();
 			try {
 				c.channel.write(this.lobbyPacket.getByteBuffer());

@@ -40,7 +40,9 @@ public class ILClientThread implements Runnable {
 	private Selector selector;
 	
 	// The advertisement socket we listen on
-	ILAdvertisementSocket advertSocket;
+	private ILAdvertisementSocket advertSocket;
+	
+	private SocketChannel serverChannel;
 	
 	// A map of servers discovered by the aSocket
 	public Map<InetSocketAddress, ILServerAdvertisementPacket> servers;
@@ -61,7 +63,7 @@ public class ILClientThread implements Runnable {
 	private long lastTick = 0;
 	private long time = 0;
 	
-	private long packetID = 0;
+	private int packetID = 0;
 	
 	public ILClientThread(int tickrate) 
 			throws SocketException, IOException 
@@ -79,7 +81,7 @@ public class ILClientThread implements Runnable {
 		this.outgoingData = new LinkedList<ILPacket>();
 	}
 	
-	public long packetID() {
+	public int packetID() {
 		if (this.packetID == Integer.MAX_VALUE) this.packetID = 0;
 		return this.packetID++;
 	}
@@ -96,11 +98,11 @@ public class ILClientThread implements Runnable {
 		this.hostAddress = hostAddress;
 		this.port = port;
 		
-		SocketChannel socketChannel = SocketChannel.open();
-		socketChannel.configureBlocking(false);
+		this.serverChannel = SocketChannel.open();
+		this.serverChannel.configureBlocking(false);
 		
 		// Kick off our connection establishment
-		boolean ic = socketChannel.connect(new InetSocketAddress(this.hostAddress, this.port));
+		boolean ic = this.serverChannel.connect(new InetSocketAddress(this.hostAddress, this.port));
 		
 		// Queue a channel registration since the caller is not the selecting
 		// thread. As part of the registration, we'll register an interest in 
@@ -110,10 +112,10 @@ public class ILClientThread implements Runnable {
 		// we can immediately change the key to read interest
 		synchronized (this.pendingChanges) {
 			if (ic) {
-				this.pendingChanges.add(new ChangeRequest(socketChannel, 
+				this.pendingChanges.add(new ChangeRequest(this.serverChannel, 
 						ChangeRequest.CHANGEOPS, SelectionKey.OP_READ));
 			} else {
-				this.pendingChanges.add(new ChangeRequest(socketChannel, 
+				this.pendingChanges.add(new ChangeRequest(this.serverChannel, 
 					ChangeRequest.REGISTER, SelectionKey.OP_CONNECT));
 			}
 		}
@@ -191,8 +193,13 @@ public class ILClientThread implements Runnable {
 	}
 	
 	public void send(ILPacket packet) throws IOException {
-		synchronized(this.outgoingData) {
-			this.outgoingData.add(packet);
+		
+		synchronized(this.pendingChanges) {
+			this.pendingChanges.add(new ChangeRequest(this.serverChannel, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
+			
+			synchronized(this.outgoingData) {
+				this.outgoingData.add(packet);
+			}
 		}
 		
 		this.selector.wakeup();
@@ -230,7 +237,7 @@ public class ILClientThread implements Runnable {
 			return;
 		}
 		
-		readBuffer.rewind();
+		readBuffer.flip();
 		this.handleResponse(socketChannel, readBuffer, numRead);
 	}
 	

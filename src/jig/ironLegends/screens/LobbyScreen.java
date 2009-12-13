@@ -1,5 +1,9 @@
 package jig.ironLegends.screens;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.logging.Logger;
+
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.Sprite;
@@ -11,6 +15,9 @@ import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
+import jig.ironLegends.oxide.client.ClientInfo;
+import jig.ironLegends.oxide.packets.ILLobbyEventPacket;
+import jig.ironLegends.oxide.packets.ILPacketFactory;
 
 /**
  * @author Travis Hall
@@ -31,6 +38,8 @@ public class LobbyScreen extends GameScreen {
 	protected RolloverButton bbutton;
 	
 	protected TextEditBox serverNameBox;
+	
+	private static int VERT_OFFSET = 10;
 	
 	/**
 	 * @param name
@@ -103,11 +112,55 @@ public class LobbyScreen extends GameScreen {
 		} else {
 			this.serverNameBox.render(rc);
 		}
+		
+		
+		if (this.game.client.lobbyState != null) {
+			synchronized(this.game.client.lobbyState) {
+				if (this.game.client.lobbyState.clients != null) {
+					Iterator<ClientInfo> itr = this.game.client.lobbyState.clients.iterator();
+					
+					int ypos = 80;
+					while(itr.hasNext()) {
+						ClientInfo c = itr.next();
+						
+						text.setY(ypos);
+						text.setLineStart(110);
+						text.print(c.name);
+						// Setline doesn't seem to work here -- spaced it out manually
+						text.setLineStart(300);
+						text.print("              Team:   ");
+						text.setLineStart(315);
+						String txt = "NIL";
+						if (c.team == ClientInfo.RED_TEAM) {
+							txt = "RED";
+						} else if (c.team == ClientInfo.BLU_TEAM) {
+							txt = "BLU";
+						}
+						text.println(txt);
+						
+						ypos += VERT_OFFSET;
+					}
+				}
+				
+			}
+		}
+		
+		
+		try {
+			this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+					this.game.m_playerInfo.getName(),
+					ClientInfo.RED_TEAM));
+		} catch (IOException e) {
+			Logger.getLogger("global").warning(e.toString());
+		}
+		
 	}
 	
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs)
 	{
+		this.game.client.update(deltaMs);
+		
 		bbutton.update(mouse, deltaMs);
 		if (bbutton.wasLeftClicked()) {
 			if (this.game.createdServer) this.game.createdServer = false;

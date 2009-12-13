@@ -129,6 +129,22 @@ public class ILPacketFactory {
 		}
 	}
 	
+	public static ILLobbyEventPacket newLobbyEventPacket(int packetID, String name, byte team) {
+		byte[] protocolData = null;
+		try {
+			protocolData = getProtocolData(packetID);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			return new ILLobbyEventPacket(protocolData, name, team);
+		} catch (IOException e) {
+			Logger.getLogger("global").warning(e.toString());
+			return null;
+		}
+	}
+	
 	public static ILEventPacket newEventPacket(int packetID, CommandState event) {
 		byte[] protocolData = null;
 		try {
