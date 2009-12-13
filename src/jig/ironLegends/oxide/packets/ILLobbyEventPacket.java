@@ -11,7 +11,6 @@ import jig.ironLegends.oxide.util.PacketBuffer;
  */
 public class ILLobbyEventPacket extends ILPacket {
 
-	public byte playerID;
 	public String name;
 	public byte team;
 
@@ -20,31 +19,28 @@ public class ILLobbyEventPacket extends ILPacket {
 	 * @param protocolData
 	 * @throws IOException 
 	 */
-	protected ILLobbyEventPacket(byte[] protocolData, byte playerID, String name, byte team)
+	protected ILLobbyEventPacket(byte[] protocolData, String name, byte team)
 			throws IOException 
 	{
 		super(ILPacket.IL_LOBBY_EVENT_HEADER, protocolData);
-		this.playerID = playerID;
 		this.team = team;
 		
-		this.contentData = new PacketBuffer(createContentData(playerID, name, team));
+		this.contentData = new PacketBuffer(createContentData(name, team));
 	}
 	
 	protected ILLobbyEventPacket(byte[] protocolData, byte[] contentData) {
 		super(ILPacket.IL_LOBBY_EVENT_HEADER, protocolData);
 		
 		this.contentData = new PacketBuffer(contentData);
-		this.playerID = this.contentData.getByte();
 		this.name = this.contentData.getString();
 		this.team = this.contentData.getByte();
 		this.contentData.rewind();
 	}
 	
-	private static byte[] createContentData(byte playerID, String name, byte team) throws IOException {
+	private static byte[] createContentData(String name, byte team) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		
-		dos.write(playerID);
 		dos.writeBytes(name);
 		dos.write(team);
 		

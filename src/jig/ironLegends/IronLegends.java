@@ -198,9 +198,9 @@ public class IronLegends extends ScrollingScreenGame {
 			this.cThread = new Thread(this.client);
 			this.cThread.start();
 			
-			this.server = new ILServerThread(IronLegends.PORT, 33);
-			this.sThread = new Thread(this.server);
-			this.sThread.start();
+//			this.server = new ILServerThread(IronLegends.PORT, 33);
+//			this.sThread = new Thread(this.server);
+//			this.sThread.start();
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

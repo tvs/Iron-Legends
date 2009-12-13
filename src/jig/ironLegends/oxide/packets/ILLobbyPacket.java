@@ -47,13 +47,13 @@ public class ILLobbyPacket extends ILPacket {
 		this.map = this.contentData.getString();
 		this.numClients = this.contentData.getByte();
 		// Reconstruct client list
-		Collection<ClientInfo> clients = new ArrayList<ClientInfo>();
+		this.clients = new ArrayList<ClientInfo>();
 		
 		for (int i = 0; i < this.numClients; i++) {
 			byte id = this.contentData.getByte();
 			String name = this.contentData.getString();
 			byte team = this.contentData.getByte();
-			clients.add(new ClientInfo(id, name, team));
+			this.clients.add(new ClientInfo(id, name, team));
 		}
 		
 		this.contentData.rewind();
@@ -71,7 +71,7 @@ public class ILLobbyPacket extends ILPacket {
 		
 		for (ClientInfo c : clients) {
 			dos.write(c.id);
-			dos.writeBytes("blah"); //c.name
+			dos.writeBytes((c.name != null) ? c.name : "Nil"); //c.name
 		}
 		
 		dos.flush();

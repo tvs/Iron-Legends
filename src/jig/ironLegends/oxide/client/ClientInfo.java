@@ -19,6 +19,8 @@ import jig.ironLegends.oxide.util.PacketList;
  * @author Travis Hall
  */
 public class ClientInfo {
+	public static byte RED_TEAM = 0x00;
+	public static byte BLU_TEAM = 0x01;
 	
 	public int id;
 	public String name;
@@ -57,6 +59,7 @@ public class ClientInfo {
 	public int read() throws IOException {
 		ByteBuffer readBuffer = ByteBuffer.allocate(ILPacket.MAX_PACKET_SIZE);
 		int numread = this.channel.read(readBuffer);
+		readBuffer.flip();
 		
 		try {
 			ILPacket packet = ILPacketFactory.getPacketFromData(readBuffer);
