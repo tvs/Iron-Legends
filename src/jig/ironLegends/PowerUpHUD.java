@@ -52,6 +52,9 @@ public class PowerUpHUD extends Body
 	public void render(RenderingContext rc)
 	{
 		super.render(rc);
+		if (m_game.m_tank == null)
+			return;
+		
 		Sprite s = null;
 		int name = 0;
 		

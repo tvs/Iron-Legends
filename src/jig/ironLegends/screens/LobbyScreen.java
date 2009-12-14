@@ -48,7 +48,7 @@ public class LobbyScreen extends GameScreen {
 	
 	private int mapSelected = 0;
 	
-	private ClientInfo playerClient;
+	//private ClientInfo playerClient;
 
 	
 	/**
@@ -59,6 +59,7 @@ public class LobbyScreen extends GameScreen {
 		
 		this.fonts = fonts;
 		this.game = game;
+		this.game.playerClient = null;
 		
 		this.serverNameBox = new TextEditBox(this.fonts.textFont, -1, 574, 271, IronLegends.SCREEN_SPRITE_SHEET + "#server-entry-box");
 		this.serverNameBox.setText("Server");
@@ -160,6 +161,19 @@ public class LobbyScreen extends GameScreen {
 						ClientInfo c = itr.next();
 						text.print(c.name, 110, ypos);
 						
+						// hostname
+						if (this.game.client.myAddress.getHostAddress().equals(c.clientIP))
+						{
+							if (this.game.playerClient == null)
+							{
+								this.game.playerClient = c;
+							}
+							tLButton.setPosition(new Vector2D(305, ypos));
+							tLButton.render(rc);
+							tRButton.setPosition(new Vector2D(350, ypos));
+							tRButton.render(rc);							
+						}
+						/*
 						if (c.name.compareTo(this.game.m_playerInfo.getName()) == 0) {
 							if (this.playerClient == null)
 							{
@@ -170,6 +184,7 @@ public class LobbyScreen extends GameScreen {
 							tRButton.setPosition(new Vector2D(350, ypos));
 							tRButton.render(rc);
 						}
+						*/
 						
 						text.print("Team  ", 270, ypos);
 						String txt = "NIL";
@@ -203,11 +218,11 @@ public class LobbyScreen extends GameScreen {
 	@Override
 	public int processCommands(KeyCommands keyCmds, Mouse mouse, final long deltaMs)
 	{
-		this.game.client.update(deltaMs);
+		//this.game.client.update(deltaMs);
 		
-		if (this.game.createdServer) {
-			this.game.server.update(deltaMs);
-		}
+		//if (this.game.createdServer) {
+		//	this.game.server.update(deltaMs);
+		//}
 		
 		bbutton.update(mouse, deltaMs);
 		if (bbutton.wasLeftClicked()) {
@@ -264,7 +279,7 @@ public class LobbyScreen extends GameScreen {
 		try {
 			if (this.game.client.tickExpired()) {
 				// Send our identification
-				if (this.playerClient == null) {
+				if (this.game.playerClient == null) {
 					this.game.client.sendLobby(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
 						this.game.client.hostAddress.getHostAddress() + "\0",
 						this.game.client.myAddress.getHostAddress() + "\0",
@@ -275,7 +290,7 @@ public class LobbyScreen extends GameScreen {
 					this.game.client.sendLobby(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
 							this.game.client.hostAddress.getHostAddress() + "\0",
 							this.game.client.myAddress.getHostAddress() + "\0",
-							this.playerClient.name + "\0", this.playerClient.team));
+							this.game.playerClient.name + "\0", this.game.playerClient.team));
 				}
 			}
 		} catch (IOException e) {
@@ -308,10 +323,15 @@ public class LobbyScreen extends GameScreen {
 	}
 	
 	private void nextTeam() {
-		if (this.playerClient.team == ClientInfo.RED_TEAM) {
-			this.playerClient.team = ClientInfo.BLU_TEAM;
+		if (this.game == null)
+			return;
+		if (this.game.playerClient == null)
+			return;
+		
+		if (this.game.playerClient.team == ClientInfo.RED_TEAM) {
+			this.game.playerClient.team = ClientInfo.BLU_TEAM;
 		} else {
-			this.playerClient.team = ClientInfo.RED_TEAM;
+			this.game.playerClient.team = ClientInfo.RED_TEAM;
 		}
 	}
 

@@ -56,7 +56,9 @@ public class RadarHUD extends MultiSpriteBody
 	private void radarRender(RenderingContext rc) {
 		// render "self" in center of radar
 		// get bearing to each rendered item and draw if withing range
-		
+		if (m_game.m_tank == null)
+			return;
+				
 		double sx = 1;
 		double sy = 1;
 		double dMaxWorld = m_worldWidth;

@@ -43,7 +43,9 @@ import jig.ironLegends.core.SpecialFx;
 import jig.ironLegends.core.StaticBodyLayer;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
+import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.client.ILClientThread;
+import jig.ironLegends.oxide.console.ILConsoleCommandHandler;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
@@ -120,7 +122,9 @@ public class IronLegends extends ScrollingScreenGame {
 	
 	public String m_mapName;
 	public PlayerInfo m_playerInfo;
-	public Tank m_tank;
+	public ClientInfo playerClient;
+	
+	public Tank m_tank = null;
 	public ViewableLayer m_bgLayer;
 	public BodyLayer<Body> m_entityLayer; // All entities in the game
 	public BodyLayer<Body> m_tankLayer;
@@ -155,7 +159,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public ILServerThread server;
 	public Thread sThread;
 	public boolean createdServer = false;
-	public boolean multiPlayerMode = false;
+	//public boolean multiPlayerMode = false;
 	public int maxActiveTanks = 4;
 	public boolean play_music = true;
 	private AudioStream music;
@@ -265,6 +269,9 @@ public class IronLegends extends ScrollingScreenGame {
 		
 		IronLegendsMapLoadSink sink = new IronLegendsMapLoadSink(this);
 		MapLoader.loadLayer(sink, sMapFile, m_rr);
+
+		//m_levelProgress.setIntro(2999);
+		//m_bFirstLevelUpdate = false;
 	}
 
 	public void loadLevel(String mapFile) {
@@ -275,7 +282,6 @@ public class IronLegends extends ScrollingScreenGame {
 		m_levelProgress.setIntro(2999);
 		m_bFirstLevelUpdate = false;
 	}
-
 	/**
 	 * Configure Commands
 	 */
@@ -358,7 +364,7 @@ public class IronLegends extends ScrollingScreenGame {
 		gameplayScreen.addViewableLayer(new GameInfoTextLayer(m_fonts,
 				m_gameProgress, m_highScore, this));
 		gameplayScreen.addViewableLayer(new GamePlayTextLayer(m_fonts,
-				m_gameProgress, m_playerInfo));
+				m_gameProgress, m_playerInfo, this));
 
 		// gameover screen has all the layers of gameplay except the text layer
 		// is different
@@ -408,6 +414,14 @@ public class IronLegends extends ScrollingScreenGame {
 		GameScreen curScreen = m_screens.getScreen(activeScreen);
 
 		if (curScreen != null) {
+			if (this.createdServer) {
+				this.server.update(deltaMs);
+			}
+			if (this.client != null)
+			{
+				this.client.update(deltaMs);
+			}
+			
 			int iNewScreen = curScreen.processCommands(m_keyCmds, mouse,
 					deltaMs);
 			int iCurScreen = curScreen.name();
@@ -467,33 +481,45 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 	}
 
-	public void newGame() {
+	public void resetGame()
+	{
 		m_bGameOver = false;
+
+		m_gameProgress.reset();
+	}
+	public void newGame(String mapFile) {
+		resetGame();
+		
+		//String mapFile = "maps/mapitems.txt";
+
 		m_gameProgress.reset();		
 	
-		// pick random map
-		String mapFile = m_availableMaps.get((int) (Math.random() * m_availableMaps.size()));
-		int bx = mapFile.indexOf("maps/");
-		if (bx > 0) {
-			mapFile = mapFile.substring(bx);
+		if (!isMultiPlayerMode())
+		{
+			// pick random map
+			mapFile = m_availableMaps.get((int) (Math.random() * m_availableMaps.size()));
+			int bx = mapFile.indexOf("maps/");
+			if (bx > 0) {
+				mapFile = mapFile.substring(bx);
+			}
 		}
-		
-//		String mapFile = "maps/grunge.txt";
-//		String mapFile = "maps/helljungle.txt";		
+	//		String mapFile = "maps/grunge.txt";
+	//		String mapFile = "maps/helljungle.txt";		
 		if (client != null)
 		{
-			if (client.startGamePacket != null)
+			ILStartGamePacket startGamePacket = client.getStartGamePacket();
+			if (startGamePacket != null)
 			{
-				// will actuall happen below!
-				client.loadedMap = true;
-				int i = client.startGamePacket.map.lastIndexOf("/");
-				String s = client.startGamePacket.map.substring(i+1);
+				int i = startGamePacket.map.lastIndexOf("/");
+				String s = startGamePacket.map.substring(i+1);
 				
 				mapFile = "maps/" + s;
 			}
 		}
-				
-		loadLevel(mapFile);		
+		
+		loadLevel(mapFile);
+		if (client != null)
+			client.loadedMap = true;
 	}
 
 	public Bullet getBullet() {
@@ -524,22 +550,67 @@ public class IronLegends extends ScrollingScreenGame {
 			// send msgs to server
 			m_clientMsgTransport.send(m_client.getTxQueue());
 		}
-		if (server != null)
+		if (server != null && client != null && isMultiPlayerMode())
 		{
-			/*
-			//TODO: during ironlegends update, keep track of how many players are sending client updates
-			// if all clients are sending client updates, send start game with go = true
-			// client update could be modified to acknowledge it received go and then
-			// when server receives client update with go set from all clients
-			// then the server can stop sending go.
-			ILStartGamePacket msg = ILPacketFactory.newStartGamePacket(server.packetID()
-					, server.hostAddress.getHostAddress() + "\0"
-					, server.hostAddress.getHostAddress() + "\0"
-					, server.getMapName() + "\0");
-			msg.m_bGo = false;
-			msg.m_bSinglePlayer = false;
-			server.send(msg);
-			*/
+			if (server.createdTanks == true)
+			{
+				// TODO send start game msg with tank info
+				ILStartGamePacket msg = ILPacketFactory.newStartGamePacket(server.packetID()
+						, server.hostAddress.getHostAddress() + "\0"
+						, server.hostAddress.getHostAddress() + "\0"
+						, server.getMapName() + "\0");
+				msg.m_bGo = true;
+				msg.m_bSinglePlayer = false;
+				
+				{
+					Iterator<Body> iter = m_tankLayer.iterator();
+					while (iter.hasNext())
+					{
+						Tank t = (Tank) iter.next();
+						EntityState es = new EntityState();
+						
+						t.serverPopulate(es);
+						entityStates.add(es);
+					}
+				}
+				
+				msg.setEntityStates(entityStates);
+
+				server.send(msg);				
+			}
+			else if (client.loadedMap)
+			{
+				// create tanks at spawn locations
+				if (client.lobbyState.clients != null) {
+					m_tankLayer.clear();
+
+					Iterator<ClientInfo> itr = client.lobbyState.clients.iterator();
+					while (itr.hasNext())
+					{
+						ClientInfo c = itr.next();
+						addTank(c);
+					}
+					server.createdTanks = true;
+				}
+			}
+			else
+			{
+				// map not loaded, keep sending startGame packet
+				/*
+				//TODO: during ironlegends update, keep track of how many players are sending client updates
+				// if all clients are sending client updates, send start game with go = true
+				// client update could be modified to acknowledge it received go and then
+				// when server receives client update with go set from all clients
+				// then the server can stop sending go.
+				ILStartGamePacket msg = ILPacketFactory.newStartGamePacket(server.packetID()
+						, server.hostAddress.getHostAddress() + "\0"
+						, server.hostAddress.getHostAddress() + "\0"
+						, server.getMapName() + "\0");
+				msg.m_bGo = false;
+				msg.m_bSinglePlayer = false;
+				server.send(msg);
+				*/
+			}
 		}
 		
 		if (m_server != null)
@@ -566,6 +637,7 @@ public class IronLegends extends ScrollingScreenGame {
 				m_serverMsgTransport.send(startGame);	
 			}
 			// send entity states (game state)
+			if (!isMultiPlayerMode())
 			{
 				Iterator<Body> iter = m_tankLayer.iterator();
 				while (iter.hasNext())
@@ -581,13 +653,31 @@ public class IronLegends extends ScrollingScreenGame {
 
 		if (client != null)
 		{
-			if (client.receivedStartGame && client.startGamePacket != null)
+			// this could be problematic if client receives a start game packet and overrides the member variable!
+			if (client.receivedStartGame && client.getStartGamePacket() != null)
 			{
+				ILStartGamePacket startGame = client.getStartGamePacket();
 				if (!client.loadedMap)
 				{
-					// TODO: load map and wait for game to start in the gameplay screen
-					ILStartGamePacket startGame = client.startGamePacket;
+					// load map and wait for game to start
 					screenTransition(m_screens.activeScreen(), GAMEPLAY_SCREEN);				
+				}
+				else if (m_tank == null && startGame.m_entityStates.size() > 0)
+				{
+					// for each tank, add if not already exists
+					Iterator<EntityState> iter = startGame.m_entityStates.iterator();
+					while (iter.hasNext())
+					{
+						EntityState es = iter.next();
+						addTank(es);
+					}
+					
+				}
+				else if (m_tank != null)
+				{
+					// TODO: tell server ready..?
+					if (startGame.m_bGo)
+						client.receivedGo = true;
 				}
 			}
 		}
@@ -595,6 +685,7 @@ public class IronLegends extends ScrollingScreenGame {
 		if (m_client != null)
 		{
 			// update tanks from entityStates
+			if (!isMultiPlayerMode())
 			{
 				// for each entityState, find appropriate entity and update
 				Iterator<EntityState> iter = entityStates.iterator();
@@ -641,6 +732,49 @@ public class IronLegends extends ScrollingScreenGame {
 
 		GameScreen activeGS = m_screens.getActiveScreen();
 		activeGS.update(deltaMs);		
+	}
+
+	private void addTank(ClientInfo c) {
+		Tank t = new Tank(this, c.team, c.team==0?Tank.Team.RED:Tank.Team.BLUE, c.id);
+		
+		// set position of tank to one of "bluespawn" locations/orientations
+		setSpawn(t, c.team==0?"redspawn":"bluespawn");
+		if (t.getEntityNumber() == playerClient.id)
+		{
+			m_tank = t;
+			m_gameProgress.setSelf(t);
+			
+		}
+
+		m_tankLayer.add(t);
+		m_entityLayer.add(t);		
+	}
+
+	private void addTank(EntityState es) {
+		// find tank if not exist, add
+		Tank t = findEntity(es.m_entityNumber);
+		if (t == null)
+		{
+			// add tank
+			ClientInfo c = getClientInfo(es.m_entityNumber);
+			
+			addTank(c);			
+		}
+		
+		t.clientUpdate(es);	
+	}
+
+	private ClientInfo getClientInfo(int entityNumber) {
+
+		Iterator<ClientInfo> itr = client.lobbyState.clients.iterator();
+		while (itr.hasNext())
+		{
+			ClientInfo c = itr.next();
+			if (c.id == entityNumber)
+				return c;
+		}
+		return null;
+
 	}
 
 	public Tank findEntity(int entityNumber) {
@@ -795,12 +929,18 @@ public class IronLegends extends ScrollingScreenGame {
 		return m_numAITanks;
 	}
 
+	/*
 	public void setMultiPlayerMode(boolean multiPlayerMode) {
 		this.multiPlayerMode = multiPlayerMode;
 	}
+	*/
 
 	public boolean isMultiPlayerMode() {
-		return multiPlayerMode;
+		if (client != null && client.receivedStartGame && client.getStartGamePacket() != null
+				&& !client.getStartGamePacket().m_bSinglePlayer)
+			return true;
+		return false;
+		//return multiPlayerMode;
 	}
 	
 	public void backgroundMusic(boolean play) {

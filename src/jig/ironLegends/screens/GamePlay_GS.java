@@ -41,7 +41,27 @@ public class GamePlay_GS extends GameScreen {
 
 	@Override
 	public void activate(int prevScreen) {
-		game.newGame();
+		//game.isMultiPlayerMode();
+		
+		if (game.client != null && game.client.getStartGamePacket() != null && 
+				!game.client.getStartGamePacket().m_bSinglePlayer)
+		{
+			String mapFile = null;
+			// will actually happen below!
+			game.client.loadedMap = true;
+			int i = game.client.getStartGamePacket().map.lastIndexOf("/");
+			String s = game.client.getStartGamePacket().map.substring(i+1);
+			
+			mapFile = "maps/" + s;
+			game.newGame(mapFile);
+			//game.resetGame();
+			//game.loadMap(mapFile);				
+		}
+		else
+		{
+			// for now this is single player logic
+			game.newGame("maps/mapitems.txt");
+		}
 	}
 
 	@Override
@@ -58,6 +78,11 @@ public class GamePlay_GS extends GameScreen {
 		// part of single player "start game" - based on map and user selections
 		// for multiplayer, tank creation all happens on the server as well, each player
 		// will have to be assigned a unique entityNumber
+		if (game.isMultiPlayerMode())
+		{
+			// actually have to wait until load tanks
+		}
+		else
 		{
 			// todo: read game data to create tanks?
 			game.m_tank = null;
@@ -299,6 +324,9 @@ public class GamePlay_GS extends GameScreen {
 	public int processCommands(KeyCommands keyCmds, Mouse mouse,
 			final long deltaMs) {
 		
+		if (game.m_tank == null)
+			return name();
+		
 		// command state may get modified per tank by client update
 		// for now just suck in the commands here
 		CommandState cs = new CommandState();
@@ -338,10 +366,18 @@ public class GamePlay_GS extends GameScreen {
 	@Override
 	public void update(long deltaMs) {
 		
-		Vector2D center = game.m_tank.getShapeCenter();
-		game.updateMapCenter(center.clamp(IronLegends.VISIBLE_BOUNDS));
+		boolean bMultiplayer = game.isMultiPlayerMode();
 		
-		if (game.m_levelProgress.isIntro()) {
+		boolean bIntro = game.m_levelProgress.isIntro();
+		if (bMultiplayer)
+		{
+			if (!game.client.getStartGamePacket().m_bGo)
+			{
+				bIntro = true;
+			}
+		}
+		
+		if (bIntro) {
 			game.m_levelProgress.update(deltaMs);
 		} else if (game.m_levelProgress.isExitActivated()) {
 			game.m_levelProgress.update(deltaMs);
@@ -349,6 +385,12 @@ public class GamePlay_GS extends GameScreen {
 			game.m_physicsEngine.applyLawsOfPhysics(deltaMs);
 		}
 		game.m_sfx.update(deltaMs);
+		
+		if (game.m_tank == null)
+			return;
+		
+		Vector2D center = game.m_tank.getShapeCenter();
+		game.updateMapCenter(center.clamp(IronLegends.VISIBLE_BOUNDS));
 		
 		// TODO: check tanks for death? then respawn (team) or adjust life (deathmatch)
 		// if deathmatch (ie single player for now?)

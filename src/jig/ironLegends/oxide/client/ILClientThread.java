@@ -51,7 +51,7 @@ public class ILClientThread implements Runnable {
 	public boolean loadedMap = false;
 	public boolean receivedGo = false;
 	
-	public ILStartGamePacket startGamePacket;
+	private ILStartGamePacket startGamePacket;
 	
 	private int tickrate;
 	private long lastTick = 0;
@@ -216,7 +216,7 @@ public class ILClientThread implements Runnable {
 				}
 			}
 		} else if (readPacket instanceof ILStartGamePacket) {
-			if (this.startGamePacket == null) this.startGamePacket = (ILStartGamePacket) readPacket;
+			if (this.startGamePacket == null) this.setStartGamePacket((ILStartGamePacket) readPacket);
 			else {
 				synchronized (this.startGamePacket) {
 					this.startGamePacket = (ILStartGamePacket) readPacket;
@@ -227,6 +227,10 @@ public class ILClientThread implements Runnable {
 		
 	}
 	
+	synchronized private void setStartGamePacket(ILStartGamePacket readPacket) {
+		this.startGamePacket = readPacket;
+	}
+
 	private void write() throws IOException {
 		if (this.tickExpired()) {
 			synchronized (this.outgoingData) {
@@ -250,6 +254,11 @@ public class ILClientThread implements Runnable {
 	
 	public void setConnectedToGame(boolean b) {
 		this.connectedToGame = b;
+	}
+
+	synchronized public ILStartGamePacket getStartGamePacket() {
+		// TODO synchronize access to set/get of this variable
+		return this.startGamePacket;
 	}
 	
 }
