@@ -160,7 +160,6 @@ public class ServerSelectScreen extends GameScreen {
 		
 		create_button.update(mouse, deltaMs);
 		if (create_button.wasLeftClicked()) {
-			this.game.client.setActive(false);
 			this.game.client.setLookingForServers(false);
 			
 			this.game.setMapName(this.game.m_availableMaps.get(0));
@@ -170,6 +169,14 @@ public class ServerSelectScreen extends GameScreen {
 			
 			this.game.createdServer = true;
 			this.game.server.setActive(true);
+			this.game.server.setAdvertise(true);
+			
+			try {
+				this.game.client.connectTo(this.game.client.myAddress);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			return IronLegends.LOBBY_SCREEN;
 		}
 		

@@ -208,6 +208,7 @@ public class LobbyScreen extends GameScreen {
 		bbutton.update(mouse, deltaMs);
 		if (bbutton.wasLeftClicked()) {
 			if (this.game.createdServer) this.game.createdServer = false;
+			this.game.client.disconnect();
 			return IronLegends.SERVER_SCREEN;
 		}
 		

@@ -32,6 +32,8 @@ import jig.ironLegends.oxide.sockets.ILAdvertisementSocket;
  * @author Travis Hall
  */
 public class ILServerThread implements Runnable {
+	private static final byte MAX_PLAYERS = 8;
+	
 	// The host:port combination to listen on
 	private InetAddress hostAddress;
 	
@@ -50,7 +52,6 @@ public class ILServerThread implements Runnable {
 	protected boolean lobby;
 	
 	private byte numberOfPlayers;
-	private byte maxPlayers;
 	private String serverName;
 	private String map;
 	private String version;
@@ -186,7 +187,7 @@ public class ILServerThread implements Runnable {
 	}
 	
 	private void updateAdvertisementPacket() {
-		this.advertPacket = ILPacketFactory.newAdvertisementPacket((int) this.packetID(), this.hostAddress.getHostAddress() + "\0", this.hostAddress.getHostAddress() + "\0", this.numberOfPlayers, this.maxPlayers, this.serverName, this.map, this.version);
+		this.advertPacket = ILPacketFactory.newAdvertisementPacket((int) this.packetID(), this.hostAddress.getHostAddress() + "\0", this.hostAddress.getHostAddress() + "\0", this.numberOfPlayers, MAX_PLAYERS, this.serverName, this.map, this.version);
 	}
 	
 	private void updateLobbyPacket() {
@@ -227,8 +228,11 @@ public class ILServerThread implements Runnable {
 			
 			ClientInfo c = this.clients.get(ep.getSenderAddress());
 			if (c == null) {
-				if (numberOfPlayers < maxPlayers) {
+				if (numberOfPlayers < MAX_PLAYERS) {
 					c = new ClientInfo(this.numberOfPlayers++, ep.getSenderAddress(), ep.name, ep.team);
+					synchronized(this.clients) {
+						this.clients.put(ep.getSenderAddress(), c);
+					}
 				}
 			} else {
 				synchronized(c) {
