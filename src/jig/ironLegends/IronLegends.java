@@ -45,7 +45,6 @@ import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.client.ILClientThread;
-import jig.ironLegends.oxide.console.ILConsoleCommandHandler;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
