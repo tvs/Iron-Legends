@@ -107,6 +107,14 @@
 	
 		<!-- @group Buttons -->
 		<frameset>
+			<name>server-name-button</name>
+			<top>1047</top>
+			<left>1323</left>
+			<width>295</width>
+			<height>38</height>
+		</frameset>
+		
+		<frameset>
 			<name>connect-button</name>
 			<top>513</top>
 			<left>1600</left>

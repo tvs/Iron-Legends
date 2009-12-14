@@ -114,11 +114,10 @@ public class LobbyScreen extends GameScreen {
 		oShader.render(rc);
 		oText.render(rc);
 		
-		
+		// Widgets that only belong to the server
 		if (this.game.createdServer) {
 			mLButton.render(rc);
 			mRButton.render(rc);
-			
 			sButton.render(rc);
 		}
 		
@@ -138,6 +137,7 @@ public class LobbyScreen extends GameScreen {
 				}
 			}
 		} else {
+			// Server name box widget
 			this.serverNameBox.render(rc);
 
 			/*

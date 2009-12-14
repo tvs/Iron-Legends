@@ -126,7 +126,7 @@ public class ServerSelectScreen extends GameScreen {
 					ILServerAdvertisementPacket p = this.game.client.servers.get(sa);
 					
 					if(!this.servers.containsKey(sa)) {
-						ServerButton b = new ServerButton(this.buttonID++, 0, 0, IronLegends.SCREEN_SPRITE_SHEET + "#csshader", sa);
+						ServerButton b = new ServerButton(this.buttonID++, 0, 0, IronLegends.SCREEN_SPRITE_SHEET + "#server-name-button", sa);
 						b.setFont(this.fonts.textFont);
 						b.setText(p.serverName);
 						
