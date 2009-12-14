@@ -269,7 +269,6 @@ public class IronLegends extends ScrollingScreenGame {
 	}
 
 	public void loadLevel(String mapFile) {
-		//loadMap("maps/mapitems.txt");
 		loadMap(mapFile);
 
 		populateGameLayers();
@@ -470,8 +469,12 @@ public class IronLegends extends ScrollingScreenGame {
 
 	public void newGame() {
 		m_bGameOver = false;
-		m_gameProgress.reset();
-		String mapFile = "maps/mapitems.txt";
+		m_gameProgress.reset();		
+	
+		// pick random map
+		String mapFile = m_availableMaps.get((int) Math.random() * m_availableMaps.size());
+//		String mapFile = "maps/grunge.txt";
+//		String mapFile = "maps/helljungle.txt";
 		if (client != null)
 		{
 			if (client.startGamePacket != null)
