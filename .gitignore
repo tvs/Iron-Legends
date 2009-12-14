@@ -5,6 +5,7 @@ design-doc/*
 tmp/*
 bin/*
 log/*.log
+metrics/*
 export/*
 
 # Archive files
