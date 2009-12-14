@@ -54,6 +54,7 @@ public class ILLobbyPacket extends ILPacket {
 			String ip = this.contentData.getString();
 			String name = this.contentData.getString();
 			byte team = this.contentData.getByte();
+
 			this.clients.add(new ClientInfo(id, ip, name, team));
 		}
 		
@@ -72,7 +73,9 @@ public class ILLobbyPacket extends ILPacket {
 		
 		for (ClientInfo c : clients) {
 			dos.write(c.id);
+			dos.writeBytes(c.clientIP + "\0");
 			dos.writeBytes((c.name != null) ? c.name : "Nil"); //c.name
+			dos.writeByte(c.team);
 		}
 		
 		dos.flush();
