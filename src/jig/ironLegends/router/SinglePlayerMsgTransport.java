@@ -1,6 +1,7 @@
 package jig.ironLegends.router;
 
 import jig.ironLegends.messages.Message;
+import jig.ironLegends.oxide.packets.ILPacket;
 
 public class SinglePlayerMsgTransport implements IMsgTransport {
 
@@ -14,12 +15,12 @@ public class SinglePlayerMsgTransport implements IMsgTransport {
 	}
 	
 	@Override
-	public void send(Message msg) {
+	public void send(ILPacket msg) {
 		m_txDest.add(msg);
 	}
 	@Override
 	public void send(MsgQueue messages) {
-		Message msg = null;
+		ILPacket msg = null;
 		msg = messages.poll();
 		while (msg != null)
 		{
@@ -36,7 +37,7 @@ public class SinglePlayerMsgTransport implements IMsgTransport {
 	}
 
 	@Override
-	public Message nextRxMsg() {
+	public ILPacket nextRxMsg() {
 		return m_rxSource.poll();
 	}
 

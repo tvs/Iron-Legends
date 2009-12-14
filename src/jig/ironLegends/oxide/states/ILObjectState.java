@@ -17,7 +17,7 @@ public class ILObjectState {
 	
 	public byte type;
 	public int id;
-	public int health;
+	public int health; // wall, base, crate become inactive when health = 0
 	public Vector2D position;
 	
 	public ILObjectState(byte type, int id, int health, Vector2D position) {

@@ -23,6 +23,7 @@ public class ClientInfo {
 	public static byte BLU_TEAM = 0x01;
 	
 	public int id;
+	public String clientIP;
 	public String name;
 	public byte team;
 	public SocketChannel channel;
@@ -35,6 +36,7 @@ public class ClientInfo {
 	
 	public int lastPacketID = 0;
 	
+	@Deprecated
 	public ClientInfo(int id, SocketChannel channel) {
 		this.id = id;
 		this.channel = channel;
@@ -49,20 +51,22 @@ public class ClientInfo {
 	 * @param name The player's name
 	 * @param team The player's team selection
 	 */
-	public ClientInfo(int id, String name, byte team) {
+	public ClientInfo(int id, String clientIP, String name, byte team) {
 		this.id = id;
+		this.clientIP = clientIP;
 		this.name = name;
 		this.team = team;
 		this.channel = null;
 	}
 	
-	public int read() throws IOException {
+	@Deprecated
+	public int read(String id) throws IOException {
 		ByteBuffer readBuffer = ByteBuffer.allocate(ILPacket.MAX_PACKET_SIZE);
 		int numread = this.channel.read(readBuffer);
 		readBuffer.flip();
 		
 		try {
-			ILPacket packet = ILPacketFactory.getPacketFromData(readBuffer);
+			ILPacket packet = ILPacketFactory.getPacketFromData(readBuffer, id);
 			
 			if (packet.isSplit()) {
 				PacketList list = splitPackets.get(packet.getPacketID());
@@ -77,7 +81,7 @@ public class ClientInfo {
 				if (list.count == packet.getPacketCount()) {
 					ILPacket completedPacket;
 					try {
-						completedPacket = ILPacketFactory.reassemblePacket(list);
+						completedPacket = ILPacketFactory.reassemblePacket(list, id);
 						this.addPacketToPendingData(completedPacket);
 						// Remove it from the map
 						splitPackets.remove(packet.getPacketID());

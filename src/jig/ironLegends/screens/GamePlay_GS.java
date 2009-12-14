@@ -59,6 +59,7 @@ public class GamePlay_GS extends GameScreen {
 		// for multiplayer, tank creation all happens on the server as well, each player
 		// will have to be assigned a unique entityNumber
 		{
+			// todo: read game data to create tanks?
 			game.m_tank = null;
 			// Main player
 			int entityNumber = 0;

@@ -10,7 +10,7 @@ import jig.ironLegends.oxide.util.PacketBuffer;
  * @author Travis Hall
  */
 public class ILLobbyEventPacket extends ILPacket {
-
+	
 	public String name;
 	public byte team;
 
