@@ -156,7 +156,7 @@ public class IronLegends extends ScrollingScreenGame {
 	public Thread sThread;
 	public boolean createdServer = false;
 	public boolean multiPlayerMode = false;
-	public int maxActiveTanks = 1;
+	public int maxActiveTanks = 4;
 	
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
