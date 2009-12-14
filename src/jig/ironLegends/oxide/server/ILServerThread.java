@@ -35,7 +35,7 @@ public class ILServerThread implements Runnable {
 	private static final byte MAX_PLAYERS = 8;
 	
 	// The host:port combination to listen on
-	private InetAddress hostAddress;
+	public InetAddress hostAddress;
 	
 	private ILServerAdvertisementPacket advertPacket;
 	private ILAdvertisementSocket advertSocket;
@@ -61,7 +61,7 @@ public class ILServerThread implements Runnable {
 	private long lastTick = 0;
 	private long time = 0;
 	
-	public long packetID = 0;
+	public int packetID = 0;
 	
 	public ILServerThread(int tickrate) 
 			throws IOException 
@@ -188,7 +188,7 @@ public class ILServerThread implements Runnable {
 	 * if we run out of numbers)
 	 * @return The packet number to be sent
 	 */
-	public long packetID() {
+	public int packetID() {
 		if (this.packetID == Integer.MAX_VALUE) this.packetID = 0;
 		return this.packetID++;
 	}
@@ -287,6 +287,13 @@ public class ILServerThread implements Runnable {
 	
 	private void sendLobbyState() throws IOException {
 		this.lobbySocket.send(this.lobbyPacket);
+	}
+
+	/**
+	 * @return
+	 */
+	public String getMapName() {
+		return this.map;
 	}
 	
 }

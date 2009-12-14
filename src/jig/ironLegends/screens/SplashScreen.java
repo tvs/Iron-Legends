@@ -12,8 +12,6 @@ import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
-import jig.ironLegends.messages.SPStartGame;
-import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.router.ClientContext;
@@ -128,7 +126,8 @@ public class SplashScreen extends GameScreen {
 				ILStartGamePacket startGamePacket = ILPacketFactory.newStartGamePacket(packetId
 						//, m_game.client.hostAddress.getHostAddress()+"\0"
 						, "garbage" + "\0"
-						, m_game.client.myAddress.getHostAddress() + "\0");
+						, m_game.client.myAddress.getHostAddress() + "\0"
+						, m_game.m_mapName);
 				
 				startGamePacket.map = sSelectedMap;
 				startGamePacket.m_bSinglePlayer = true;

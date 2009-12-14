@@ -41,6 +41,8 @@ public class LobbyScreen extends GameScreen {
 	protected RolloverButton tLButton;
 	protected RolloverButton tRButton;
 	
+	protected RolloverButton sButton;
+	
 	protected TextEditBox serverNameBox;
 	
 	private int mapSelected = 0;
@@ -57,7 +59,7 @@ public class LobbyScreen extends GameScreen {
 		this.fonts = fonts;
 		this.game = game;
 		
-		this.serverNameBox = new TextEditBox(this.fonts.textFont, -1, 574, 268, IronLegends.SCREEN_SPRITE_SHEET + "#csshader");
+		this.serverNameBox = new TextEditBox(this.fonts.textFont, -1, 574, 271, IronLegends.SCREEN_SPRITE_SHEET + "#server-entry-box");
 		this.serverNameBox.setText("Server");
 		
 		bg = new Sprite(IronLegends.SCREEN_SPRITE_SHEET + "#background");
@@ -87,6 +89,9 @@ public class LobbyScreen extends GameScreen {
 		bbutton = new RolloverButton(-3, 0, 535,
 				IronLegends.SCREEN_SPRITE_SHEET + "#back-button");
 		
+		sButton = new RolloverButton(-8, 614, 535,
+				IronLegends.SCREEN_SPRITE_SHEET + "#start-button");
+		
 		mLButton = new RolloverButton(-4, 490, 118, IronLegends.SCREEN_SPRITE_SHEET + "#left-arrow");
 		mRButton = new RolloverButton(-5, 690, 118, IronLegends.SCREEN_SPRITE_SHEET + "#right-arrow");
 		
@@ -112,6 +117,8 @@ public class LobbyScreen extends GameScreen {
 		if (this.game.createdServer) {
 			mLButton.render(rc);
 			mRButton.render(rc);
+			
+			sButton.render(rc);
 		}
 		
 		TextWriter text = new TextWriter(rc);
@@ -120,7 +127,7 @@ public class LobbyScreen extends GameScreen {
 		text.setLineStart(498);
 		
 		text.setFont(fonts.textFont);
-		text.print("Server Name: ");
+		text.print("Server Name  ");
 		
 		if (!this.game.createdServer) {
 			if (this.game.client.lobbyState != null) {
@@ -141,7 +148,7 @@ public class LobbyScreen extends GameScreen {
 			
 		}
 		
-		
+		// Getting lobby status
 		if (this.game.client.lobbyState != null) {
 			synchronized(this.game.client.lobbyState) {
 				if (this.game.client.lobbyState.clients != null) {
@@ -150,16 +157,7 @@ public class LobbyScreen extends GameScreen {
 					int ypos = 80;
 					while(itr.hasNext()) {
 						ClientInfo c = itr.next();
-						
-//						text.setY(ypos);
-//						text.setLineStart(110);
-//						text.print(c.name);
 						text.print(c.name, 110, ypos);
-						// Using the other method of manually setting the spacing breaks everything
-						// who the hell knows why
-						// Setline doesn't seem to work here -- spaced it out manually
-//						text.setLineStart(300);
-//						text.print("              Team:   ");
 						
 						if (c.name.compareTo(this.game.m_playerInfo.getName()) == 0) {
 							if (this.playerClient == null)
@@ -172,32 +170,30 @@ public class LobbyScreen extends GameScreen {
 							tRButton.render(rc);
 						}
 						
-						text.print("Team: ", 270, ypos);
-//						text.setLineStart(315);
+						text.print("Team  ", 270, ypos);
 						String txt = "NIL";
 						if (c.team == ClientInfo.RED_TEAM) {
 							txt = "RED";
 						} else if (c.team == ClientInfo.BLU_TEAM) {
 							txt = "BLU";
 						}
-//						text.println(txt);
 						text.print(txt, 315, ypos);
 						
 						ypos += VERT_OFFSET;
 					}
 				}
-				
-//				text.setY(120);
-//				text.setLineStart(580);
-//				text.println(this.game.client.lobbyState.map);
-				text.print(this.game.client.lobbyState.map, 580, 120);	
 			}
 		}
 		
+		// Server/Client specific printing
 		if (this.game.createdServer) {
 			int ind = this.game.getMapName().lastIndexOf('/');
 			int fin = this.game.getMapName().length();
 			text.print(this.game.getMapName().substring(ind+1, fin - 4), 580, 120);
+		} else {
+			int ind = this.game.client.lobbyState.map.lastIndexOf('/');
+			int fin = this.game.client.lobbyState.map.length();
+			text.print(this.game.client.lobbyState.map.substring(ind+1, fin-4), 580, 120);
 		}
 		
 		
@@ -245,6 +241,15 @@ public class LobbyScreen extends GameScreen {
 			}
 			
 			this.game.server.setMapName(this.game.getMapName());
+			
+			this.sButton.update(mouse, deltaMs);
+			if (this.sButton.wasLeftClicked()) {
+				this.game.server.send(ILPacketFactory.newStartGamePacket(this.game.server.packetID()
+						, this.game.server.hostAddress.getHostAddress() + "\0"
+						, this.game.server.hostAddress.getHostAddress() + "\0"
+						, this.game.server.getMapName() + "\0"));
+			}
+			
 		}
 		
 		try {
@@ -266,6 +271,12 @@ public class LobbyScreen extends GameScreen {
 			}
 		} catch (IOException e) {
 			Logger.getLogger("global").warning(e.toString());
+		}
+		
+		// If the client has picked up a "start game" message -- we dump it into the m_client queue?
+		// TODO: get rid of the m_client queue
+		if (this.game.client.receivedStartGame) {
+			this.game.m_client.send(this.game.client.startGamePacket);
 		}
 		
 		return name();		

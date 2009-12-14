@@ -209,7 +209,7 @@ public class ILPacketFactory {
 	 * @param packetID
 	 * @return
 	 */
-	public static ILStartGamePacket newStartGamePacket(int packetID, String identifier, String senderID) {
+	public static ILStartGamePacket newStartGamePacket(int packetID, String identifier, String senderID, String map) {
 		byte[] protocolData = null;
 		try {
 			protocolData = getProtocolData(packetID, identifier, senderID);
@@ -218,7 +218,7 @@ public class ILPacketFactory {
 			return null;
 		}
 		
-		return new ILStartGamePacket(protocolData);
+		return new ILStartGamePacket(protocolData, map);
 	}
 	
 	/**

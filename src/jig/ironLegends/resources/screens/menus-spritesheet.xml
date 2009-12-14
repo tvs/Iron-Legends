@@ -144,6 +144,17 @@
 		<width>223</width>
 		<height>142</height>
 	</frameset>
+		
+		<!-- @group Buttons -->
+		<frameset>
+			<name>start-button</name>
+			<top>441</top>
+			<left>1600</left>
+			<height>36</height>
+			<width>186</width>
+			<rows>2</rows>
+		</frameset>
+		<!-- @end Buttons -->
 	<!-- @end Server Lobby -->
 
 	<!-- @group Text -->
@@ -215,6 +226,14 @@
 		<width>7</width>
 		<height>8</height>
 		<rows>2</rows>
+	</frameset>
+	
+	<frameset>
+		<name>server-entry-box</name>
+		<top>657</top>
+		<left>1600</left>
+		<width>128</width>
+		<height>5</height>
 	</frameset>
 	<!-- @end Widgets -->
 	

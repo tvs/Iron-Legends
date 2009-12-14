@@ -729,4 +729,5 @@ public class IronLegends extends ScrollingScreenGame {
 	public boolean isMultiPlayerMode() {
 		return multiPlayerMode;
 	}
+	
 }

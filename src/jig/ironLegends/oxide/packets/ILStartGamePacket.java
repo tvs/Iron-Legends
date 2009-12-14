@@ -44,9 +44,9 @@ public class ILStartGamePacket extends ILPacket {
 	 * @param protocolData
 	 * @param map
 	 */
-	protected ILStartGamePacket(byte[] protocolData) {
+	protected ILStartGamePacket(byte[] protocolData, String map) {
 		super(ILPacket.IL_START_GAME_HEADER, protocolData);
-		this.map = null;
+		this.map = map;
 		this.m_bSinglePlayer = true;
 		this.m_playerDataCol = new Vector<PlayerData>();
 		m_countPlayers = 0;
