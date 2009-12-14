@@ -318,7 +318,7 @@ public class Tank extends MultiSpriteBody {
 				m_steering.setTarget(target);
 				if (dist <= 2 * bulletRange) { // chase
 					m_steering.setBehavior(SteeringBehavior.Behavior.SEEK);
-					m_steering.setTargetBound(bulletRange);					
+					m_steering.setTargetBound(bulletRange);
 				} else {
 					m_steering.setBehavior(SteeringBehavior.Behavior.ARIVE);
 					m_steering.setTargetBound(1.75 * bulletRange);
@@ -643,7 +643,7 @@ public class Tank extends MultiSpriteBody {
 		m_steering.setMaxSpeed(SPEED);
 
 		// Obstacle Avoidance
-		m_steering.setObstacleAvoidance(false); // disabling now - maybe need to remove AI tanks from collision
+		m_steering.setObstacleAvoidance(true); // disabling now - maybe need to remove AI tanks from collision
 		m_steering.setAvoidDistance(150.0);		
 	}
 	
