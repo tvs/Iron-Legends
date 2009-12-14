@@ -143,8 +143,6 @@ public class MapLoader
 			}
 		}
 		
-//		String sMapDevJarLocation = sInstallDir + "\\bin\\jig\\ironLegends\\maps";
-//		String sMapExtLocation = sInstallDir + "\\maps";
 		String sMapDevJarLocation = sInstallDir + "/bin/jig/ironLegends/maps";
 		String sMapExtLocation = sInstallDir + "/maps";
 		

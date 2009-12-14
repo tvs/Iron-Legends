@@ -45,6 +45,7 @@ import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.oxide.client.ILClientThread;
 import jig.ironLegends.oxide.packets.ILPacket;
+import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.oxide.server.ILServerThread;
 import jig.ironLegends.router.ClientContext;
@@ -474,6 +475,19 @@ public class IronLegends extends ScrollingScreenGame {
 		String mapFile = m_availableMaps.get((int) Math.random() * m_availableMaps.size());
 //		String mapFile = "maps/grunge.txt";
 //		String mapFile = "maps/helljungle.txt";
+		if (client != null)
+		{
+			if (client.startGamePacket != null)
+			{
+				// will actuall happen below!
+				client.loadedMap = true;
+				int i = client.startGamePacket.map.lastIndexOf("/");
+				String s = client.startGamePacket.map.substring(i+1);
+				
+				mapFile = "maps/" + s;
+			}
+		}
+				
 		loadLevel(mapFile);		
 	}
 
@@ -505,6 +519,24 @@ public class IronLegends extends ScrollingScreenGame {
 			// send msgs to server
 			m_clientMsgTransport.send(m_client.getTxQueue());
 		}
+		if (server != null)
+		{
+			/*
+			//TODO: during ironlegends update, keep track of how many players are sending client updates
+			// if all clients are sending client updates, send start game with go = true
+			// client update could be modified to acknowledge it received go and then
+			// when server receives client update with go set from all clients
+			// then the server can stop sending go.
+			ILStartGamePacket msg = ILPacketFactory.newStartGamePacket(server.packetID()
+					, server.hostAddress.getHostAddress() + "\0"
+					, server.hostAddress.getHostAddress() + "\0"
+					, server.getMapName() + "\0");
+			msg.m_bGo = false;
+			msg.m_bSinglePlayer = false;
+			server.send(msg);
+			*/
+		}
+		
 		if (m_server != null)
 		{
 			//this.client.send(event)
@@ -538,6 +570,19 @@ public class IronLegends extends ScrollingScreenGame {
 					
 					t.serverPopulate(es);
 					entityStates.add(es);
+				}
+			}
+		}
+
+		if (client != null)
+		{
+			if (client.receivedStartGame && client.startGamePacket != null)
+			{
+				if (!client.loadedMap)
+				{
+					// TODO: load map and wait for game to start in the gameplay screen
+					ILStartGamePacket startGame = client.startGamePacket;
+					screenTransition(m_screens.activeScreen(), GAMEPLAY_SCREEN);				
 				}
 			}
 		}

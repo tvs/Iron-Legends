@@ -15,6 +15,7 @@ public class ILStartGamePacket extends ILPacket {
 	public String map;
 	public int m_countPlayers;
 	public boolean m_bSinglePlayer;
+	public boolean m_bGo; // if !m_bGo, then clients should just load map and sent client updates, but keep the "loading" text
 	
 	class PlayerData
 	{
@@ -47,6 +48,7 @@ public class ILStartGamePacket extends ILPacket {
 		super(ILPacket.IL_START_GAME_HEADER, protocolData);
 		this.map = map;
 		this.m_bSinglePlayer = true;
+		this.m_bGo = false;
 		this.m_playerDataCol = new Vector<PlayerData>();
 		m_countPlayers = 0;
 		//this.contentData = null;
@@ -80,6 +82,8 @@ public class ILStartGamePacket extends ILPacket {
 	protected void pack(DataOutputStream dos) throws IOException
 	{
 		dos.writeBytes(map);
+		dos.writeByte(m_bSinglePlayer?1:0);
+		dos.writeByte(m_bGo?1:0);
 		dos.writeByte(this.m_playerDataCol.size());
 
 		for (PlayerData o : this.m_playerDataCol) {
@@ -90,6 +94,10 @@ public class ILStartGamePacket extends ILPacket {
 	
 	private void unpack(PacketBuffer contentData) {
 		map = contentData.getString();
+		
+		m_bSinglePlayer = contentData.getByte()==1?true:false;
+		m_bGo = contentData.getByte()==1?true:false;
+
 		m_countPlayers = contentData.getByte();
 		
 		for (int i = 0; i < m_countPlayers; ++i)
