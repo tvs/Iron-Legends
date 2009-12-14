@@ -497,7 +497,7 @@ public class IronLegends extends ScrollingScreenGame {
 		if (!isMultiPlayerMode())
 		{
 			// pick random map
-			mapFile = m_availableMaps.get((int) Math.random() * m_availableMaps.size());
+			mapFile = m_availableMaps.get((int) (Math.random() * m_availableMaps.size()));
 			int bx = mapFile.indexOf("maps/");
 			if (bx > 0) {
 				mapFile = mapFile.substring(bx);

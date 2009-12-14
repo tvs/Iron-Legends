@@ -604,6 +604,7 @@ public class SteeringBehavior {
 
 	public void setWanderTheta(double wanderTheta) {
 		this.wanderTheta = wanderTheta;
+		target = Vector2D.getUnitLengthVector(wanderTheta).scale(wanderRadius);
 	}
 
 	public Vector2D getSteerForce() {
