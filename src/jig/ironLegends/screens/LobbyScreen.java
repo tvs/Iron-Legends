@@ -162,7 +162,10 @@ public class LobbyScreen extends GameScreen {
 //						text.print("              Team:   ");
 						
 						if (c.name.compareTo(this.game.m_playerInfo.getName()) == 0) {
-							this.playerClient = c;
+							if (this.playerClient == null)
+							{
+								this.playerClient = c;
+							}
 							tLButton.setPosition(new Vector2D(305, ypos));
 							tLButton.render(rc);
 							tRButton.setPosition(new Vector2D(350, ypos));
@@ -246,14 +249,14 @@ public class LobbyScreen extends GameScreen {
 					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
 						this.game.client.hostAddress.getHostAddress() + "\0",
 						this.game.client.myAddress.getHostAddress() + "\0",
- 						this.game.m_playerInfo.getName(),
+ 						this.game.m_playerInfo.getName() + "\0",
 						ClientInfo.RED_TEAM));
 				} else {
 					// Send our current state
 					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
 							this.game.client.hostAddress.getHostAddress() + "\0",
 							this.game.client.myAddress.getHostAddress() + "\0",
-							this.playerClient.name, this.playerClient.team));
+							this.playerClient.name + "\0", this.playerClient.team));
 				}
 			}
 		} catch (IOException e) {
