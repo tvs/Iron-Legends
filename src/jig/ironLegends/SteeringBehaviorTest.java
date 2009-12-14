@@ -32,6 +32,7 @@ public class SteeringBehaviorTest extends StaticScreenGame {
 	
 	public SteeringBehaviorTest() {
 		super(WORLD_WIDTH, WORLD_HEIGHT, false);
+		gameframe.setTitle("Steering Behavior");
 		PaintableCanvas.loadDefaultFrames("player", 25, 15, 1, JIGSHAPE.EAST,
 				Color.blue);
 		PaintableCanvas.loadDefaultFrames("obstacle", 25, 25, 1, JIGSHAPE.RECTANGLE,
@@ -57,6 +58,7 @@ public class SteeringBehaviorTest extends StaticScreenGame {
 		sb.setWorldbounds(new Rectangle(WORLD_WIDTH, WORLD_HEIGHT));
 		sb.setObstacles(obstacleLayer);
 		sb.setAvoidDistance(50.0);
+		sb.slowVelReset = true;
 /*
 		 sb = new SteeringBehavior(e, SteeringBehavior.Behavior.FLEE);
 		 sb.setTargetBound(100);

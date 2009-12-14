@@ -101,10 +101,11 @@ public class IronLegendsMapLoadSink implements IMapLoadSink {
 			m_mapItemSeq++;
 			m_ironLegends.m_tankBulletObstacleLayer.add(ob);
 		}
-		if (ob != null)
+		
+		if (ob != null) {
 			m_ironLegends.m_obstacles.put(ob.getMapItemSeq(), ob);
-		
-		
+			m_ironLegends.m_entityLayer.add(ob);
+		}		
 	}
 
 }

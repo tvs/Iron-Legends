@@ -326,6 +326,8 @@ public class Tank extends MultiSpriteBody {
 			}
 		}
 
+//		System.out.printf("Entites: %s\n", game.m_entityLayer.size());
+		m_steering.setObstacles(game.m_entityLayer); // for obstacle avoidance
 		m_steering.apply(deltaMs);
 		Vector2D translateVec = getVelocity();
 		if (!translateVec.epsilonEquals(Vector2D.ZERO, 0.01)) { // moving
@@ -634,6 +636,10 @@ public class Tank extends MultiSpriteBody {
 		m_steering = new SteeringBehavior(this);
 		m_steering.setWorldbounds(game.m_mapCalc.getWorldBounds());
 		m_steering.setMaxSpeed(SPEED);
+
+		// Obstacle Avoidance
+		m_steering.setObstacleAvoidance(false); // disabling now - maybe need to remove AI tanks from collision
+		m_steering.setAvoidDistance(150.0);		
 	}
 	
 	public void setSteering(SteeringBehavior m_steering) {

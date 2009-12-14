@@ -72,7 +72,7 @@ public class GamePlay_GS extends GameScreen {
 			game.m_entityLayer.add(game.m_tank);
 			
 			// Add initial 4 AI Tank
-			while (game.m_tankLayer.size() < 5) {
+			while (game.m_tankLayer.size() < game.maxActiveTanks + 1) {
 				game.addAITank(entityNumber++);
 			}
 		}

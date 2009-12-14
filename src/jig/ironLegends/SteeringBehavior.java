@@ -3,7 +3,6 @@ package jig.ironLegends;
 import java.awt.Rectangle;
 import java.util.Random;
 
-import jig.engine.physics.AbstractBodyLayer;
 import jig.engine.physics.Body;
 import jig.engine.physics.BodyLayer;
 import jig.engine.util.Vector2D;
@@ -89,7 +88,23 @@ public class SteeringBehavior {
 	 * Avoid obstacles
 	 */
 	protected boolean obstacleAvoidance;
-
+	/**
+	 * Reset Velocity slowly
+	 */
+	protected boolean slowVelReset = true;
+	protected boolean resetingVelcotiy = false;
+	protected double resetVelStartAngle = 0.0;
+	protected double resetVelEndAngle = 0.0;
+	
+	/**
+	 * use Temp target
+	 */
+	protected boolean useTempTarget = false;	
+	protected Vector2D tempTarget = Vector2D.ZERO;
+	protected Vector2D tempLastPos = Vector2D.ZERO;
+	private Vector2D _lastpos = Vector2D.ZERO;
+	private int tempTargetCounter = 0;
+	
 	/**
 	 * Steering Behavior
 	 * 
@@ -105,10 +120,10 @@ public class SteeringBehavior {
 		maxSpeed = 100.0;
 		maxSteerForce = 100.0;
 		slowingDistance = 10.0;
-		avoidDistance = 25.0;
+		avoidDistance = 100.0;
 		obstacleAvoidance = true;
 		worldbounds = IronLegends.WORLD_BOUNDS;
-		obstacles = new AbstractBodyLayer.NoUpdate<Body>();
+		obstacles = null;
 		rand = new Random();
 	}
 
@@ -215,13 +230,18 @@ public class SteeringBehavior {
 
 		// Calculate the new location to steer towards on the wander circle
 		// Start with velocity
+		int tries = 4;
 		do {
 			target = getWanderTarget(agent.getVelocity());
-			if (!clampToWorld(target, worldbounds)) {
+			if (!clampToWorld(target, worldbounds, false)) {
 				break;
 			}
-		} while (true);
+			tries--;
+		} while (tries > 0);
 
+		if (tries == 0) { // force fully change the direction
+			clampToWorld(target, worldbounds, true);
+		}
 		// Steer towards the target
 		steer(false);
 	}
@@ -262,6 +282,7 @@ public class SteeringBehavior {
 		Vector2D steervector = Vector2D.ZERO;
 		Vector2D dv = agent.getCenterPosition().difference(target);
 		double d = Math.sqrt(dv.magnitude2()); // distance to travel
+//		System.out.printf("current: %s, running away: %s d: %.2f\n", agent.getCenterPosition(), target, d);
 		if (d < targetBound + 0.1) {
 			dv = new Vector2D(dv.getX() / d, dv.getY() / d); // Unit Vector
 			dv = dv.scale(getMaxSpeed());
@@ -279,51 +300,95 @@ public class SteeringBehavior {
 	 * @param deltaMs
 	 */
 	public void apply(long deltaMs) {
-		switch (behavior) {
-		case WANDER:
-			wander();
-			break;
-
-		case SEEK:
-			steer(false);
-			break;
-
-		case ARIVE:
-			steer(true);
-			break;
-
-		case FLEE:
-			flee();
-			break;
-
-		default:
-			return;
+		if (resetingVelcotiy) { // gradually reset the velocity			
+			double angleDiff = Math.abs(resetVelEndAngle - resetVelStartAngle);
+			if (angleDiff <= 0.001) {
+				resetingVelcotiy = false;
+			} else {
+				double newa = ((resetVelEndAngle > resetVelStartAngle ? 1 : -1) * Math.toRadians(10)); // changing angle 10 degree at a time
+				newa = resetVelStartAngle + (Math.abs(newa) > angleDiff ? angleDiff * (newa > 0 ? 1 : -1) : newa);				
+				agent.setVelocity(Vector2D.getUnitLengthVector(newa).scale((getMaxSpeed()/2) * deltaMs / 1000.0));
+				wanderTheta = newa;
+				resetVelStartAngle = newa;				
+				return;
+			}
 		}
 
-		if (obstacleAvoidance) {
-			Vector2D avoid = avoidObstacle();
-			steerForce = steerForce.translate(avoid); // add forces
+		if (useTempTarget) { // was stuck so goto random target
+			target = tempTarget;			
+			tempTargetCounter++;
+			if (tempLastPos.distance2(agent.getCenterPosition()) > 100 * 100) {
+				useTempTarget = false;
+				tempTargetCounter = 0;				
+			} else if (tempTargetCounter > 500) {
+				useTempTarget = false;
+				tempTargetCounter = 0;
+			}
+			
+			flee();
+		} else {		
+			switch (behavior) {
+			case WANDER:
+				wander();
+				break;
+	
+			case SEEK:
+				steer(false);
+				break;
+	
+			case ARIVE:
+				steer(true);
+				break;
+	
+			case FLEE:
+				flee();
+				break;
+	
+			default:
+				return;
+			}
 		}
 
 		// Set Velocity
 		Vector2D vel = agent.getVelocity();
 		vel = vel.translate(steerForce);
 		vel = limitVector(vel, getMaxSpeed());
-		vel = vel.scale(deltaMs / 1000.0);
-		agent.setVelocity(vel);
+		vel = vel.scale(deltaMs / 1000.0);		
+		agent.setVelocity(vel);		
 
-		if (obstacleAvoidance) { // check for potential obstacle collision 
-			Vector2D avoid = avoidObstacle();
-			if (!avoid.epsilonEquals(Vector2D.ZERO, 0.001)) {
-				vel = vel.translate(avoid);
-				vel = limitVector(vel, getMaxSpeed());
-				vel = vel.scale(deltaMs / 1000.0);
-				resetVelocity(vel);
+		steerForce = Vector2D.ZERO; // reset the force to zero
+		
+		if (!vel.epsilonEquals(Vector2D.ZERO, 0.001)) { // Only need to check if agent is moving
+			if (behavior != Behavior.WANDER) { // clamp future position to world
+				clampToWorld(agent.getCenterPosition().translate(vel), worldbounds, true);
+			}
+			
+			vel = agent.getVelocity();
+/*
+			Vector2D futurePos = agent.getCenterPosition().translate(vel);
+			if (behavior != Behavior.WANDER && !useTempTarget && futurePos.epsilonEquals(_lastpos, 0.1)) { // stuck
+				//vel = getRandomVector(getMaxSpeed() * deltaMs / 1000.0);
+//				vel = new Vector2D(700, 700).unitVector().scale((getMaxSpeed() * deltaMs / 1000.0));
+//				resetVelocity(vel, false);
+				useTempTarget = true;
+				tempLastPos = agent.getCenterPosition();
+				tempTarget = agent.getCenterPosition().translate(new Vector2D(0.2, 0.2));//vel.unitVector().scale(targetBound).translate(agent.getCenterPosition()); // random target
+				System.out.printf("Target: %s, tempTarget: %s\n", target, tempTarget);				
+			} 
+*/
+			
+			if (obstacleAvoidance && !useTempTarget) { // check for potential obstacle collision				
+				Vector2D avoid = avoidObstacle();
+				if (!avoid.epsilonEquals(Vector2D.ZERO, 0.001)) {				
+					vel = vel.translate(avoid);
+					vel = limitVector(vel, getMaxSpeed());
+					vel = vel.scale(deltaMs / 1000.0);
+					resetVelocity(vel, false);
+				}
 			}
 		}
-
-		// System.out.printf("Steering: %s Velocity: %s\n", steerForce, vel);
-		steerForce = Vector2D.ZERO; // reset the force to zero
+		
+		_lastpos = agent.getCenterPosition().translate(vel);
 	}
 
 	/**
@@ -332,22 +397,33 @@ public class SteeringBehavior {
 	 */	
 	public Vector2D avoidObstacle() {
 		Vector2D avoid = Vector2D.ZERO;
+		if (obstacles == null) {
+			return avoid;
+		}
+		
 		Vector2D uv = agent.getVelocity().unitVector();
 		Vector2D futurePos = agent.getCenterPosition().translate(agent.getVelocity());
+		double vmag = Math.sqrt(agent.getVelocity().magnitude2());
 		double distBetweenObjects = 0.0;
 		double distToKeep = 0.0;
+		double closest = -1.0;
 		
+		//System.out.printf("Agent's Vel: %s uv: %s vmag: %.2f\n", agent.getVelocity(), uv, vmag);
 		for(Body b : obstacles) {
-			if (!b.equals(agent)) {				
+			if (!b.equals(agent) && b.isActive()) {				
 				Vector2D dv = b.getCenterPosition().difference(futurePos);				
 				distBetweenObjects = dv.magnitude2();
+				if (closest == -1.0) {
+					closest = distBetweenObjects;
+				}
 				distToKeep = (avoidDistance * avoidDistance) + Math.pow(Math.max(b.getWidth(), b.getHeight()), 2);
-				if (distBetweenObjects <= distToKeep) {
+				if (closest > distBetweenObjects && distBetweenObjects <= distToKeep) {
+					closest = distBetweenObjects;
 					Vector2D projection = uv.scale(dv.dot(uv));					
 					Vector2D ortho = b.getCenterPosition().difference(futurePos.translate(projection));					
 					// to avoid, move perpendicularly away from the obstacle
-					avoid = ortho.unitVector().scale(Math.sqrt(agent.getVelocity().magnitude2()) * -1.0);
-					// System.out.printf("dv: %s distBetweenObjects: %.2f, distToKeep: %.2f avoid: %s\n", dv, Math.sqrt(distBetweenObjects), Math.sqrt(distToKeep), avoid);
+					avoid = ortho.unitVector().scale(vmag * -1.0);
+					//System.out.printf("dv: %s distBetweenObjects: %.2f, distToKeep: %.2f avoid: %s\n", dv, Math.sqrt(distBetweenObjects), Math.sqrt(distToKeep), avoid);
 				}
 			}
 		}
@@ -359,9 +435,15 @@ public class SteeringBehavior {
 	 * Reset Agent's Velocity
 	 * @param vel
 	 */
-	public void resetVelocity(Vector2D vel) {
-		agent.setVelocity(vel);
-		wanderTheta = getVectorAngle(vel);		
+	public void resetVelocity(Vector2D vel, boolean force) {
+		if (!force && slowVelReset) {
+			resetingVelcotiy = true;
+			resetVelStartAngle = getVectorAngle(agent.getVelocity());
+			resetVelEndAngle = getVectorAngle(vel);
+		} else {
+			agent.setVelocity(vel);
+			wanderTheta = getVectorAngle(vel);
+		}
 	}
 	
 	/**
@@ -402,7 +484,7 @@ public class SteeringBehavior {
 	 * @param r
 	 * @return
 	 */
-	public boolean clampToWorld(Vector2D pos, final Rectangle r) {
+	public boolean clampToWorld(Vector2D pos, final Rectangle r, boolean force) {
 		boolean changed = false;
 		Vector2D vel = agent.getVelocity();
 		double px = pos.getX();
@@ -410,18 +492,24 @@ public class SteeringBehavior {
 		double vx = vel.getX();
 		double vy = vel.getY();
 
-		if (px < r.getMinX() || px > r.getMaxX()) {
-			vx = Math.random();
-			changed = true;
+		if (px <= r.getMinX()) {
+			vx = (force ? 1.0 : Math.random());
+			changed = true;			
+		} else if (px > r.getMaxX()) {
+			vx = (force ? -1.0 : Math.random());
+			changed = true;			
 		}
-
-		if (py < r.getMinY() || py > r.getMaxY()) {
-			vy = Math.random();
+		
+		if (py < r.getMinY()) {
+			vy = (force ? 1.0 : Math.random());
+			changed = true;			
+		} else if (py >= r.getMaxY()) {
+			vy = (force ? -1.0 : Math.random());
 			changed = true;
 		}
 
 		if (changed) {
-			resetVelocity(new Vector2D(vx, vy));
+			resetVelocity(new Vector2D(vx, vy), true);
 		}
 		return changed;
 	}
