@@ -62,6 +62,8 @@ public class ILServerThread implements Runnable {
 	private long time = 0;
 	
 	public int packetID = 0;
+
+	public boolean createdTanks = false;
 	
 	public ILServerThread(int tickrate) 
 			throws IOException 

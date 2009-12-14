@@ -29,6 +29,10 @@ public class LifeHUD extends Body {
 	public void render(RenderingContext rc) {
 		super.render(rc);
 		m_tankHud.render(rc);
+
+		if (m_game.m_tank == null)
+			return;
+		
 		m_healthBar.render(rc, m_tankHud.getPosition().getX() + m_tankHud.getWidth() + 2, 
 				m_tankHud.getPosition().getY() + 10, 
 				m_game.m_tank.getHealth(), 

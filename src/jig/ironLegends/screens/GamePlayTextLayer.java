@@ -10,11 +10,14 @@ import jig.ironLegends.core.TextWriter;
 public class GamePlayTextLayer extends ScreenTextLayer
 {
 	protected PlayerInfo m_playerInfo;
-	public GamePlayTextLayer(Fonts fonts, GameProgress gameProgress, PlayerInfo playerInfo)
+	protected IronLegends game;
+	public GamePlayTextLayer(Fonts fonts, GameProgress gameProgress, PlayerInfo playerInfo
+			, IronLegends game)
 	{
 		super(fonts);
 		m_gameProgress = gameProgress;
 		m_playerInfo = playerInfo;
+		this.game = game;
 	}
 	
 	@Override
@@ -58,6 +61,14 @@ public class GamePlayTextLayer extends ScreenTextLayer
 			text.println("");
 			text.setFont(m_fonts.instructionalFont);
 			text.println("Press enter to continue");
+		}
+		else if (game.client != null && game.client.receivedStartGame && 
+				!game.client.receivedGo)
+		{
+			text.setFont(m_fonts.titleFont);
+			text.setY(IronLegends.WORLD_HEIGHT/8);
+			text.setLineStart(-1);
+			text.println("Loading");			
 		}
 		else if (m_gameProgress.getLevelProgress().isIntro())
 		{
