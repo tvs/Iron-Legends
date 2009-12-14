@@ -21,6 +21,8 @@ import jig.engine.RenderingContext;
 import jig.engine.ResourceFactory;
 import jig.engine.ViewableLayer;
 import jig.engine.PaintableCanvas.JIGSHAPE;
+import jig.engine.audio.AudioState;
+import jig.engine.audio.jsound.AudioStream;
 import jig.engine.hli.ImageBackgroundLayer;
 import jig.engine.hli.ScrollingScreenGame;
 import jig.engine.physics.AbstractBodyLayer;
@@ -154,6 +156,8 @@ public class IronLegends extends ScrollingScreenGame {
 	public boolean createdServer = false;
 	public boolean multiPlayerMode = false;
 	public int maxActiveTanks = 4;
+	public boolean play_music = true;
+	private AudioStream music;
 	
 	public IronLegends() {
 		super(SCREEN_WIDTH, SCREEN_HEIGHT, false);
@@ -244,10 +248,9 @@ public class IronLegends extends ScrollingScreenGame {
 		
 		// Load Special Effects
 		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
-		/*
-		 testing an animated sprite
-		m_sfx.add("tankExplosion", "explosion", IronLegends.SPRITE_SHEET + "#wall", 1500, 2);
-		*/
+		
+		// Background Music
+		music = new AudioStream(RESOURCE_AUDIO + "ry_z-Forked_Road.mp3");
 	}
 
 	public void loadMap(String sMapFile) {		
@@ -282,6 +285,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_keyCmds.addCommand("up", KeyEvent.VK_UP);
 		m_keyCmds.addCommand("down", KeyEvent.VK_DOWN);
 
+		m_keyCmds.addCommand("music", KeyEvent.VK_M);
 		m_keyCmds.addCommand("fixturret", KeyEvent.VK_T);
 		m_keyCmds.addCommand("fire", KeyEvent.VK_CONTROL);
 		m_keyCmds.addCommand("space", KeyEvent.VK_SPACE);
@@ -382,13 +386,19 @@ public class IronLegends extends ScrollingScreenGame {
 	public void screenTransition(int iFromScreen, int iToScreen)
 	{
 		if (iFromScreen != iToScreen)
-		{
+		{			
 			GameScreen curScreen = m_screens.getScreen(iFromScreen);
 			m_screens.setActiveScreen(iToScreen);
 			GameScreen newScreen = m_screens.getActiveScreen();
 			if (curScreen != null)
 				curScreen.deactivate();
 			newScreen.activate(iFromScreen);
+			
+			if (iToScreen != GAMEPLAY_SCREEN) {
+				backgroundMusic(false);
+			} else {
+				backgroundMusic(play_music);
+			}
 		}
 	}
 	
@@ -411,16 +421,29 @@ public class IronLegends extends ScrollingScreenGame {
 		}
 
 		if (m_keyCmds.wasPressed("pause")) {
-			if (m_paused) {
-			} else {
-			}
 			m_paused = !m_paused;
+			if (m_paused) {
+				backgroundMusic(false);
+			} else {
+				backgroundMusic(play_music);
+			}
 		}
 
-		if (activeScreen == GAMEPLAY_SCREEN) {			
+		if (activeScreen == GAMEPLAY_SCREEN) {
+			// Controls
+			if (m_keyCmds.wasPressed("music")) {
+				play_music = !play_music;
+				backgroundMusic(play_music);
+			}
+			
 			// Cheat Codes
 			if (m_keyCmds.wasPressed("godmode")) {
 				m_godmode = !m_godmode;
+			}
+			
+			if (m_keyCmds.wasPressed("die")) {
+				m_tank.explode();
+				m_gameProgress.tankDestroyed(m_tank);
 			}
 			
 			if (m_keyCmds.wasPressed("shield")) {
@@ -448,7 +471,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_bGameOver = false;
 		m_gameProgress.reset();
 		String mapFile = "maps/mapitems.txt";
-		loadLevel(mapFile);
+		loadLevel(mapFile);		
 	}
 
 	public Bullet getBullet() {
@@ -727,4 +750,17 @@ public class IronLegends extends ScrollingScreenGame {
 		return multiPlayerMode;
 	}
 	
+	public void backgroundMusic(boolean play) {
+		if (play) {
+			if (music.getState() == AudioState.PRE || music.getState() == AudioState.STOPPED) {
+				music.play(.5);
+			} else if (music.getState() == AudioState.PAUSED) {
+				music.resume();
+			}			
+		} else {
+			if (music.getState() == AudioState.PLAYING) {
+				music.pause();
+			}
+		}
+	}	
 }
