@@ -106,6 +106,8 @@ public class SteeringBehavior {
 	protected Vector2D _lastpos = Vector2D.ZERO;
 	private int tempTargetCounter = 0;
 	
+	private int stuckCounter = 0;
+	
 	/**
 	 * Steering Behavior
 	 * 
@@ -298,7 +300,7 @@ public class SteeringBehavior {
 	 * 
 	 * @param deltaMs
 	 */
-	public void apply(long deltaMs) {
+	public void apply(long deltaMs) {		
 		if (resetingVelcotiy) { // gradually reset the velocity			
 			double angleDiff = Math.abs(resetVelEndAngle - resetVelStartAngle);
 			if (angleDiff <= 0.001) {
@@ -331,8 +333,7 @@ public class SteeringBehavior {
 					// done steering after resetting velocity, changing back the velocity slowly					
 					steer(false, 0.0);					
 					Vector2D newvel = agent.getVelocity().translate(steerForce);
-					newvel = limitVector(newvel, getMaxSpeed());
-					newvel = newvel.scale(deltaMs / 1000.0);
+					newvel = scaleVelocity(newvel, getMaxSpeed() * deltaMs / 1000.0);
 					resetVelocity(newvel, false);
 					resetVelSteer = false;
 				}
@@ -366,11 +367,10 @@ public class SteeringBehavior {
 		// Set Velocity
 		Vector2D vel = agent.getVelocity();
 		vel = vel.translate(steerForce);
-		vel = limitVector(vel, getMaxSpeed());
-		vel = vel.scale(deltaMs / 1000.0);		
+		vel = scaleVelocity(vel, getMaxSpeed() * deltaMs / 1000.0);		
 		agent.setVelocity(vel);		
 
-		steerForce = Vector2D.ZERO; // reset the force to zero
+		steerForce = Vector2D.ZERO; // reset the force to zero		
 		
 		if (!vel.epsilonEquals(Vector2D.ZERO, 0.001)) { // Only need to check if agent is moving
 			if (behavior != Behavior.WANDER) { // clamp future position to world
@@ -378,32 +378,38 @@ public class SteeringBehavior {
 			}
 			
 			vel = agent.getVelocity();
-/*
-			Vector2D futurePos = agent.getCenterPosition().translate(vel);
-			if (behavior != Behavior.WANDER && !useTempTarget && futurePos.epsilonEquals(_lastpos, 0.1)) { // stuck
-				//vel = getRandomVector(getMaxSpeed() * deltaMs / 1000.0);
-//				vel = new Vector2D(700, 700).unitVector().scale((getMaxSpeed() * deltaMs / 1000.0));
-//				resetVelocity(vel, false);
-				useTempTarget = true;
-				tempLastPos = agent.getCenterPosition();
-				tempTarget = agent.getCenterPosition().translate(new Vector2D(0.2, 0.2));//vel.unitVector().scale(targetBound).translate(agent.getCenterPosition()); // random target
-				System.out.printf("Target: %s, tempTarget: %s\n", target, tempTarget);				
-			} 
-*/
-			
+//			System.out.printf("Diff: %s Behavior: %s Last: %s Current: %s useTempTarget: %s resetingVelcotiy: %s\n", agent.getCenterPosition().difference(_lastpos), behavior, _lastpos, agent.getCenterPosition(), useTempTarget, useTempTarget, resetingVelcotiy);
+			if (agent.getCenterPosition().epsilonEquals(_lastpos, 0.1)) { // stuck
+				stuckCounter++;
+				if (stuckCounter > 10) { // really stuck						
+					stuckCounter = 0;
+					resetVelSteer = false;
+					resetingVelcotiy = false;
+					useTempTarget = true;
+					vel = getRandomVector(getMaxSpeed() * deltaMs / 1000.0);
+					resetVelocity(vel, false);
+					tempLastPos = agent.getCenterPosition();
+					tempTarget = vel.scale(100).translate(agent.getCenterPosition()); // target in direction of velocity
+				}
+			} else {
+				stuckCounter = 0;
+			}
+
+			vel = agent.getVelocity();
 			if (obstacleAvoidance && !useTempTarget) { // check for potential obstacle collision				
 				Vector2D avoid = avoidObstacle();
 				if (!avoid.epsilonEquals(Vector2D.ZERO, 0.001)) {				
 					vel = vel.translate(avoid);
-					vel = limitVector(vel, getMaxSpeed());
-					vel = vel.scale(deltaMs / 1000.0);
+					vel = scaleVelocity(vel, getMaxSpeed() * deltaMs / 1000.0);
 					resetVelocity(vel, false);
-					resetVelSteer = true; // steer for a while after resetting velocity
+					if (behavior != Behavior.WANDER) {
+						resetVelSteer = true; // steer for a while after resetting velocity
+					}
 				}
-			}
+			}			
 		}
 		
-		_lastpos = agent.getCenterPosition().translate(vel);
+		_lastpos = agent.getCenterPosition();		
 	}
 
 	/**
@@ -490,6 +496,20 @@ public class SteeringBehavior {
 			v = v.unitVector().scale(mag);
 		}
 
+		return v;
+	}
+	
+	/**
+	 * Scale Velocity Vector
+	 * @param v
+	 * @param df
+	 * @return
+	 */
+	public Vector2D scaleVelocity(Vector2D v, double df) {
+		if (!v.epsilonEquals(Vector2D.ZERO, 0.001)) {
+			v = v.unitVector().scale(df);
+		}
+		
 		return v;
 	}
 
