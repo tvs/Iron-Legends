@@ -559,7 +559,7 @@ public class IronLegends extends ScrollingScreenGame {
 						, server.hostAddress.getHostAddress() + "\0"
 						, server.hostAddress.getHostAddress() + "\0"
 						, server.getMapName() + "\0");
-				msg.m_bGo = false;
+				msg.m_bGo = true;
 				msg.m_bSinglePlayer = false;
 				
 				{
@@ -676,6 +676,8 @@ public class IronLegends extends ScrollingScreenGame {
 				else if (m_tank != null)
 				{
 					// TODO: tell server ready..?
+					if (startGame.m_bGo)
+						client.receivedGo = true;
 				}
 			}
 		}
