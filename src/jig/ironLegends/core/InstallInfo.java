@@ -6,7 +6,7 @@ import java.net.URL;
 public class InstallInfo {
 
 	static public String getInstallDir(String className, String jarName) {
-		String sInstallDir = "\\Temp";
+		String sInstallDir = "/Temp";
 
 		URL classURL = InstallInfo.class.getResource(className);
 		String s = classURL.getFile();
@@ -24,7 +24,7 @@ public class InstallInfo {
 					- sPackage.length());
 			sInstallDir += "/";
 		} else {
-			sInstallDir += "\\";
+			sInstallDir += "/";
 			Package pkg = InstallInfo.class.getPackage();
 			if (pkg != null) {
 				String sPackage = pkg.getName();

@@ -48,6 +48,9 @@ public class ILClientThread implements Runnable {
 	private boolean lobby;
 	
 	public boolean receivedStartGame = false;
+	public boolean loadedMap = false;
+	public boolean receivedGo = false;
+	
 	public ILStartGamePacket startGamePacket;
 	
 	private int tickrate;

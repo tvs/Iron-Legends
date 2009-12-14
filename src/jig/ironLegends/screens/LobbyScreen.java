@@ -17,6 +17,7 @@ import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
+import jig.ironLegends.oxide.packets.ILStartGamePacket;
 
 /**
  * @author Travis Hall
@@ -244,10 +245,18 @@ public class LobbyScreen extends GameScreen {
 			
 			this.sButton.update(mouse, deltaMs);
 			if (this.sButton.wasLeftClicked()) {
-				this.game.server.send(ILPacketFactory.newStartGamePacket(this.game.server.packetID()
+				ILStartGamePacket msg = ILPacketFactory.newStartGamePacket(this.game.server.packetID()
 						, this.game.server.hostAddress.getHostAddress() + "\0"
 						, this.game.server.hostAddress.getHostAddress() + "\0"
-						, this.game.server.getMapName() + "\0"));
+						, this.game.server.getMapName() + "\0");
+				//TODO: during ironlegends update, keep track of how many players are sending client updates
+				// if all clients are sending client updates, send start game with go = true
+				// client update could be modified to acknowledge it received go and then
+				// when server receives client update with go set from all clients
+				// then the server can stop sending go.
+				msg.m_bGo = false;
+				msg.m_bSinglePlayer = false;
+				this.game.server.send(msg);
 			}
 			
 		}
@@ -275,9 +284,12 @@ public class LobbyScreen extends GameScreen {
 		
 		// If the client has picked up a "start game" message -- we dump it into the m_client queue?
 		// TODO: get rid of the m_client queue
+		/* mjpp - just let ironllegends mainloop act upon this packet
+		
 		if (this.game.client.receivedStartGame) {
 			this.game.m_client.send(this.game.client.startGamePacket);
 		}
+		*/
 		
 		return name();		
 	}
