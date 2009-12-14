@@ -640,7 +640,7 @@ public class Tank extends MultiSpriteBody {
 	public void setSteering() {
 		m_steering = new SteeringBehavior(this);
 		m_steering.setWorldbounds(game.m_mapCalc.getWorldBounds());
-		m_steering.setMaxSpeed(SPEED);
+		m_steering.setMaxSpeed(SPEED/2);
 
 		// Obstacle Avoidance
 		m_steering.setObstacleAvoidance(true); // disabling now - maybe need to remove AI tanks from collision

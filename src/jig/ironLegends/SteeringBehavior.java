@@ -333,8 +333,7 @@ public class SteeringBehavior {
 					// done steering after resetting velocity, changing back the velocity slowly					
 					steer(false, 0.0);					
 					Vector2D newvel = agent.getVelocity().translate(steerForce);
-					newvel = limitVector(newvel, getMaxSpeed());
-					newvel = newvel.scale(deltaMs / 1000.0);
+					newvel = scaleVelocity(newvel, getMaxSpeed() * deltaMs / 1000.0);
 					resetVelocity(newvel, false);
 					resetVelSteer = false;
 				}
@@ -368,8 +367,7 @@ public class SteeringBehavior {
 		// Set Velocity
 		Vector2D vel = agent.getVelocity();
 		vel = vel.translate(steerForce);
-		vel = limitVector(vel, getMaxSpeed());
-		vel = vel.scale(deltaMs / 1000.0);		
+		vel = scaleVelocity(vel, getMaxSpeed() * deltaMs / 1000.0);		
 		agent.setVelocity(vel);		
 
 		steerForce = Vector2D.ZERO; // reset the force to zero		
@@ -402,8 +400,7 @@ public class SteeringBehavior {
 				Vector2D avoid = avoidObstacle();
 				if (!avoid.epsilonEquals(Vector2D.ZERO, 0.001)) {				
 					vel = vel.translate(avoid);
-					vel = limitVector(vel, getMaxSpeed());
-					vel = vel.scale(deltaMs / 1000.0);
+					vel = scaleVelocity(vel, getMaxSpeed() * deltaMs / 1000.0);
 					resetVelocity(vel, false);
 					if (behavior != Behavior.WANDER) {
 						resetVelSteer = true; // steer for a while after resetting velocity
@@ -509,7 +506,7 @@ public class SteeringBehavior {
 	 * @return
 	 */
 	public Vector2D scaleVelocity(Vector2D v, double df) {
-		if (v.epsilonEquals(Vector2D.ZERO, 0.001)) {
+		if (!v.epsilonEquals(Vector2D.ZERO, 0.001)) {
 			v = v.unitVector().scale(df);
 		}
 		
