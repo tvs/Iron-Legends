@@ -309,7 +309,7 @@ public class Tank extends MultiSpriteBody {
 				m_steering.resetVelocity(Vector2D.getUnitLengthVector(getRotation() - Math.toRadians(90)).scale(getSpeed() * deltaMs / 1000.0), true); // define new heading
 			}
 		} else {
-			_newheading = false;
+			_newheading = false;			
 			Vector2D tp = target.getCenterPosition();
 			Vector2D sp = getCenterPosition();
 			dist = Math.sqrt(tp.distance2(sp));
@@ -331,8 +331,18 @@ public class Tank extends MultiSpriteBody {
 				m_steering.setBehavior(SteeringBehavior.Behavior.WANDER);
 			}
 		}
-
-		m_steering.setObstacles(game.m_entityLayer); // for obstacle avoidance
+		
+		if (m_steering.getBehavior() == SteeringBehavior.Behavior.WANDER) {
+			// do some fires
+			for (Body b : game.m_tankBulletObstacleLayer) {
+				if (b.getCenterPosition().distance2(getCenterPosition()) < 200*200) {
+					fire();
+					break;
+				}
+			}
+		}
+		
+		m_steering.setObstacles(game.m_entityLayer); // for obstacle avoidance		
 		m_steering.apply(deltaMs);
 		Vector2D translateVec = getVelocity();
 		if (!translateVec.epsilonEquals(Vector2D.ZERO, 0.01)) { // moving
