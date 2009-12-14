@@ -95,6 +95,7 @@ public class SteeringBehavior {
 	protected boolean resetingVelcotiy = false;
 	protected double resetVelStartAngle = 0.0;
 	protected double resetVelEndAngle = 0.0;
+	protected boolean resetVelSteer = false;
 	
 	/**
 	 * use Temp target
@@ -102,7 +103,7 @@ public class SteeringBehavior {
 	protected boolean useTempTarget = false;	
 	protected Vector2D tempTarget = Vector2D.ZERO;
 	protected Vector2D tempLastPos = Vector2D.ZERO;
-	private Vector2D _lastpos = Vector2D.ZERO;
+	protected Vector2D _lastpos = Vector2D.ZERO;
 	private int tempTargetCounter = 0;
 	
 	/**
@@ -196,7 +197,7 @@ public class SteeringBehavior {
 	public Vector2D getWanderTarget(Vector2D t) {
 		Vector2D circleLocation = t;
 		// Normalize to get heading
-		if (circleLocation.epsilonEquals(Vector2D.ZERO, 0.01)) {
+		if (circleLocation.epsilonEquals(Vector2D.ZERO, 0.001)) {
 			circleLocation = Vector2D.getUnitLengthVector((Math.random()
 					* Math.PI * 2.0));
 		} else {
@@ -223,8 +224,6 @@ public class SteeringBehavior {
 	 * displacement in each frame.
 	 */
 	public void wander() {
-		targetBound = 0.0;
-
 		// Random change
 		wanderTheta += (Math.random() * 2 - 1) * wanderRate;
 
@@ -243,7 +242,7 @@ public class SteeringBehavior {
 			clampToWorld(target, worldbounds, true);
 		}
 		// Steer towards the target
-		steer(false);
+		steer(false, 0.0);
 	}
 
 	/**
@@ -254,15 +253,15 @@ public class SteeringBehavior {
 	 * @param slowdown
 	 *            if true, it slows down as it approaches the target
 	 */
-	public void steer(boolean slowdown) {
+	public void steer(boolean slowdown, double targetbound) {
 		Vector2D steervector = Vector2D.ZERO;
 		Vector2D dv = target.difference(agent.getCenterPosition());
 		double d = Math.sqrt(dv.magnitude2()); // distance to travel
-		if (d > targetBound + 0.1) {
+		if (d > targetbound + 0.1) {
 			dv = new Vector2D(dv.getX() / d, dv.getY() / d); // Unit Vector
-			if (slowdown && d <= (slowingDistance + targetBound)) {
+			if (slowdown && d <= (slowingDistance + targetbound)) {
 				dv = dv.scale(getMaxSpeed()
-						* (d / (slowingDistance + targetBound)));
+						* (d / (slowingDistance + targetbound)));
 			} else {
 				dv = dv.scale(getMaxSpeed());
 			}
@@ -304,28 +303,43 @@ public class SteeringBehavior {
 			double angleDiff = Math.abs(resetVelEndAngle - resetVelStartAngle);
 			if (angleDiff <= 0.001) {
 				resetingVelcotiy = false;
+				if (resetVelSteer) {					
+					useTempTarget = true;
+					tempLastPos = agent.getCenterPosition();
+					tempTarget = agent.getVelocity();
+					if (tempTarget.epsilonEquals(Vector2D.ZERO, 0.001)) {
+						tempTarget = getRandomUnitVector();
+					}
+					tempTarget = tempTarget.unitVector().scale(targetBound).translate(agent.getCenterPosition());
+				}
 			} else {
 				double newa = ((resetVelEndAngle > resetVelStartAngle ? 1 : -1) * Math.toRadians(10)); // changing angle 10 degree at a time
 				newa = resetVelStartAngle + (Math.abs(newa) > angleDiff ? angleDiff * (newa > 0 ? 1 : -1) : newa);				
-				agent.setVelocity(Vector2D.getUnitLengthVector(newa).scale((getMaxSpeed()/2) * deltaMs / 1000.0));
+				agent.setVelocity(Vector2D.getUnitLengthVector(newa).scale((getMaxSpeed()/3) * deltaMs / 1000.0));
 				wanderTheta = newa;
 				resetVelStartAngle = newa;				
 				return;
 			}
 		}
 
-		if (useTempTarget) { // was stuck so goto random target
-			target = tempTarget;			
+		if (useTempTarget) { // was stuck so goto new target temporary
 			tempTargetCounter++;
-			if (tempLastPos.distance2(agent.getCenterPosition()) > 100 * 100) {
-				useTempTarget = false;
-				tempTargetCounter = 0;				
-			} else if (tempTargetCounter > 500) {
+			if (tempTargetCounter > 250 || tempLastPos.distance2(agent.getCenterPosition()) > 100 * 100) {
 				useTempTarget = false;
 				tempTargetCounter = 0;
+				if (resetVelSteer) {
+					// done steering after resetting velocity, changing back the velocity slowly					
+					steer(false, 0.0);					
+					Vector2D newvel = agent.getVelocity().translate(steerForce);
+					newvel = limitVector(newvel, getMaxSpeed());
+					newvel = newvel.scale(deltaMs / 1000.0);
+					resetVelocity(newvel, false);
+					resetVelSteer = false;
+				}
 			}
 			
-			flee();
+			target = tempTarget;
+			steer(false, 0.0);
 		} else {		
 			switch (behavior) {
 			case WANDER:
@@ -333,11 +347,11 @@ public class SteeringBehavior {
 				break;
 	
 			case SEEK:
-				steer(false);
+				steer(false, targetBound);
 				break;
 	
 			case ARIVE:
-				steer(true);
+				steer(true, targetBound);
 				break;
 	
 			case FLEE:
@@ -384,6 +398,7 @@ public class SteeringBehavior {
 					vel = limitVector(vel, getMaxSpeed());
 					vel = vel.scale(deltaMs / 1000.0);
 					resetVelocity(vel, false);
+					resetVelSteer = true; // steer for a while after resetting velocity
 				}
 			}
 		}
@@ -422,7 +437,8 @@ public class SteeringBehavior {
 					Vector2D projection = uv.scale(dv.dot(uv));					
 					Vector2D ortho = b.getCenterPosition().difference(futurePos.translate(projection));					
 					// to avoid, move perpendicularly away from the obstacle
-					avoid = ortho.unitVector().scale(vmag * -1.0);
+					double angle = getVectorAngle(ortho);
+					avoid = Vector2D.getUnitLengthVector(angle + (Math.random() * 2 - 1) * Math.toRadians(10)).scale(vmag * -1.0);
 					//System.out.printf("dv: %s distBetweenObjects: %.2f, distToKeep: %.2f avoid: %s\n", dv, Math.sqrt(distBetweenObjects), Math.sqrt(distToKeep), avoid);
 				}
 			}

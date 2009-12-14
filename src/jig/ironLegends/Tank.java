@@ -71,7 +71,8 @@ public class Tank extends MultiSpriteBody {
 	private double initialRotDeg = 0;
 	private boolean fireSecondBullet = false;
 	private double m_turretRotationRad;
-
+	private boolean _newheading = false;
+	
 	public Tank(IronLegends game, int iTeam, Team team, Type type, int entityNumber) {
 		super(game.m_polygonFactory.createRectangle(Vector2D.ZERO, 85, 101),
 				IronLegends.SPRITE_SHEET + "#tank");
@@ -301,9 +302,14 @@ public class Tank extends MultiSpriteBody {
 		double dist = 0.0;
 		double target_angle = 0.0;
 		
-		if (target == null || !target.isActive()) {
-			m_steering.setBehavior(SteeringBehavior.Behavior.WANDER);
+		if (target == null || !target.isActive()) {			
+			m_steering.setBehavior(SteeringBehavior.Behavior.WANDER);			
+			if (!_newheading) {
+				_newheading = true;
+				m_steering.resetVelocity(Vector2D.getUnitLengthVector(getRotation() - Math.toRadians(90)).scale(getSpeed() * deltaMs / 1000.0), true); // define new heading
+			}
 		} else {
+			_newheading = false;
 			Vector2D tp = target.getCenterPosition();
 			Vector2D sp = getCenterPosition();
 			dist = Math.sqrt(tp.distance2(sp));
@@ -312,7 +318,7 @@ public class Tank extends MultiSpriteBody {
 				m_steering.setTarget(target);
 				if (dist <= 2 * bulletRange) { // chase
 					m_steering.setBehavior(SteeringBehavior.Behavior.SEEK);
-					m_steering.setTargetBound(bulletRange);					
+					m_steering.setTargetBound(bulletRange);
 				} else {
 					m_steering.setBehavior(SteeringBehavior.Behavior.ARIVE);
 					m_steering.setTargetBound(1.75 * bulletRange);
@@ -326,7 +332,6 @@ public class Tank extends MultiSpriteBody {
 			}
 		}
 
-//		System.out.printf("Entites: %s\n", game.m_entityLayer.size());
 		m_steering.setObstacles(game.m_entityLayer); // for obstacle avoidance
 		m_steering.apply(deltaMs);
 		Vector2D translateVec = getVelocity();
@@ -638,7 +643,7 @@ public class Tank extends MultiSpriteBody {
 		m_steering.setMaxSpeed(SPEED);
 
 		// Obstacle Avoidance
-		m_steering.setObstacleAvoidance(false); // disabling now - maybe need to remove AI tanks from collision
+		m_steering.setObstacleAvoidance(true); // disabling now - maybe need to remove AI tanks from collision
 		m_steering.setAvoidDistance(150.0);		
 	}
 	

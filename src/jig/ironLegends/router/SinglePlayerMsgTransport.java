@@ -1,6 +1,5 @@
 package jig.ironLegends.router;
 
-import jig.ironLegends.messages.Message;
 import jig.ironLegends.oxide.packets.ILPacket;
 
 public class SinglePlayerMsgTransport implements IMsgTransport {
