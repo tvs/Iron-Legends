@@ -7,12 +7,6 @@ tree:839.0:1138.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#tree
 wall:1114.0:925.0:-45.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
 wall:1007.0:1216.0:-90.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
 wall:773.0:1004.0:-315.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
-redbase:1025.0:1898.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#red-base
-redspawn:1025.0:1730.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
-redspawn:909.0:1779.0:-45.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
-redspawn:1143.0:1774.0:-315.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
-redspawn:855.0:1888.0:-90.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
-redspawn:1190.0:1888.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
 bluebase:1909.0:84.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#blue-base
 bluespawn:1727.0:184.0:-135.0:jig/ironLegends/resources/ironLegends-spritesheet.png#armor
 bluespawn:1805.0:267.0:-135.0:jig/ironLegends/resources/ironLegends-spritesheet.png#armor
@@ -53,9 +47,13 @@ wall:297.0:1067.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#w
 wall:298.0:1115.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
 rock2:219.0:1531.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#rock2
 rock2:583.0:1648.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#rock2
-rock2:1375.0:1699.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#rock2
 tree:1005.0:1420.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#tree
 tree:477.0:1416.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#tree
 crate:46.0:1946.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#crate
 wall:67.0:1865.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#wall
 tree:182.0:1932.0:-270.0:jig/ironLegends/resources/ironLegends-spritesheet.png#tree
+redbase:982.0:1924.0:0.0:jig/ironLegends/resources/ironLegends-spritesheet.png#red-base
+redspawn:1111.0:1918.0:-315.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
+redspawn:860.0:1916.0:-45.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
+redspawn:937.0:1798.0:-45.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed
+redspawn:1041.0:1800.0:-315.0:jig/ironLegends/resources/ironLegends-spritesheet.png#speed

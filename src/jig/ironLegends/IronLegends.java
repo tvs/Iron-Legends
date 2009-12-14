@@ -472,7 +472,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_gameProgress.reset();		
 	
 		// pick random map
-		String mapFile = m_availableMaps.get((int) Math.random() * m_availableMaps.size());
+		String mapFile = m_availableMaps.get((int) (Math.random() * m_availableMaps.size()));
 		int bx = mapFile.indexOf("maps/");
 		if (bx > 0) {
 			mapFile = mapFile.substring(bx);
