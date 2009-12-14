@@ -196,7 +196,7 @@ public class SteeringBehavior {
 	public Vector2D getWanderTarget(Vector2D t) {
 		Vector2D circleLocation = t;
 		// Normalize to get heading
-		if (circleLocation.epsilonEquals(Vector2D.ZERO, 0.01)) {
+		if (circleLocation.epsilonEquals(Vector2D.ZERO, 0.001)) {
 			circleLocation = Vector2D.getUnitLengthVector((Math.random()
 					* Math.PI * 2.0));
 		} else {
