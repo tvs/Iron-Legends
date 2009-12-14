@@ -41,9 +41,6 @@ import jig.ironLegends.core.SpecialFx;
 import jig.ironLegends.core.StaticBodyLayer;
 import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
-import jig.ironLegends.messages.Message;
-import jig.ironLegends.messages.SPStartGame;
-
 import jig.ironLegends.oxide.client.ILClientThread;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;

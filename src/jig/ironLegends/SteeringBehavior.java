@@ -102,7 +102,7 @@ public class SteeringBehavior {
 	protected boolean useTempTarget = false;	
 	protected Vector2D tempTarget = Vector2D.ZERO;
 	protected Vector2D tempLastPos = Vector2D.ZERO;
-	private Vector2D _lastpos = Vector2D.ZERO;
+	protected Vector2D _lastpos = Vector2D.ZERO;
 	private int tempTargetCounter = 0;
 	
 	/**

@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
-import jig.ironLegends.oxide.states.ILObjectState;
 import jig.ironLegends.oxide.util.PacketBuffer;
 
 /**
