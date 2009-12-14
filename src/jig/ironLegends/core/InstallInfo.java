@@ -14,7 +14,7 @@ public class InstallInfo {
 
 		sInstallDir = installDir.toString();
 		if (sInstallDir.startsWith("file:"))
-			sInstallDir = installDir.toString().substring(6);
+			sInstallDir = installDir.toString().substring(5);
 
 		int bangIdx = sInstallDir.indexOf("!");
 		if (bangIdx > 0) {
@@ -22,7 +22,6 @@ public class InstallInfo {
 			String sPackage = jarName;
 			sInstallDir = sInstallDir.substring(0, sInstallDir.length()
 					- sPackage.length());
-			sInstallDir += "/";
 		} else {
 			sInstallDir += "/";
 			Package pkg = InstallInfo.class.getPackage();

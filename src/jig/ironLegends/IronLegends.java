@@ -168,8 +168,7 @@ public class IronLegends extends ScrollingScreenGame {
 		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
 		
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
-				+ "IronLegends.class", "IronLegends.jar");
-
+				+ "IronLegends.class", "IronLegends.jar");		
 		// Load resources
 		loadResources();
 		
@@ -269,6 +268,7 @@ public class IronLegends extends ScrollingScreenGame {
 	}
 
 	public void loadLevel(String mapFile) {
+		System.out.println("Loading map: " + mapFile);		
 		loadMap(mapFile);
 
 		populateGameLayers();
@@ -473,8 +473,13 @@ public class IronLegends extends ScrollingScreenGame {
 	
 		// pick random map
 		String mapFile = m_availableMaps.get((int) Math.random() * m_availableMaps.size());
+		int bx = mapFile.indexOf("maps/");
+		if (bx > 0) {
+			mapFile = mapFile.substring(bx);
+		}
+		
 //		String mapFile = "maps/grunge.txt";
-//		String mapFile = "maps/helljungle.txt";
+//		String mapFile = "maps/helljungle.txt";		
 		if (client != null)
 		{
 			if (client.startGamePacket != null)
