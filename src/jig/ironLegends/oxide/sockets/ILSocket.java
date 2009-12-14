@@ -25,7 +25,7 @@ import jig.ironLegends.oxide.packets.ILPacketFactory;
  * @author Travis Hall
  */
 public abstract class ILSocket {
-	public static int TIME_OUT = 1000;
+	public static int TIME_OUT = 1;
 	public InetAddress hostAddress;
 	protected ByteBuffer buffer;
 	protected SelectableChannel channel;

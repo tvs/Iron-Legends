@@ -115,13 +115,15 @@ public class ILServerThread implements Runnable {
 				}
 				continue;
 			}
+			
+			boolean exp = this.tickExpired();
 	
 			try {
 				// Advertise the server over the LAN (multicast)
 				if (advertise) {
 					synchronized(this.advertPacket) {
 						this.updateAdvertisementPacket();
-						if (this.tickExpired()) {
+						if (exp) {
 							advertSocket.send(this.advertPacket);
 						}
 					}
@@ -132,7 +134,7 @@ public class ILServerThread implements Runnable {
 					this.readLobby();
 					synchronized(this.lobbyPacket) {
 						this.updateLobbyPacket();
-						if (this.tickExpired()) {
+						if (exp) {
 							// Send out lobby updates
 							this.sendLobbyState();
 						}
@@ -143,7 +145,7 @@ public class ILServerThread implements Runnable {
 				this.read();
 				
 				// If the tick has expired, update each of the clients
-				if (this.tickExpired()) {
+				if (exp) {
 					// Update the tick
 					this.lastTick = this.time;
 					this.updateClients();
