@@ -180,6 +180,22 @@ public class ILPacketFactory {
 	/**
 	 * @param packetID
 	 * @return
+	 */
+	public static ILStartGamePacket newStartGamePacket(int packetID) {
+		byte[] protocolData = null;
+		try {
+			protocolData = getProtocolData(packetID);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return new ILStartGamePacket(protocolData);
+	}
+	
+	/**
+	 * @param packetID
+	 * @return
 	 * @throws IOException 
 	 */
 	private static byte[] getProtocolData(int packetID) throws IOException {

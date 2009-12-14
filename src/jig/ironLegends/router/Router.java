@@ -1,6 +1,7 @@
 package jig.ironLegends.router;
 
-import jig.ironLegends.messages.Message;
+
+import jig.ironLegends.oxide.packets.ILPacket;
 
 public class Router {
 	MsgQueue m_tx = null;
@@ -11,7 +12,7 @@ public class Router {
 		m_tx = new MsgQueue();
 		m_rx = new MsgQueue();
 	}
-	public void send(Message msg)
+	public void send(ILPacket msg)
 	{
 		m_tx.add(msg);
 	}

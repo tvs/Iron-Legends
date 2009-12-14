@@ -44,6 +44,8 @@ import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.messages.Message;
 import jig.ironLegends.messages.SPStartGame;
 import jig.ironLegends.oxide.client.ILClientThread;
+import jig.ironLegends.oxide.packets.ILPacket;
+import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.oxide.server.ILServerThread;
 import jig.ironLegends.router.ClientContext;
 import jig.ironLegends.router.IMsgTransport;
@@ -491,10 +493,13 @@ public class IronLegends extends ScrollingScreenGame {
 			 * server rx commandState
 			 */
 			// process client msgs
+		
 			while (m_serverMsgTransport.hasRxMsg())
 			{
-				Message msg = m_serverMsgTransport.nextRxMsg();
-				SPStartGame startGame = (SPStartGame)msg;
+				ILPacket msg = m_serverMsgTransport.nextRxMsg();
+				//SPStartGame startGame = (SPStartGame)msg;
+				
+				ILStartGamePacket startGame = (ILStartGamePacket)msg;
 				// send msg responses to client
 				m_serverMsgTransport.send(startGame);	
 			}
@@ -509,7 +514,6 @@ public class IronLegends extends ScrollingScreenGame {
 					t.serverPopulate(es);
 					entityStates.add(es);
 				}
-				
 			}
 		}
 		
@@ -530,9 +534,11 @@ public class IronLegends extends ScrollingScreenGame {
 			// process server msgs
 			while (m_clientMsgTransport.hasRxMsg())
 			{
-				Message msg = m_clientMsgTransport.nextRxMsg();
+				ILPacket msg = m_clientMsgTransport.nextRxMsg();
 				@SuppressWarnings("unused")
-				SPStartGame startGame = (SPStartGame)msg;
+				ILStartGamePacket startGame = (ILStartGamePacket)msg;
+				//SPStartGame startGame = (SPStartGame)msg;
+				
 				// TODO: supply startGame parameters to gameplay screen 
 				// set active screen
 				screenTransition(m_screens.activeScreen(), GAMEPLAY_SCREEN);				

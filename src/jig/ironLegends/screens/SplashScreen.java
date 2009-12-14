@@ -13,6 +13,9 @@ import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
 import jig.ironLegends.messages.SPStartGame;
+import jig.ironLegends.oxide.packets.ILPacket;
+import jig.ironLegends.oxide.packets.ILPacketFactory;
+import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.router.ClientContext;
 import jig.ironLegends.router.ServerContext;
 import jig.ironLegends.router.SinglePlayerMsgTransport;
@@ -118,9 +121,28 @@ public class SplashScreen extends GameScreen {
 				// transport of messages can just be queue movement for single player
 				m_game.m_clientMsgTransport = new SinglePlayerMsgTransport(m_game.m_server.getRxQueue(), m_game.m_client.getRxQueue());
 				m_game.m_serverMsgTransport = new SinglePlayerMsgTransport(m_game.m_client.getRxQueue(), m_game.m_server.getRxQueue());
+
+				String sSelectedMap = "mapitems.txt";
+				int packetId = this.m_game.client.packetID();
 				
-				SPStartGame msg = new SPStartGame("mapitems.txt");
-				m_game.m_client.send(msg);
+				ILStartGamePacket startGamePacket = ILPacketFactory.newStartGamePacket(packetId);
+				
+				startGamePacket.map = sSelectedMap;
+				startGamePacket.m_bSinglePlayer = true;
+				
+				startGamePacket.addPlayer("FixMyName", 0);
+				/*
+				for (int i = 0; i < 4; ++i)
+				{
+					startGamePacket.addPlayer("AI-" + (i+1), i+1);
+				}
+				*/
+				
+				// TODO: single player, name ai tanks as ai-1 .. 
+				
+				//SPStartGame msg = new SPStartGame(sSelectedMap);
+				//m_game.m_client.send(msg);
+				m_game.m_client.send(startGamePacket);
 			}
 			
 			// TODO Push this to the correct "Lobby" screen
