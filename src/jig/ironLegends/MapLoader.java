@@ -111,8 +111,7 @@ public class MapLoader
 				maps.add(sDir + "/" + list[i]);
 				output += list[i]+"\n";
 			}
-		}
-		System.out.println(output);
+		}		
 	}
 
 	public static Vector<String> listMaps(String sInstallDir, String jarName)
@@ -149,12 +148,12 @@ public class MapLoader
 		String sMapDevJarLocation = sInstallDir + "/bin/jig/ironLegends/maps";
 		String sMapExtLocation = sInstallDir + "/maps";
 		
-		System.out.println(sMapJarLocation);
+		System.out.println("Loading maps from jar: " + sMapJarLocation);
 		addMaps(maps, sMapJarLocation);
 		if (maps.size() == 0)
 			addMaps(maps, sMapDevJarLocation);
 		
-		System.out.println(sMapExtLocation);
+		System.out.println("Loading maps from external: " + sMapExtLocation);
 		addMaps(maps, sMapExtLocation);
 		
 		return maps;
