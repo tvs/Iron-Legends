@@ -82,11 +82,15 @@ public class ILClientThread implements Runnable {
 	public boolean tickExpired() {
 		return (this.time - this.lastTick > this.tickrate);
 	}
-	
+	public void disconnect()
+	{
+		connectedToGame = false;		
+	}
 	public void connectTo(InetAddress hostAddress) throws IOException {
 		this.hostAddress = hostAddress;
 		
 		this.gameSocket = new ILAdvertisementSocket("230.0.0.1", 5002);
+		connectedToGame = true;
 	}
 	
 	/* (non-Javadoc)
