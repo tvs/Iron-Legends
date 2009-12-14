@@ -244,11 +244,15 @@ public class LobbyScreen extends GameScreen {
 				// Send our identification
 				if (this.playerClient == null) {
 					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
-						this.game.m_playerInfo.getName(),
+						this.game.client.hostAddress.getHostAddress() + "\0",
+						this.game.client.myAddress.getHostAddress() + "\0",
+ 						this.game.m_playerInfo.getName(),
 						ClientInfo.RED_TEAM));
 				} else {
 					// Send our current state
 					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+							this.game.client.hostAddress.getHostAddress() + "\0",
+							this.game.client.myAddress.getHostAddress() + "\0",
 							this.playerClient.name, this.playerClient.team));
 				}
 			}

@@ -26,6 +26,7 @@ import jig.ironLegends.oxide.packets.ILPacketFactory;
  */
 public abstract class ILSocket {
 	public static int TIME_OUT = 1000;
+	public InetAddress hostAddress;
 	protected ByteBuffer buffer;
 	protected SelectableChannel channel;
 	protected InetSocketAddress remoteSocket;
@@ -40,6 +41,7 @@ public abstract class ILSocket {
 	protected ILSocket(InetAddress ipAddress, int portNumber) 
 			throws IOException 
 	{
+		this.hostAddress = ipAddress;
 		this.buffer = ByteBuffer.allocate(1400);
 		this.buffer.order(ByteOrder.BIG_ENDIAN);
 		this.remoteSocket = new InetSocketAddress(ipAddress, portNumber);
@@ -50,11 +52,12 @@ public abstract class ILSocket {
 	 * @return The IronLegendsPacket object created from the data in the buffer
 	 * @throws PacketFormatException When the IronLegendsPacket could not be
 	 * 		   created because of a format error
+	 * @throws IOException 
 	 */
 	protected ILPacket getPacketFromData() 
-			throws PacketFormatException 
+			throws PacketFormatException, IOException 
 	{		
-		return ILPacketFactory.getPacketFromData(this.buffer);
+		return ILPacketFactory.getPacketFromData(this.buffer, this.hostAddress.getHostAddress() + "\0");
 	}
 	
 	/**

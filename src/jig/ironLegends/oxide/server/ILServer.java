@@ -11,7 +11,7 @@ public class ILServer {
 		try {
 //			InetAddress addr = InetAddress.getByName("localhost");
 			
-			ILNIOServerThread sThread = new ILNIOServerThread(2555, 33);
+			ILServerThread sThread = new ILServerThread(33);
 			sThread.setActive(true);
 			sThread.setServerName("Doggles house of dogs");
 			sThread.setMapName("Badlands");

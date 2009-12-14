@@ -43,8 +43,8 @@ import jig.ironLegends.core.GameScreens.ScreenTransition;
 import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.messages.Message;
 import jig.ironLegends.messages.SPStartGame;
-import jig.ironLegends.oxide.client.ILNIOClientThread;
-import jig.ironLegends.oxide.server.ILNIOServerThread;
+import jig.ironLegends.oxide.client.ILClientThread;
+import jig.ironLegends.oxide.server.ILServerThread;
 import jig.ironLegends.router.ClientContext;
 import jig.ironLegends.router.IMsgTransport;
 import jig.ironLegends.router.ServerContext;
@@ -147,9 +147,9 @@ public class IronLegends extends ScrollingScreenGame {
 	public IMsgTransport m_serverMsgTransport = null;
 	public Vector<String> m_availableMaps;
 	
-	public ILNIOClientThread client;
+	public ILClientThread client;
 	public Thread cThread;
-	public ILNIOServerThread server;
+	public ILServerThread server;
 	public Thread sThread;
 	public boolean createdServer = false;
 	public boolean multiPlayerMode = false;
@@ -197,11 +197,11 @@ public class IronLegends extends ScrollingScreenGame {
 		// Server/Client
 		try {
 			// TODO: Remove magic numbers
-			this.client = new ILNIOClientThread(20);
+			this.client = new ILClientThread(20);
 			this.cThread = new Thread(this.client);
 			this.cThread.start();
 			
-			this.server = new ILNIOServerThread(IronLegends.PORT, 33);
+			this.server = new ILServerThread(33);
 			this.sThread = new Thread(this.server);
 			this.sThread.start();
 		} catch (SocketException e) {

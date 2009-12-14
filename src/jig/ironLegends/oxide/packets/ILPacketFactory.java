@@ -1,5 +1,7 @@
 package jig.ironLegends.oxide.packets;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -10,6 +12,7 @@ import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.exceptions.IncompletePacketException;
 import jig.ironLegends.oxide.exceptions.IronOxideException;
 import jig.ironLegends.oxide.exceptions.PacketFormatException;
+import jig.ironLegends.oxide.util.PacketBuffer;
 import jig.ironLegends.oxide.util.PacketList;
 
 
@@ -19,9 +22,12 @@ import jig.ironLegends.oxide.util.PacketList;
 public class ILPacketFactory {
 	
 	
-	public static ILPacket getPacketFromData(ByteBuffer buffer)
-			throws PacketFormatException 
+	public static ILPacket getPacketFromData(ByteBuffer buffer, String id)
+			throws PacketFormatException, IOException 
 	{	
+		
+		PacketBuffer pb = new PacketBuffer(buffer);
+		
 		int protocolID = buffer.getInt(); // Strip the protocol ID
 		
 		if (protocolID != ILPacket.IL_PROTOCOL_ID) {
@@ -29,8 +35,27 @@ public class ILPacketFactory {
 					+ Integer.toHexString(protocolID));
 		}
 		
-		byte[] protocolData = new byte[9];
-		buffer.get(protocolData,0, protocolData.length);
+		String identifier = pb.getString();
+		
+		if (id != null) {
+			if (identifier.compareTo(id) != 0) {
+				throw new PacketFormatException("Incorrect identifier");
+			}
+		}
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		
+		dos.writeBytes(identifier);
+		
+		byte[] pd = new byte[9];
+		buffer.get(pd, 0, pd.length);
+		
+		dos.write(pd);
+		dos.flush();
+		dos.close();
+		
+		byte[] protocolData = baos.toByteArray();
 		
 		int header = buffer.get();
 		
@@ -60,7 +85,7 @@ public class ILPacketFactory {
 		}
 	}
 	
-	public static ILPacket reassemblePacket(PacketList packetList)
+	public static ILPacket reassemblePacket(PacketList packetList, String identifier)
 			throws IOException, IronOxideException
 	{
 		ILPacket firstPacket = packetList.list[0];
@@ -79,7 +104,7 @@ public class ILPacketFactory {
 			firstPacket.getContent().concatenatePacketBuffer(splitPacket.getContent());
 		}
 		
-		return ILPacketFactory.getPacketFromData(firstPacket.getByteBuffer());
+		return ILPacketFactory.getPacketFromData(firstPacket.getByteBuffer(), identifier);
 	}
 
 	/**
@@ -92,12 +117,12 @@ public class ILPacketFactory {
 	 * @return
 	 */
 	public static ILServerAdvertisementPacket newAdvertisementPacket(
-			int packetID, byte numberOfPlayers, byte maxPlayers,
+			int packetID, String identifier, String senderID, byte numberOfPlayers, byte maxPlayers,
 			String serverName, String map, String version) {
 	
 		byte[] protocolData = null;
 		try {
-			protocolData = getProtocolData(packetID);
+			protocolData = getProtocolData(packetID, identifier, senderID);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -113,10 +138,10 @@ public class ILPacketFactory {
 		return new ILServerAdvertisementPacket(protocolData, contentBytes);
 	}
 
-	public static ILLobbyPacket newLobbyPacket(int packetID, byte numberOfPlayers, String serverName, String map, Collection<ClientInfo> clients) {
+	public static ILLobbyPacket newLobbyPacket(int packetID, String identifier, String senderID, byte numberOfPlayers, String serverName, String map, Collection<ClientInfo> clients) {
 		byte[] protocolData = null;
 		try {
-			protocolData = getProtocolData(packetID);
+			protocolData = getProtocolData(packetID, identifier, senderID);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -129,10 +154,10 @@ public class ILPacketFactory {
 		}
 	}
 	
-	public static ILLobbyEventPacket newLobbyEventPacket(int packetID, String name, byte team) {
+	public static ILLobbyEventPacket newLobbyEventPacket(int packetID, String identifier, String senderID, String name, byte team) {
 		byte[] protocolData = null;
 		try {
-			protocolData = getProtocolData(packetID);
+			protocolData = getProtocolData(packetID, identifier, senderID);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -145,10 +170,10 @@ public class ILPacketFactory {
 		}
 	}
 	
-	public static ILEventPacket newEventPacket(int packetID, CommandState event) {
+	public static ILEventPacket newEventPacket(int packetID, String identifier, String senderID, CommandState event) {
 		byte[] protocolData = null;
 		try {
-			protocolData = getProtocolData(packetID);
+			protocolData = getProtocolData(packetID, identifier, senderID);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -165,10 +190,10 @@ public class ILPacketFactory {
 	 * @param packetID
 	 * @return
 	 */
-	public static ILReadyPacket newReadyPacket(int packetID) {
+	public static ILReadyPacket newReadyPacket(int packetID, String identifier, String senderID) {
 		byte[] protocolData = null;
 		try {
-			protocolData = getProtocolData(packetID);
+			protocolData = getProtocolData(packetID, identifier, senderID);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -182,8 +207,8 @@ public class ILPacketFactory {
 	 * @return
 	 * @throws IOException 
 	 */
-	private static byte[] getProtocolData(int packetID) throws IOException {
-		return ILPacket.createProtocolData(packetID, (byte) 0, (byte) 1, ILPacket.DEFAULT_SPLIT_SIZE);
+	private static byte[] getProtocolData(int packetID, String identifier, String senderID) throws IOException {
+		return ILPacket.createProtocolData(identifier, senderID, packetID, (byte) 0, (byte) 1, ILPacket.DEFAULT_SPLIT_SIZE);
 	}
 
 }
