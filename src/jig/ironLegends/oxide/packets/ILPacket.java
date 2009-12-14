@@ -43,6 +43,8 @@ public abstract class ILPacket {
 	protected byte packetCount;
 	protected short splitSize;
 	protected byte flags;
+	protected String filterID;
+	protected String senderID;
 	
 	protected ILPacket(byte headerData, byte[] protocolData) {
 		this(headerData, protocolData, new byte[0]);
@@ -52,7 +54,8 @@ public abstract class ILPacket {
 		this.headerData = headerData;
 		this.protocolData = new PacketBuffer(protocolData);
 		this.contentData = new PacketBuffer(contentBytes);
-		
+		this.filterID = this.protocolData.getString();
+		this.senderID = this.protocolData.getString();
 		this.flags = this.protocolData.getByte();
 		this.packetID = this.protocolData.getInt();
 		this.packetNumber = this.protocolData.getByte();
@@ -99,6 +102,14 @@ public abstract class ILPacket {
 		return this.packetNumber;
 	}
 	
+	public String getFilterID() {
+		return this.filterID;
+	}
+	
+	public String getSenderAddress() { 
+		return this.senderID;
+	}
+	
 	public byte getPacketCount() {
 		return this.packetCount;
 	}
@@ -115,13 +126,16 @@ public abstract class ILPacket {
 		return ((this.flags & SPLIT_FLAG) == SPLIT_FLAG);
 	}
 	
-	public static byte[] createProtocolData(int packetID, byte packetNum, 
+	public static byte[] createProtocolData(String identifier, String senderID, int packetID, byte packetNum, 
 			byte packetCount, short splitSize, boolean inOrder, boolean split) 
 			throws IOException
 	{
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
+		
+		dos.writeBytes(identifier);
+		dos.writeBytes(senderID);
 		
 		byte flag = 0;
 		if(inOrder) flag |= ORDER_FLAG;
@@ -138,11 +152,11 @@ public abstract class ILPacket {
 		return baos.toByteArray();
 	}
 	
-	public static byte[] createProtocolData(int packetID, byte packetNum,
+	public static byte[] createProtocolData(String identifier, String senderID, int packetID, byte packetNum,
 			byte packetCount, short splitSize) 
 			throws IOException 
 	{
-		return createProtocolData(packetID, packetNum, packetCount, splitSize, 
+		return createProtocolData(identifier, senderID, packetID, packetNum, packetCount, splitSize, 
 				false, false);
 	}
 

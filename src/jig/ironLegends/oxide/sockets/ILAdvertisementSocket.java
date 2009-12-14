@@ -80,12 +80,13 @@ public class ILAdvertisementSocket {
 	 * @return The IronLegendsPacket object created from the data in the buffer
 	 * @throws PacketFormatException When the IronLegendsPacket could not be
 	 * 		   created because of a format error
+	 * @throws IOException 
 	 */
-	protected ILPacket getPacketFromData() 
-			throws PacketFormatException 
+	protected ILPacket getPacketFromData(String id) 
+			throws PacketFormatException, IOException 
 	{
 		this.buffer.rewind();
-		return ILPacketFactory.getPacketFromData(this.buffer);
+		return ILPacketFactory.getPacketFromData(this.buffer, id);
 	}
 	
 	/**
@@ -95,17 +96,30 @@ public class ILAdvertisementSocket {
 	 * @throws TimeoutException
 	 * @throws IronOxideException
 	 */
-	public ILPacket getMessage() 
+	public ILPacket getMessage(String id) 
 			throws IOException, SocketTimeoutException, IronOxideException
-	{
-		ILServerAdvertisementPacket packet;
-		
+	{	
 		this.receivePacket();
-		packet = (ILServerAdvertisementPacket) this.getPacketFromData();
-		packet.address = this.address;
-		this.buffer.flip();
 		
-		return packet;
+		ILPacket p = this.getPacketFromData(id);
+		
+		if (p instanceof ILServerAdvertisementPacket) {
+			ILServerAdvertisementPacket packet;
+			packet = (ILServerAdvertisementPacket) this.getPacketFromData(id);
+			packet.address = this.address;
+			
+			this.buffer.flip();
+			return packet;
+		} else {
+			this.buffer.flip();
+			return p;
+		}
+	}
+	
+	public ILPacket getMessage() 
+		throws IOException, SocketTimeoutException, IronOxideException
+	{
+		return this.getMessage(null);
 	}
 	
 	protected boolean packetIsSplit() {

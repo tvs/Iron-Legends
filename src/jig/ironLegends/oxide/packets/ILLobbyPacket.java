@@ -51,9 +51,10 @@ public class ILLobbyPacket extends ILPacket {
 		
 		for (int i = 0; i < this.numClients; i++) {
 			byte id = this.contentData.getByte();
+			String ip = this.contentData.getString();
 			String name = this.contentData.getString();
 			byte team = this.contentData.getByte();
-			this.clients.add(new ClientInfo(id, name, team));
+			this.clients.add(new ClientInfo(id, ip, name, team));
 		}
 		
 		this.contentData.rewind();

@@ -125,7 +125,8 @@ public class SplashScreen extends GameScreen {
 				String sSelectedMap = "mapitems.txt";
 				int packetId = this.m_game.client.packetID();
 				
-				ILStartGamePacket startGamePacket = ILPacketFactory.newStartGamePacket(packetId);
+				ILStartGamePacket startGamePacket = ILPacketFactory.newStartGamePacket(packetId
+						, m_game.client.hostAddress.getHostAddress()+"\0", m_game.client.myAddress.getHostAddress() + "\0");
 				
 				startGamePacket.map = sSelectedMap;
 				startGamePacket.m_bSinglePlayer = true;
