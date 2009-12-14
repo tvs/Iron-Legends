@@ -259,7 +259,6 @@ public class ILServerThread implements Runnable {
 	}
 	
 	private void sendLobbyState() throws IOException {
-		
 		this.gameSocket.send(this.lobbyPacket);
 	}
 	

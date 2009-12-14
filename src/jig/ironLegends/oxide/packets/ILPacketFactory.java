@@ -43,10 +43,13 @@ public class ILPacketFactory {
 			}
 		}
 		
+		String senderID = pb.getString(); 
+			
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		
-		dos.writeBytes(identifier);
+		dos.writeBytes(identifier + "\0");
+		dos.writeBytes(senderID + "\0");
 		
 		byte[] pd = new byte[9];
 		buffer.get(pd, 0, pd.length);
