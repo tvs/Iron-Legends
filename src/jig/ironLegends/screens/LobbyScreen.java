@@ -208,6 +208,10 @@ public class LobbyScreen extends GameScreen {
 	{
 		this.game.client.update(deltaMs);
 		
+		if (this.game.createdServer) {
+			this.game.server.update(deltaMs);
+		}
+		
 		bbutton.update(mouse, deltaMs);
 		if (bbutton.wasLeftClicked()) {
 			if (this.game.createdServer) this.game.createdServer = false;
@@ -247,14 +251,14 @@ public class LobbyScreen extends GameScreen {
 			if (this.game.client.tickExpired()) {
 				// Send our identification
 				if (this.playerClient == null) {
-					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+					this.game.client.sendLobby(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
 						this.game.client.hostAddress.getHostAddress() + "\0",
 						this.game.client.myAddress.getHostAddress() + "\0",
  						this.game.m_playerInfo.getName() + "\0",
 						ClientInfo.RED_TEAM));
 				} else {
 					// Send our current state
-					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+					this.game.client.sendLobby(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
 							this.game.client.hostAddress.getHostAddress() + "\0",
 							this.game.client.myAddress.getHostAddress() + "\0",
 							this.playerClient.name + "\0", this.playerClient.team));

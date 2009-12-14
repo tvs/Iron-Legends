@@ -26,7 +26,10 @@ public class ILAdvertisementSocket {
 	protected InetSocketAddress address;
 	protected ByteBuffer buffer;
 	protected InetAddress group;
-	protected int port;
+	
+	protected int readPort;
+	protected int writePort;
+	
 	protected MulticastSocket outSocket;
 	protected MulticastSocket inSocket;
 	
@@ -36,7 +39,7 @@ public class ILAdvertisementSocket {
 	 * @param portNumber Port number of the server
 	 * @throws IOException 
 	 */
-	public ILAdvertisementSocket(String ipAddress, int portNumber) 
+	public ILAdvertisementSocket(String ipAddress, int readPort, int writePort) 
 		throws IOException, SocketException
 	{			
 		this.buffer = ByteBuffer.allocate(ILPacket.MAX_PACKET_SIZE);
@@ -49,10 +52,11 @@ public class ILAdvertisementSocket {
 		}
 		
 		this.outSocket = new MulticastSocket();
-		this.inSocket = new MulticastSocket(portNumber);
+		this.inSocket = new MulticastSocket(readPort);
 		this.inSocket.joinGroup(group);
 		
-		this.port = portNumber;
+		this.readPort = readPort;
+		this.writePort = writePort;
 		this.inSocket.setSoTimeout(ILSocket.TIME_OUT);
 	}
 	
@@ -64,7 +68,7 @@ public class ILAdvertisementSocket {
 		
 		byte[] buffer = dataPacket.getBytes();
 		
-		packet = new DatagramPacket(buffer, buffer.length, this.group, this.port);
+		packet = new DatagramPacket(buffer, buffer.length, this.group, this.writePort);
 		this.outSocket.send(packet);
 	}
 	

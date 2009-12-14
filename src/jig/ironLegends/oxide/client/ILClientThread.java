@@ -33,6 +33,7 @@ public class ILClientThread implements Runnable {
 	// The advertisement socket we listen on
 	private ILAdvertisementSocket advertSocket;
 	private ILAdvertisementSocket gameSocket;
+	private ILAdvertisementSocket lobbySocket;
 	
 	// A map of servers discovered by the aSocket
 	public Map<InetSocketAddress, ILServerAdvertisementPacket> servers;
@@ -44,6 +45,7 @@ public class ILClientThread implements Runnable {
 	private boolean lookingForServers;
 	private boolean active;
 	private boolean connectedToGame;
+	private boolean lobby;
 	
 	public boolean receivedStartGame = false;
 	public ILStartGamePacket startGamePacket;
@@ -60,10 +62,13 @@ public class ILClientThread implements Runnable {
 		this.tickrate = tickrate;
 		
 		this.myAddress = InetAddress.getLocalHost();
-		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5001);
+		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5002, 5001);
+		this.lobbySocket = new ILAdvertisementSocket("230.0.0.1", 5006, 5005);
 		this.lookingForServers = false;
 		this.active = false;
 		this.connectedToGame = false;
+		
+		this.lobby = false;
 		
 		this.servers = new HashMap<InetSocketAddress, ILServerAdvertisementPacket>();
 		this.stateUpdates = new LinkedList<ILGameStatePacket>();
@@ -89,8 +94,9 @@ public class ILClientThread implements Runnable {
 	public void connectTo(InetAddress hostAddress) throws IOException {
 		this.hostAddress = hostAddress;
 		
-		this.gameSocket = new ILAdvertisementSocket("230.0.0.1", 5002);
+		this.gameSocket = new ILAdvertisementSocket("230.0.0.1", 5004, 5003);
 		connectedToGame = true;
+		lobby = true;
 	}
 	
 	/* (non-Javadoc)
@@ -123,6 +129,7 @@ public class ILClientThread implements Runnable {
 			
 			if (connectedToGame) {
 				try {
+					if (lobby) this.readLobby();
 					this.read();
 					this.write();
 				} catch (IOException e) {
@@ -145,6 +152,10 @@ public class ILClientThread implements Runnable {
 		}
 	}
 	
+	public void sendLobby(ILPacket packet) throws IOException {
+		this.lobbySocket.send(packet);
+	}
+	
 	public void sendReadyPacket() throws IOException {
 		synchronized(this.outgoingData) {
 			ILReadyPacket p = ILPacketFactory.newReadyPacket((int) this.packetID(), 
@@ -158,6 +169,22 @@ public class ILClientThread implements Runnable {
 		ILPacket readPacket;
 		try {
 			readPacket = gameSocket.getMessage();
+		} catch(SocketTimeoutException e) {
+			return;
+		} catch (IOException e) {
+			return;
+		} catch (IronOxideException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		this.handlePacket(readPacket);
+	}
+	
+	private void readLobby() throws IOException {
+		ILPacket readPacket;
+		try {
+			readPacket = lobbySocket.getMessage();
 		} catch(SocketTimeoutException e) {
 			return;
 		} catch (IOException e) {

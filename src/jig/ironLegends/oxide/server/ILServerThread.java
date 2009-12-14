@@ -39,6 +39,7 @@ public class ILServerThread implements Runnable {
 	
 	private ILServerAdvertisementPacket advertPacket;
 	private ILAdvertisementSocket advertSocket;
+	private ILAdvertisementSocket lobbySocket;
 	private ILAdvertisementSocket gameSocket;
 	
 	private ILLobbyPacket lobbyPacket;
@@ -68,8 +69,10 @@ public class ILServerThread implements Runnable {
 		this.hostAddress = InetAddress.getLocalHost();
 		this.tickrate = tickrate; // Ticks per second
 		
-		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5001);
-		this.gameSocket = new ILAdvertisementSocket("230.0.0.1", 5002);
+		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5001, 5002);
+		this.gameSocket = new ILAdvertisementSocket("230.0.0.1", 5003, 5004);
+		this.lobbySocket = new ILAdvertisementSocket("230.0.0.1", 5005, 5006);
+		
 		this.advertise = true;
 		this.lobby = true;
 		this.active = false;
@@ -124,17 +127,19 @@ public class ILServerThread implements Runnable {
 					}
 				}
 				
-				// Send out lobby updates
 				if (lobby) {
+					// Read a lobby update
+					this.readLobby();
 					synchronized(this.lobbyPacket) {
 						this.updateLobbyPacket();
 						if (this.tickExpired()) {
+							// Send out lobby updates
 							this.sendLobbyState();
 						}
 					}
 				}
-				
-				// Read a client update
+					
+				// Read a client game update
 				this.read();
 				
 				// If the tick has expired, update each of the clients
@@ -216,6 +221,22 @@ public class ILServerThread implements Runnable {
 		this.handlePacket(readPacket);
 	}
 	
+	private void readLobby() throws IOException {
+		ILPacket readPacket;
+		try {
+			readPacket = lobbySocket.getMessage();
+		} catch(SocketTimeoutException e) {
+			return;
+		} catch (IOException e) {
+			return;
+		} catch (IronOxideException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		this.handlePacket(readPacket);
+	}
+	
 	private void handlePacket(ILPacket readPacket)  
 	{	
 		if (readPacket instanceof ILEventPacket) {
@@ -263,7 +284,7 @@ public class ILServerThread implements Runnable {
 	}
 	
 	private void sendLobbyState() throws IOException {
-		this.gameSocket.send(this.lobbyPacket);
+		this.lobbySocket.send(this.lobbyPacket);
 	}
 	
 }
