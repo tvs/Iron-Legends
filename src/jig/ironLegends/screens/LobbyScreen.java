@@ -240,15 +240,17 @@ public class LobbyScreen extends GameScreen {
 		}
 		
 		try {
-			// Send our identification
-			if (this.playerClient == null) {
-				this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
-					this.game.m_playerInfo.getName(),
-					ClientInfo.RED_TEAM));
-			} else {
-				// Send our current state
-				this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
-						this.playerClient.name, this.playerClient.team));
+			if (this.game.client.tickExpired()) {
+				// Send our identification
+				if (this.playerClient == null) {
+					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+						this.game.m_playerInfo.getName(),
+						ClientInfo.RED_TEAM));
+				} else {
+					// Send our current state
+					this.game.client.send(ILPacketFactory.newLobbyEventPacket(this.game.client.packetID(), 
+							this.playerClient.name, this.playerClient.team));
+				}
 			}
 		} catch (IOException e) {
 			Logger.getLogger("global").warning(e.toString());

@@ -16,7 +16,7 @@ public class ILClient {
 		try {
 			InetAddress addr = InetAddress.getByName("localhost");
 			
-			ILClientThread cThread = new ILClientThread(20);
+			ILNIOClientThread cThread = new ILNIOClientThread(20);
 			cThread.connectTo(addr, 2555);
 			cThread.setActive(true);
 			cThread.setLookingForServers(true);
