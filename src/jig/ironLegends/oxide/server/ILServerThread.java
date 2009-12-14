@@ -69,9 +69,9 @@ public class ILServerThread implements Runnable {
 		this.hostAddress = InetAddress.getLocalHost();
 		this.tickrate = tickrate; // Ticks per second
 		
-		this.advertSocket = new ILAdvertisementSocket("224.0.0.23", 5001, 5002);
-		this.gameSocket = new ILAdvertisementSocket("224.0.0.23", 5003, 5004);
-		this.lobbySocket = new ILAdvertisementSocket("224.0.0.23", 5005, 5006);
+		this.advertSocket = new ILAdvertisementSocket("224.0.0.23", 7001, 7002);
+		this.gameSocket = new ILAdvertisementSocket("224.0.0.23", 7003, 7004);
+		this.lobbySocket = new ILAdvertisementSocket("224.0.0.23", 7005, 7006);
 		
 		this.advertise = true;
 		this.lobby = true;
