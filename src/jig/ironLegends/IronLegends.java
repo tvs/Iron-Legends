@@ -172,8 +172,7 @@ public class IronLegends extends ScrollingScreenGame {
 		setWorldDim(WORLD_WIDTH, WORLD_HEIGHT);
 		
 		m_sInstallDir = InstallInfo.getInstallDir("/" + GAME_ROOT
-				+ "IronLegends.class", "IronLegends.jar");
-
+				+ "IronLegends.class", "IronLegends.jar");		
 		// Load resources
 		loadResources();
 		
@@ -276,7 +275,7 @@ public class IronLegends extends ScrollingScreenGame {
 	}
 
 	public void loadLevel(String mapFile) {
-		//loadMap("maps/mapitems.txt");
+		System.out.println("Loading map: " + mapFile);		
 		loadMap(mapFile);
 
 		populateGameLayers();
@@ -485,14 +484,42 @@ public class IronLegends extends ScrollingScreenGame {
 	public void resetGame()
 	{
 		m_bGameOver = false;
+
 		m_gameProgress.reset();
 	}
 	public void newGame(String mapFile) {
 		resetGame();
 		
 		//String mapFile = "maps/mapitems.txt";
+
+		m_gameProgress.reset();		
+	
+		if (!isMultiPlayerMode())
+		{
+			// pick random map
+			mapFile = m_availableMaps.get((int) Math.random() * m_availableMaps.size());
+			int bx = mapFile.indexOf("maps/");
+			if (bx > 0) {
+				mapFile = mapFile.substring(bx);
+			}
+		}
+	//		String mapFile = "maps/grunge.txt";
+	//		String mapFile = "maps/helljungle.txt";		
+		if (client != null)
+		{
+			ILStartGamePacket startGamePacket = client.getStartGamePacket();
+			if (startGamePacket != null)
+			{
+				int i = startGamePacket.map.lastIndexOf("/");
+				String s = startGamePacket.map.substring(i+1);
 				
-		loadLevel(mapFile);		
+				mapFile = "maps/" + s;
+			}
+		}
+		
+		loadLevel(mapFile);
+		if (client != null)
+			client.loadedMap = true;
 	}
 
 	public Bullet getBullet() {
@@ -523,7 +550,7 @@ public class IronLegends extends ScrollingScreenGame {
 			// send msgs to server
 			m_clientMsgTransport.send(m_client.getTxQueue());
 		}
-		if (server != null && client != null)
+		if (server != null && client != null && isMultiPlayerMode())
 		{
 			if (server.createdTanks == true)
 			{
