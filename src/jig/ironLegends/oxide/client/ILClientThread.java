@@ -62,8 +62,8 @@ public class ILClientThread implements Runnable {
 		this.tickrate = tickrate;
 		
 		this.myAddress = InetAddress.getLocalHost();
-		this.advertSocket = new ILAdvertisementSocket("230.0.0.1", 5002, 5001);
-		this.lobbySocket = new ILAdvertisementSocket("230.0.0.1", 5006, 5005);
+		this.advertSocket = new ILAdvertisementSocket("224.0.0.23", 5002, 5001);
+		this.lobbySocket = new ILAdvertisementSocket("224.0.0.23", 5006, 5005);
 		this.lookingForServers = false;
 		this.active = false;
 		this.connectedToGame = false;
@@ -94,7 +94,7 @@ public class ILClientThread implements Runnable {
 	public void connectTo(InetAddress hostAddress) throws IOException {
 		this.hostAddress = hostAddress;
 		
-		this.gameSocket = new ILAdvertisementSocket("230.0.0.1", 5004, 5003);
+		this.gameSocket = new ILAdvertisementSocket("224.0.0.23", 5004, 5003);
 		connectedToGame = true;
 		lobby = true;
 	}
