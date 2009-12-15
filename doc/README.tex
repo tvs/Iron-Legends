@@ -57,16 +57,24 @@
 
 \subsection{High Bar}
 
-\subsection{Additional Freatures implemented}
+\subsection{Additional Features implemented}
 
 %%%%%%%%%% Technical Showpieces %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Technical Showpieces}
 
 \subsection{Multiplayer via Networking}
 
+Unfortunately, this technical showpiece is only mostly-complete. As we went to hook the networking into the multiplayer, we discovered extremely subtle problems that cropped up with the Java NIO classes (i.e. SocketChannel, Selectors, etc.) and the network. What worked in one environment failed to work on another.
+
+After experiencing these major setbacks, we spent a good 10-12 hours on Sunday completely reworking the networking to use Multicast messages. While this works (and can be demonstrated on the Multiplayer Server Select and Lobby screen), the packets aren't handled once into the multiplayer game situation and so game updates aren't accepted and used. This is only an hour or two from being completed, but alas, we ran short of time.
+
+As an aside, because it's so frustratingly close to completion, it may be completed sometime in the future. Keep an eye on the GitHub repository! http://github.com/doggles/Iron-Legends
+
 \subsection{Artificial Intelligence}
 
 \subsection{Dual Mode: Single/Multi Player}
+
+As mentioned earlier, the multiplayer connection was moments from completion. However, there was a nice divide already set up such that the individual who chose to host a server, effectively just duplicated the actions of the server. The single player game would simply run a server and then run the AI in addition. The single/multiplayer win/lose scenarios already existed and could be swapped between nicely as well.
 
 \section{Cheat Codes}
 
