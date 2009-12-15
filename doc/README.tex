@@ -68,7 +68,22 @@ Unfortunately, this technical showpiece is only mostly-complete. As we went to h
 
 After experiencing these major setbacks, we spent a good 10-12 hours on Sunday completely reworking the networking to use Multicast messages. While this works (and can be demonstrated on the Multiplayer Server Select and Lobby screen), the packets aren't handled once into the multiplayer game situation and so game updates aren't accepted and used. This is only an hour or two from being completed, but alas, we ran short of time.
 
-As an aside, because it's so frustratingly close to completion, it may be completed sometime in the future. Keep an eye on the GitHub repository! http://github.com/doggles/Iron-Legends
+As an aside, because it's so frustratingly close to completion, it may be completed sometime in the future (in fact, as of writing this, there is a push containing movement networking, waiting for GitHub to finish a repository migration). Keep an eye on the GitHub repository! http://github.com/doggles/Iron-Legends
+
+\subsubsection{NIO Details}
+Nitty gritty implementation details can be seen in jig/ironLegends/oxide/client and [...]/oxide/server under the ILNIO{*}.java classes.
+
+With the client, the ROX NIO tutorial (http://rox-xmlrpc.sourceforge.net/niotut/) was followed quite heavily. In fact, the queueing system and the change request system was followed to the letter. Each message was broken up into constituent packets (of 1400 byte max-length) that could be created and reassembled by way of a packet factory. Any packets that were split could also be reassembled, so packet size was not a concern (though they never seemed to get above about 900 bytes even with a full set of data).
+
+The server also began from the ROX NIO tutorial, but ended up diverging heavily, doing away with the change request system. The server simply registered an interest operation on reading or accepting connections (though only one at a time). When the tick expired, the server would then look at the list of connected clients (created when it accepted a connection), and update them directly through their open channels.
+
+In order to discover the available servers, the client and server were given an ILAdvertisementSocket that handled reading and writing to a multicast port (this became the main data socket after the rebuild, since it was convenient and already created). By reading on the multicast group, the client reassembled an ILAdvertisementPacket and could use that for determining the host's address, server name, map name, number of players, and other information.
+
+When the "connect" button is hit, the client would request a connection on the server's channel and finalize the connection---though there was one nuance where a client connecting could potentially finalize the connection immediately (if it were on localhost for example), so there was a requirement to handle that. The Server would then create a ClientInfo for this player, attach the ClientInfo to the key (so the key could be used as an identifier -- they're not hashable it seemed so attaching was the only other course of action) as well as put it in a list (for later mass-updates), and then begin sending lobby updates.
+
+This is where the trouble started to come up. In initial testing, this worked perfectly. Then as we were attempting to use it on the campus network, packets stopped being received despite being sent (i.e. the server didn't receive client updates and the client didn't receive server updates). On occasion, the packets would be received, but at a tremendously slow rate. As a group, we spent a few hours quashing potential bugs that we noticed in the code, but ultimately nothing was fixed. This was when we decided that we needed to try another approach.
+
+We completely rewrote the server and client using the multicast sockets and the existing ILAdvertisementSocket class. This fixed a few things, but ultimately, the clients and the servers were still getting slow updates. After a bit of trying to troublshoot this, we decided to split the ILAdvertisementSocket across two ports --- one for reading, one for writing. This seemed to fix latency issues, the servers could host and the clients could connect, but at that point it was rather late, the campus was closing, and so we called it a day before completing the implementation of the game update packets. Unfortunately, we weren't quite fast enough the next day to get the networking fully completed (though it was very close).
 
 \subsection{Artificial Intelligence}
 
