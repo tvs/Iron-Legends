@@ -255,7 +255,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
 		
 		// Background Music
-		//music = new AudioStream(RESOURCE_AUDIO + "ry_z-Forked_Road.mp3");
+		music = new AudioStream(RESOURCE_AUDIO + "ry_z-Forked_Road.mp3");
 	}
 
 	public void loadMap(String sMapFile) {		
@@ -1018,7 +1018,6 @@ public class IronLegends extends ScrollingScreenGame {
 	}
 	
 	public void backgroundMusic(boolean play) {
-		/*
 		if (play) {
 			if (music.getState() == AudioState.PRE || music.getState() == AudioState.STOPPED) {
 				music.play(.5);
@@ -1030,7 +1029,6 @@ public class IronLegends extends ScrollingScreenGame {
 				music.pause();
 			}
 		}
-		*/
 	}
 
 }
