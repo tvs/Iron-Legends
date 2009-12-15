@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jig.ironLegends.CommandState;
 import jig.ironLegends.oxide.client.ClientInfo;
@@ -44,8 +44,8 @@ public class ILServerThread implements Runnable {
 	
 	private ILLobbyPacket lobbyPacket;
 	
-	private List<CommandState> receivedData;
-	private List<ILPacket> outgoingData;
+	public ConcurrentLinkedQueue<CommandState> receivedData;
+	private ConcurrentLinkedQueue<ILPacket> outgoingData;
 	private Map<String, ClientInfo> clients;
 	
 	protected boolean advertise;
@@ -79,8 +79,8 @@ public class ILServerThread implements Runnable {
 		this.lobby = true;
 		this.active = false;
 		this.clients = new HashMap<String, ClientInfo>();
-		this.receivedData = new LinkedList<CommandState>();
-		this.outgoingData = new LinkedList<ILPacket>();
+		this.receivedData = new ConcurrentLinkedQueue<CommandState>();
+		this.outgoingData = new ConcurrentLinkedQueue<ILPacket>();
 		
 		this.serverName = "Server\0";
 		this.map = "Map\0";
@@ -281,8 +281,8 @@ public class ILServerThread implements Runnable {
 	private void updateClients() throws IOException {
 		synchronized(this.outgoingData) {
 			while(!outgoingData.isEmpty()) {
-				this.gameSocket.send(outgoingData.get(0));
-				outgoingData.remove(0);
+				this.gameSocket.send(outgoingData.remove());
+				//outgoingData.remove(0);
 			}
 		}
 	}
@@ -296,6 +296,11 @@ public class ILServerThread implements Runnable {
 	 */
 	public String getMapName() {
 		return this.map;
+	}
+
+	public boolean isActive() {
+		// TODO Auto-generated method stub
+		return this.active;
 	}
 	
 }

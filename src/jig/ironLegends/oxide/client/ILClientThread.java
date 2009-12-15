@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import jig.ironLegends.CommandState;
 import jig.ironLegends.oxide.exceptions.IronOxideException;
@@ -38,8 +39,8 @@ public class ILClientThread implements Runnable {
 	// A map of servers discovered by the aSocket
 	public Map<InetSocketAddress, ILServerAdvertisementPacket> servers;
 	
-	public List<ILGameStatePacket> stateUpdates;
-	public List<ILPacket> outgoingData;
+	public ConcurrentLinkedQueue<ILGameStatePacket> stateUpdates;
+	public ConcurrentLinkedQueue<ILPacket> outgoingData;
 	public ILLobbyPacket lobbyState;
 	
 	private boolean lookingForServers;
@@ -74,8 +75,8 @@ public class ILClientThread implements Runnable {
 		this.lobby = false;
 		
 		this.servers = new HashMap<InetSocketAddress, ILServerAdvertisementPacket>();
-		this.stateUpdates = new LinkedList<ILGameStatePacket>();
-		this.outgoingData = new LinkedList<ILPacket>();
+		this.stateUpdates = new ConcurrentLinkedQueue<ILGameStatePacket>();
+		this.outgoingData = new ConcurrentLinkedQueue<ILPacket>();
 	}
 	
 	public int packetID() {
@@ -140,6 +141,7 @@ public class ILClientThread implements Runnable {
 				}
 			}			
 		}
+		//System.out.println("Exiting client thread");
 	}
 	
 	public void send(CommandState event) throws IOException {
@@ -236,8 +238,8 @@ public class ILClientThread implements Runnable {
 			synchronized (this.outgoingData) {
 				// Write until there's no more data
 				while (!this.outgoingData.isEmpty()) {
-					this.gameSocket.send(this.outgoingData.get(0));
-					this.outgoingData.remove(0);
+					this.gameSocket.send(this.outgoingData.remove());
+					//this.outgoingData.remove(0);
 				}
 			}
 			this.lastTick = this.time;

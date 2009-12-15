@@ -17,7 +17,7 @@ import jig.ironLegends.oxide.util.PacketBuffer;
  */
 public class ILGameStatePacket extends ILPacket {
 	
-	private List<EntityState> tankStates;
+	public List<EntityState> tankStates;
 	private List<ILObjectState> objectStates;
 	private List<ILEvent> events;
 	

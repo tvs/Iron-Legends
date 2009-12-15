@@ -1,5 +1,7 @@
 package jig.ironLegends.screens;
 
+import java.io.IOException;
+
 import jig.engine.Mouse;
 import jig.engine.RenderingContext;
 import jig.engine.Sprite;
@@ -12,6 +14,7 @@ import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
+import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.router.ClientContext;
@@ -111,6 +114,7 @@ public class SplashScreen extends GameScreen {
 		{
 			if (m_game.m_server == null)
 			{
+				//*
 				// single player, so launch server on this client
 				m_game.m_server = new ServerContext();
 				// send message to server to "start game"
@@ -119,13 +123,19 @@ public class SplashScreen extends GameScreen {
 				// transport of messages can just be queue movement for single player
 				m_game.m_clientMsgTransport = new SinglePlayerMsgTransport(m_game.m_server.getRxQueue(), m_game.m_client.getRxQueue());
 				m_game.m_serverMsgTransport = new SinglePlayerMsgTransport(m_game.m_client.getRxQueue(), m_game.m_server.getRxQueue());
-
+				//*/
 				String sSelectedMap = "mapitems.txt";
 				int packetId = this.m_game.client.packetID();
 				
+				try {
+					m_game.client.connectTo(m_game.client.myAddress);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				ILStartGamePacket startGamePacket = ILPacketFactory.newStartGamePacket(packetId
-						//, m_game.client.hostAddress.getHostAddress()+"\0"
-						, "garbage" + "\0"
+						, m_game.client.hostAddress.getHostAddress()+"\0"
+						//, "garbage" + "\0"
 						, m_game.client.myAddress.getHostAddress() + "\0"
 						, m_game.m_mapName);
 				
@@ -133,22 +143,28 @@ public class SplashScreen extends GameScreen {
 				startGamePacket.m_bSinglePlayer = true;
 				
 				startGamePacket.addPlayer("FixMyName", 0);
+				
+
 				/*
 				for (int i = 0; i < 4; ++i)
 				{
 					startGamePacket.addPlayer("AI-" + (i+1), i+1);
 				}
-				*/
+				//*/
 				
-				// TODO: single player, name ai tanks as ai-1 .. 
-				
-				//SPStartGame msg = new SPStartGame(sSelectedMap);
-				//m_game.m_client.send(msg);
+				// TODO: single player, name ai tanks as ai-1 .. 				
 				m_game.m_client.send(startGamePacket);
+				/*
+				this.m_game.client.setLookingForServers(false);
+				//this.m_game.client.setActive(true);
+				
+				//ILLobbyPacket lp = ILPacketFactory.newLobbyPacket(server.packetID()
+				//		, server., senderID, numberOfPlayers, serverName, map, clients)
+				
+				m_game.server.send(startGamePacket);
+				*/
 			}
 			
-			// TODO Push this to the correct "Lobby" screen
-			//return IronLegends.GAMEPLAY_SCREEN;
 			return name();
 		}
 		

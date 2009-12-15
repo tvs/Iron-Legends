@@ -220,6 +220,19 @@ public class ILPacketFactory {
 		
 		return new ILStartGamePacket(protocolData, map);
 	}
+	public static ILGameStatePacket newGameStatePacket(int packetID, String identifier, String senderID)
+	{
+		byte[] protocolData = null;
+		try
+		{
+			protocolData = getProtocolData(packetID, identifier, senderID);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return new ILGameStatePacket(protocolData);
+	}
 	
 	/**
 	 * @param packetID

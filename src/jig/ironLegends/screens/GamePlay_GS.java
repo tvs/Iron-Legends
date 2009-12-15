@@ -1,5 +1,6 @@
 package jig.ironLegends.screens;
 
+import java.io.IOException;
 import java.util.List;
 
 import jig.engine.Mouse;
@@ -22,6 +23,8 @@ import jig.ironLegends.collision.Sink_CPB_CPB_Default;
 import jig.ironLegends.core.ConvexPolyBody;
 import jig.ironLegends.core.GameScreen;
 import jig.ironLegends.core.KeyCommands;
+import jig.ironLegends.oxide.packets.ILEventPacket;
+import jig.ironLegends.oxide.packets.ILPacketFactory;
 
 public class GamePlay_GS extends GameScreen {
 	IronLegends game;
@@ -331,6 +334,8 @@ public class GamePlay_GS extends GameScreen {
 		// for now just suck in the commands here
 		CommandState cs = new CommandState();
 		// client processing
+		boolean bMultiplayer = game.isMultiPlayerMode();
+		
 		{
 			cs.setEntityNumber(game.m_tank.getEntityNumber());
 			cs.setTurretRotationRad(game.m_tank.getTurretRotation());
@@ -341,14 +346,27 @@ public class GamePlay_GS extends GameScreen {
 			{
 				cs.setState(CommandState.CMD_DIE, true);				
 			}
-			// send to server here?
+			
+			if (bMultiplayer)
+			{
+				// send to server here?
+				ILEventPacket p = ILPacketFactory.newEventPacket(game.client.packetID(), game.client.hostAddress.getHostAddress() + "\0"
+						, game.client.myAddress.getHostAddress()+"\0", cs);
+				try {
+					game.client.send(p);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 
 		// when server receives the entity command state, it can find the entity and then
 		// update it
+		if (!bMultiplayer)
 		{
 			Tank t = game.findEntity(cs.getEntityNumber());
-			t.serverControlMovement(keyCmds, mouse, cs);
+			t.serverControlMovement(cs);
 			if (cs.isActive(CommandState.CMD_DIE))
 			{
 				// the below should happen when server issues a die cmd

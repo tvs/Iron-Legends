@@ -206,6 +206,9 @@ public class Tank extends MultiSpriteBody {
 	
 	@Override
 	public void update(long deltaMs) {
+		if (game.isMultiPlayerMode() && !game.isServer())
+			return;
+		
 		if (!isActive()) {
 			if (respawn) {
 				timeSinceDied += deltaMs;
@@ -247,7 +250,7 @@ public class Tank extends MultiSpriteBody {
 			AIMovement(deltaMs);
 		}
 	}
-	public void serverControlMovement(KeyCommands m_keyCmds, Mouse mouse, CommandState cs) {
+	public void serverControlMovement(CommandState cs) {
 		// server
 		{			
 			if (cs.isActive(CommandState.CMD_UP))

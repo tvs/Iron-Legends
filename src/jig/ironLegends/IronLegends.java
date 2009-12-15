@@ -46,6 +46,7 @@ import jig.ironLegends.mapEditor.MapCalc;
 import jig.ironLegends.oxide.client.ClientInfo;
 import jig.ironLegends.oxide.client.ILClientThread;
 import jig.ironLegends.oxide.console.ILConsoleCommandHandler;
+import jig.ironLegends.oxide.packets.ILGameStatePacket;
 import jig.ironLegends.oxide.packets.ILPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
@@ -254,7 +255,7 @@ public class IronLegends extends ScrollingScreenGame {
 		m_sfx.add("tankExplosion", "tankExplosion", IronLegends.SPRITE_SHEET + "#explosion", 1500, 1);
 		
 		// Background Music
-		music = new AudioStream(RESOURCE_AUDIO + "ry_z-Forked_Road.mp3");
+		//music = new AudioStream(RESOURCE_AUDIO + "ry_z-Forked_Road.mp3");
 	}
 
 	public void loadMap(String sMapFile) {		
@@ -542,14 +543,26 @@ public class IronLegends extends ScrollingScreenGame {
 
 	@Override
 	public void update(long deltaMs) {
+		
+		/*
+		 
+		 + commandState server receive
+		 + commandState client send
+		 + gameState server send (entityStates)
+		 + gameState client rcv (entityStates)
+		 
+		 - make single player also send msgs
+		 
+		*/
 		// out of band entityStates for now
 		Vector<EntityState> entityStates = new Vector<EntityState>();
-		
+		//*
 		if (m_client != null)
 		{
 			// send msgs to server
 			m_clientMsgTransport.send(m_client.getTxQueue());
 		}
+		//*/
 		if (server != null && client != null && isMultiPlayerMode())
 		{
 			if (server.createdTanks == true)
@@ -576,7 +589,29 @@ public class IronLegends extends ScrollingScreenGame {
 				
 				msg.setEntityStates(entityStates);
 
-				server.send(msg);				
+				server.send(msg);
+				
+				if (m_tank != null)
+				{
+					// receive Command States
+					while (!server.receivedData.isEmpty())
+					{
+						CommandState cs = server.receivedData.remove();
+						Tank t = findEntity(cs.getEntityNumber());
+						t.serverControlMovement(cs);
+						if (cs.isActive(CommandState.CMD_DIE))
+						{
+							// the below should happen when server issues a die cmd
+							m_tank.causeDamage(m_tank.getHealth());
+							m_gameProgress.playerDied();
+						}						
+					}
+					
+					// now send gamestate
+					sendGameState();
+					{
+					}
+				}
 			}
 			else if (client.loadedMap)
 			{
@@ -596,7 +631,7 @@ public class IronLegends extends ScrollingScreenGame {
 			else
 			{
 				// map not loaded, keep sending startGame packet
-				/*
+				//*
 				//TODO: during ironlegends update, keep track of how many players are sending client updates
 				// if all clients are sending client updates, send start game with go = true
 				// client update could be modified to acknowledge it received go and then
@@ -609,22 +644,16 @@ public class IronLegends extends ScrollingScreenGame {
 				msg.m_bGo = false;
 				msg.m_bSinglePlayer = false;
 				server.send(msg);
-				*/
+				//*/
 			}
 		}
 		
+		//*
 		if (m_server != null)
 		{
 			//this.client.send(event)
 			//this.client.stateUpdates
-			/*
-			 * client
-			 * startGame received
-			 * stateUpdates
-			 * 
-			 * lobby,ready
-			 * server rx commandState
-			 */
+			
 			// process client msgs
 		
 			while (m_serverMsgTransport.hasRxMsg())
@@ -650,7 +679,8 @@ public class IronLegends extends ScrollingScreenGame {
 				}
 			}
 		}
-
+		//*/
+		
 		if (client != null)
 		{
 			// this could be problematic if client receives a start game packet and overrides the member variable!
@@ -665,6 +695,7 @@ public class IronLegends extends ScrollingScreenGame {
 				else if (m_tank == null && startGame.m_entityStates.size() > 0)
 				{
 					// for each tank, add if not already exists
+					
 					Iterator<EntityState> iter = startGame.m_entityStates.iterator();
 					while (iter.hasNext())
 					{
@@ -677,11 +708,22 @@ public class IronLegends extends ScrollingScreenGame {
 				{
 					// TODO: tell server ready..?
 					if (startGame.m_bGo)
+					{
 						client.receivedGo = true;
+						if (!isServer())
+						{
+							while (!client.stateUpdates.isEmpty())
+							{
+								ILGameStatePacket p = client.stateUpdates.remove();
+								clientUpdateEntityStates(p.tankStates.iterator());	
+							}
+						}							
+					}
+					
 				}
 			}
 		}
-		
+		//*
 		if (m_client != null)
 		{
 			// update tanks from entityStates
@@ -689,12 +731,7 @@ public class IronLegends extends ScrollingScreenGame {
 			{
 				// for each entityState, find appropriate entity and update
 				Iterator<EntityState> iter = entityStates.iterator();
-				while (iter.hasNext())
-				{
-					EntityState es = iter.next();
-					Tank t = findEntity(es.m_entityNumber);
-					t.clientUpdate(es);
-				}
+				clientUpdateEntityStates(iter);
 			}
 			
 			// process server msgs
@@ -710,7 +747,7 @@ public class IronLegends extends ScrollingScreenGame {
 				screenTransition(m_screens.activeScreen(), GAMEPLAY_SCREEN);				
 			}
 		}
-		
+		//*/		
 		processCommands(deltaMs);
 
 		if (m_levelProgress.isExitActivated()) {
@@ -732,6 +769,37 @@ public class IronLegends extends ScrollingScreenGame {
 
 		GameScreen activeGS = m_screens.getActiveScreen();
 		activeGS.update(deltaMs);		
+	}
+
+	private void clientUpdateEntityStates(Iterator<EntityState> iter) {		
+		while (iter.hasNext())
+		{
+			EntityState es = iter.next();
+			Tank t = findEntity(es.m_entityNumber);
+			t.clientUpdate(es);								
+		}
+	}
+
+	private void sendGameState() 
+	{		
+		// TODO will ahve to addd to a quueu the collision response and events?
+		// TODO will have to prevent clients from updating tanks?
+		ILGameStatePacket p = ILPacketFactory.newGameStatePacket(
+				  server.packetID()
+				 , server.hostAddress.getHostAddress() + "\0"
+				, server.hostAddress.getHostAddress() + "\0"
+				);
+		Iterator<Body> iter = m_tankLayer.iterator();
+		while (iter.hasNext())
+		{
+			Tank t = (Tank) iter.next();
+			EntityState es = new EntityState();
+			
+			t.serverPopulate(es);
+			p.addTankState(es);
+		}
+		
+		server.send(p);		
 	}
 
 	private void addTank(ClientInfo c) {
@@ -943,7 +1011,14 @@ public class IronLegends extends ScrollingScreenGame {
 		//return multiPlayerMode;
 	}
 	
+	public boolean isServer() {
+		if (server != null && server.isActive())
+			return true;
+		return false;
+	}
+	
 	public void backgroundMusic(boolean play) {
+		/*
 		if (play) {
 			if (music.getState() == AudioState.PRE || music.getState() == AudioState.STOPPED) {
 				music.play(.5);
@@ -955,5 +1030,7 @@ public class IronLegends extends ScrollingScreenGame {
 				music.pause();
 			}
 		}
-	}	
+		*/
+	}
+
 }
