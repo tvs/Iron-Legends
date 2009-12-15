@@ -48,20 +48,34 @@
 
 %%%%%%%%%% Abstract %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-\emph{Iron Legends} is a top-down arcade-style tank combat game. The goal is simple: total domination! Players will strap themselves into the cockpit of a tank and blast, smash, and detonate anyone and everyone who dares to stand in their way. With two different modes of gameplay–--single-player and networked multiplayer--–combatants can pit their wits and their bravery against legions of computer-controlled tanks or test their mettle against friend and foe alike. Let the mayhem begin!
+\emph{Iron Legends} is a top-down arcade-style tank combat game. The goal is simple: total domination! Players will strap themselves into the cockpit of a tank and blast, smash, and detonate anyone and everyone who dares to stand in their way. With two different modes of gameplay--single-player and networked multiplayer--combatants can pit their wits and their bravery against legions of computer-controlled tanks or test their mettle against friend and foe alike. Let the mayhem begin!
 \end{abstract}
 
 \section{Project Implementation Status}
 
 \subsection{Low Bar}
-
+\begin{itemize}
+	\item Two maps
+	\item Player Base
+	\item Mini map/Radar
+	\item Obstacles: Wall, Trees, Rocks
+	\item Power-ups: Shield, Double cannon, Speed, Armor, Extra Life
+	\item AI Tanks for single player mode
+	\item Single/Multiplayer integration
+	\item Multiplayer: Server create, lobby, packet send/receive architecture.
+	\item Sound effects and music
+\end{itemize}
 \subsection{High Bar}
-
+\begin{itemize}
+	\item Movable turret
+	\item Collectible powerups
+\end{itemize}
 \subsection{Additional Features implemented}
-
+\begin{itemize}
+	\item Map Editor
+\end{itemize}
 %%%%%%%%%% Technical Showpieces %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Technical Showpieces}
-
 \subsection{Multiplayer via Networking}
 
 Unfortunately, this technical showpiece is only mostly-complete. As we went to hook the networking into the multiplayer, we discovered extremely subtle problems that cropped up with the Java NIO classes (i.e. SocketChannel, Selectors, etc.) and the network. What worked in one environment failed to work on another.
@@ -86,6 +100,18 @@ This is where the trouble started to come up. In initial testing, this worked pe
 We completely rewrote the server and client using the multicast sockets and the existing ILAdvertisementSocket class. This fixed a few things, but ultimately, the clients and the servers were still getting slow updates. After a bit of trying to troublshoot this, we decided to split the ILAdvertisementSocket across two ports --- one for reading, one for writing. This seemed to fix latency issues, the servers could host and the clients could connect, but at that point it was rather late, the campus was closing, and so we called it a day before completing the implementation of the game update packets. Unfortunately, we weren't quite fast enough the next day to get the networking fully completed (though it was very close).
 
 \subsection{Artificial Intelligence}
+In Singleplayer mode player play's with the computer controlled tank. The computer controlled tanks are navigated by using Artificial Intelligence (AI) techniques. To make the tank movements more realistic we choose to use behavior based AI. 
+
+Following behaviors has been implemented in the game:
+\begin{description}
+	\item[Wander] Wander is a type of random steering. To make sure the movement is not ``twitchy'' it retain steering direction
+state and make small random displacements to it each frame. To achieve this, we constrain the steering force to the surface of a sphere located slightly ahead of the tank. To produce the steering force for the next frame a random displacement is added to the previous value, and the sum is constrained again to the sphere's surface. Tanks starts with this behavior and wander around in the world. If tank detect the opponent tank in its radar then it switches to Arrive behavior.
+	\item[Seek] Seek acts to steer the tank towards a target. This behavior adjusts the character so that its velocity is radially aligned towards the target.
+	\item[Arrive] Arrive behavior is identical to seek while the character is far from its target. But instead of moving through the target at full speed, this behavior causes the character to slow down as it approaches the target, eventually slowing to a stop.
+	\item[Flee] Flee is simply the inverse of seek and acts to steer the character so that its velocity is radially aligned away from the target. The desired velocity points in the opposite direction.
+	\item[Obstacle Avoidance] Obstacle avoidance behavior gives a tank the ability to maneuver in a map by dodging around obstacles. It predicts the future position based on the current velocity and look for possible collision, if it can hit an obstacle then try to move away from the obstacle. To make it more realistic the change in velocity are done gradually. It also checks if it the tank is stuck for a while, then choose new random target and try to move away from.
+
+\end{description}
 
 \subsection{Dual Mode: Single/Multi Player}
 
