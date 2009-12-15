@@ -14,7 +14,6 @@ import jig.ironLegends.core.KeyCommands;
 import jig.ironLegends.core.TextWriter;
 import jig.ironLegends.core.ui.RolloverButton;
 import jig.ironLegends.core.ui.TextEditBox;
-import jig.ironLegends.oxide.packets.ILLobbyPacket;
 import jig.ironLegends.oxide.packets.ILPacketFactory;
 import jig.ironLegends.oxide.packets.ILStartGamePacket;
 import jig.ironLegends.router.ClientContext;
